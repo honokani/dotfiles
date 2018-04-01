@@ -1,0 +1,16 @@
+[[plugins]]
+repo = 'Shougo/deoplete.nvim'
+on_i = 1
+hook_source = '''
+    source ~/.config/nvim/plugins/deoplete.rc.vim
+'''
+
+[[plugins]]
+repo = 'Shougo/neosnippet'
+on_i = 1
+on_ft = ['snippet']
+depends = ['neosnippet-snippets']
+hook_source = '''
+    source ~/.config/nvim/plugins/neosnippet.rc.vim
+'''
+

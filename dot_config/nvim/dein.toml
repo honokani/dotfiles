@@ -1,0 +1,72 @@
+[[plugins]]
+repo = 'Shougo/dein.vim'
+
+[[plugins]]
+repo = 'Shougo/vimproc.vim'
+build = 'make'
+
+[[plugins]]
+repo = 'Shougo/neosnippet-snippets'
+
+[[plugins]]
+repo = 'Shougo/context_filetype.vim'
+
+[[plugins]] # color
+repo = 'tomasr/molokai'
+hook_add = '''
+set background=dark
+au MyAuto VimEnter * nested colorscheme molokai
+'''
+
+[[plugins]] # toml syntax
+repo = 'cespare/vim-toml'
+on_ft = 'toml'
+
+[[plugins]] # toml syntax
+repo = 'ElmCast/elm-vim'
+on_ft = 'elm'
+
+[[plugins]]
+repo = 'Shougo/unite.vim'
+
+[[plugins]]
+repo = 'Shougo/vimfiler'
+depends = 'unite.vim'
+hook_add = '''
+source ~/.config/nvim/plugins/vimfiler.rc.vim
+autocmd Filetype vimfiler nmap <buffer> <CR> <Plug>(vimfiler_expand_or_edit)
+'''
+
+[[plugins]]
+repo = 'itchyny/lightline.vim'
+hook_add = '''
+let g:lightline = {
+    \   'colorscheme': 'wombat'
+    \}
+'''
+
+[[plugins]]
+repo = 'nathanaelkane/vim-indent-guides'
+
+[[plugins]]
+repo = 'kassio/neoterm'
+if = "has('nvim')"
+hook_add = '''
+    nnoremap <silent> ,rc :TREPLSendFile<cr>
+    nnoremap <silent> ,rl :TREPLSendLine<cr>
+    vnoremap <silent> ,rl :TREPLSendSelection<cr>
+    nnoremap <silent> vt :Ttoggle<cr>
+    nnoremap <silent> vs :terminal<cr>
+'''
+
+[[plugins]]
+repo = 'tpope/vim-surround'
+
+[[plugins]]
+repo = 'justincampbell/vim-eighties'
+hook_add = '''
+    let g:eighties_enable = 1
+    let g:eighties_minimum_width = 100
+    let g:eighties_exta_width = 0
+    let g:eighties_compute = 1
+'''
