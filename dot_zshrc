@@ -1,0 +1,146 @@
+export LANGUAGE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+export LC_CTYPE=en_US.UTF-8
+export LANG=en_US.UTF-8
+export XDG_CONFIG_HOME="$HOME/.config"
+
+source $HOME/.zplug/init.zsh
+
+########################################  
+# python
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+# nodejs
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# stack
+export PATH=~/.local/bin:$PATH
+
+########################################  
+# cd補助
+DIRSTACKSIZE=200
+setopt auto_cd
+setopt auto_pushd
+
+########################################  
+# 補完
+# 補完機能を有効にする
+# fpath=(/usr/local/share/zsh-completions/src $fpath)
+autoload -Uz compinit
+compinit
+
+# 補完で小文字でも大文字にマッチさせる  
+# zstyle \':completion:*\' matcher-list \'m:{a-z}={A-Z}\'  
+
+# ../ の後は今いるディレクトリを補完しない  
+# zstyle \':completion:*\' ignore-parents parent pwd ..  
+
+# sudo の後ろでコマンド名を補完する  
+# zstyle \':completion:*:sudo:*\' command-path /usr/local/sbin /usr/local/bin   
+#                    /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin  
+
+# ps コマンドのプロセス名補完  
+# zstyle \':completion:*:processes\' command \'ps x -o pid,s,args\'  
+
+
+########################################  
+# color
+autoload -Uz colors
+colors
+# prompt
+# PROMPT='%F{blue}%n@%m%f %(!.#.$) '
+PROMPT='%F{blue}%n `branch-status-check` %f%(!.#.$) '
+RPROMPT='[%F{green}%~%f] %*'
+setopt prompt_subst
+setopt transient_rprompt
+
+########################################  
+# history
+export HISTFILE=${HOME}/.zhistory
+export HISTSIZE=100000
+export SAVEHIST=100000
+setopt hist_ignore_dups
+setopt EXTENDED_HISTORY
+setopt share_history
+
+########################################  
+# key bind
+# bindkey -v
+setopt no_flow_control
+alias ws="cd ~/ws"
+
+alias ll="ls -lrt"
+alias lll="ls -alrt"
+alias rm="rm -i"
+alias cp="cp -i"
+alias mv="mv -i"
+alias mkdir="mkdir -p"
+
+alias zsrc="source ~/.zshrc"
+alias zset="nvim ~/.zshrc"
+alias zhis="cat ~/.zhistory | grep "
+
+alias nv="nvim"
+alias nvi="nvim ~/.config/nvim/init.vim"
+alias nvo="nvim ~/.config/nvim/options.rc.vim"
+alias nvk="nvim ~/.config/nvim/keymaps.rc.vim"
+alias nvd="nvim ~/.config/nvim/dein.toml"
+alias nvl="nvim ~/.config/nvim/dein_lazy.toml"
+
+alias gb="git branch"
+alias gch="git checkout "
+alias gad="git add "
+alias gcm="git commit "
+
+alias oct="octave --no-gui"
+
+########################################  
+
+
+# {{{ methods for RPROMPT
+# fg[color]表記と$reset_colorを使いたい
+# @see https://wiki.archlinux.org/index.php/zsh
+autoload -U colors; colors
+function branch-status-check {
+    local prefix branchname suffix
+        # .gitの中だから除外
+        if [[ "$PWD" =~ '/\.git(/.*)?$' ]]; then
+            return
+        fi
+        branchname=`get-branch-name`
+        # ブランチ名が無いので除外
+        if [[ -z $branchname ]]; then
+            return
+        fi
+        prefix=`get-branch-status` #色だけ返ってくる
+        suffix='%{'${reset_color}'%}'
+        echo ${prefix}${branchname}${suffix}
+}
+function get-branch-name {
+    # gitディレクトリじゃない場合のエラーは捨てます
+    echo `git rev-parse --abbrev-ref HEAD 2> /dev/null`
+}
+function get-branch-status {
+    local res color
+        output=`git status --short 2> /dev/null`
+        if [ -z "$output" ]; then
+            res=':' # status Clean
+            color='%{'${fg[green]}'%}'
+        elif [[ $output =~ "[\n]?\?\? " ]]; then
+            res='?:' # Untracked
+            color='%{'${fg[yellow]}'%}'
+        elif [[ $output =~ "[\n]? M " ]]; then
+            res='M:' # Modified
+            color='%{'${fg[red]}'%}'
+        else
+            res='A:' # Added to commit
+            color='%{'${fg[cyan]}'%}'
+        fi
+        # echo ${color}${res}'%{'${reset_color}'%}'
+        echo ${color} # 色だけ返す
+}
+# }}}
+
