@@ -70,20 +70,26 @@ setopt share_history
 # key bind
 # bindkey -v
 setopt no_flow_control
-alias ws="cd ~/ws"
+alias ws="cd ~/ws "
+alias dot="cd ~/git_clones/dotfiles "
 
-alias ll="ls -lrt"
-alias lll="ls -alrt"
-alias rm="rm -i"
-alias cp="cp -i"
-alias mv="mv -i"
-alias mkdir="mkdir -p"
+alias ll="ls -lrt "
+alias lll="ls -alrt "
+alias rm="rm -i "
+alias cp="cp -i "
+alias mv="mv -i "
+alias mkdir="mkdir -p "
 
 alias zsrc="source ~/.zshrc"
 alias zset="nvim ~/.zshrc"
 alias zhis="cat ~/.zhistory | grep "
 
-alias nv="nvim"
+alias pyev="pyenv versions "
+alias pyel="pyenv virtualenvs "
+alias pyea="pyenv activate "
+alias pyed="pyenv deactivate "
+
+alias nv="nvim "
 alias nvi="nvim ~/.config/nvim/init.vim"
 alias nvo="nvim ~/.config/nvim/options.rc.vim"
 alias nvk="nvim ~/.config/nvim/keymaps.rc.vim"
@@ -91,11 +97,11 @@ alias nvd="nvim ~/.config/nvim/dein.toml"
 alias nvl="nvim ~/.config/nvim/dein_lazy.toml"
 
 alias gb="git branch"
-alias gch="git checkout "
+alias gco="git checkout "
 alias gad="git add "
 alias gcm="git commit "
 
-alias oct="octave --no-gui"
+alias oct="octave --no-gui "
 
 ########################################  
 
