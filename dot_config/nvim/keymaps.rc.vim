@@ -33,7 +33,6 @@ inoremap    (           ()<LEFT>
 inoremap    ()          ()
 inoremap    (<SPACE>    (<SPACE><SPACE>)<LEFT><LEFT>
 inoremap    <           <><LEFT>
-inoremap    <           <<SPACE>><LEFT>
 inoremap    <>          <>
 inoremap    <<SPACE>    <<SPACE><SPACE>><LEFT><LEFT>
 inoremap    [           []<LEFT>
