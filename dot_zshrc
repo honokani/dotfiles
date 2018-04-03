@@ -24,6 +24,7 @@ export PATH=~/.local/bin:$PATH
 DIRSTACKSIZE=200
 setopt auto_cd
 setopt auto_pushd
+setopt pushd_ignore_dups
 
 ########################################  
 # 補完
@@ -79,6 +80,14 @@ alias rm="rm -i "
 alias cp="cp -i "
 alias mv="mv -i "
 alias mkdir="mkdir -p "
+alias dirs="dirs -v "
+alias cd1="pushd +1 "
+alias cd2="pushd +2 "
+alias cd3="pushd +3 "
+alias cd4="pushd +4 "
+alias cd5="pushd +5 "
+alias cd6="pushd +6 "
+alias cd7="pushd +7 "
 
 alias zsrc="source ~/.zshrc"
 alias zset="nvim ~/.zshrc"
@@ -103,8 +112,22 @@ alias gcm="git commit "
 
 alias oct="octave --no-gui "
 
-########################################  
+########################################
 
+# cdの後にlsを実行
+function chpwd() {
+  ls -ltr --color=auto
+}
+
+# mkdirとcdを同時実行
+function mkcd() {
+  if [[ -d $1 ]]; then
+    echo "$1 already exists!"
+    cd $1
+  else
+    mkdir -p $1 && cd $1
+  fi
+}
 
 # {{{ methods for RPROMPT
 # fg[color]表記と$reset_colorを使いたい
