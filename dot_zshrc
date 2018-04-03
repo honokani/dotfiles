@@ -64,8 +64,9 @@ export HISTFILE=${HOME}/.zhistory
 export HISTSIZE=100000
 export SAVEHIST=100000
 setopt hist_ignore_dups
-setopt EXTENDED_HISTORY
+setopt extended_history
 setopt share_history
+
 
 ########################################  
 # key bind
@@ -74,8 +75,8 @@ setopt no_flow_control
 alias ws="cd ~/ws "
 alias dot="cd ~/git_clones/dotfiles "
 
-alias ll="ls -lrt "
-alias lll="ls -alrt "
+alias ll="ls -lrt  --color=auto "
+alias lll="ls -alrt  --color=auto "
 alias rm="rm -i "
 alias cp="cp -i "
 alias mv="mv -i "
@@ -91,7 +92,9 @@ alias cd7="pushd +7 "
 
 alias zsrc="source ~/.zshrc"
 alias zset="nvim ~/.zshrc"
-alias zhis="cat ~/.zhistory | grep "
+alias hall="fc -lt '%F %T' 1"
+alias h="fc -lt '%F %T' -20"
+alias zhis="hall | grep "
 
 alias pyev="pyenv versions "
 alias pyel="pyenv virtualenvs "
