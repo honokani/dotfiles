@@ -23,15 +23,21 @@ nnoremap    q;          q:
 nnoremap    q;          q:
 
 
-inoremap    ,           ,
-inoremap    (           ()<ESC>
-inoremap    "           ""<ESC>
-inoremap    '           ''<ESC>
-inoremap    [           []<ESC>
-inoremap    [<CR>       [<CR><ESC><Up>yyp$r]<Left>v^r<Space>J<Up>$
-inoremap    <           <><ESC>
-inoremap    {           {}<ESC>
-inoremap    {<CR>       {<CR><ESC><Up>yyp$r}<Left>v^r<Space>J<Up>$
+inoremap    "           "<SPACE>"ba<SPACE>
+inoremap    ""          ""
+inoremap    '           '<space>'ba<SPACE>
+inoremap    ''          ''
+inoremap    (           (<SPACE>)ba<SPACE>
+inoremap    ()          ()
+inoremap    <           <<SPACE>><LEFT>
+inoremap    <>          <>
+inoremap    [           [<SPACE>]ba<SPACE>
+inoremap    []          []
+inoremap    [<CR>       [<ESC>yyp$r,<Left>v0r<Space>yypr]2<Up>a<SPACE>
+inoremap    {           {<SPACE>}ba<SPACE>
+inoremap    {}          {}
+inoremap    {<CR>       {<ESC>yypr}<RIGHT>D<Up>$a<CR>
+
 inoremap    jj          <ESC>
 inoremap    kk          <ESC>
 inoremap    ;;          <ESC>A
