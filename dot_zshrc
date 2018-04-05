@@ -72,8 +72,8 @@ setopt share_history
 # key bind
 # bindkey -v
 setopt no_flow_control
-alias ws="cd ~/ws "
-alias dot="cd ~/git_clones/dotfiles "
+alias ws="~/ws"
+alias dot="~/git_clones/dotfiles"
 
 alias ll="ls -lrt  --color=auto "
 alias lll="ls -alrt  --color=auto "
@@ -108,10 +108,13 @@ alias nvk="nvim ~/.config/nvim/keymaps.rc.vim"
 alias nvd="nvim ~/.config/nvim/dein.toml"
 alias nvl="nvim ~/.config/nvim/dein_lazy.toml"
 
-alias gb="git branch"
+alias gbr="git branch"
 alias gco="git checkout "
 alias gad="git add "
-alias gcm="git commit "
+alias gcm="git commit -m "
+alias gdf="git diff "
+alias glo="git log --oneline "
+alias grb="git rebase -i HEAD~5"
 
 alias oct="octave --no-gui "
 
