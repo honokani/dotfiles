@@ -5,8 +5,8 @@ endif
 set sh=zsh
 
 " python
-let g:python_host_prog  = '/home/honokani/.pyenv/versions/neovim2/bin/python'
-let g:python3_host_prog = '/home/honokani/.pyenv/versions/neovim3/bin/python'
+let g:python_host_prog  = "~/.pyenv/versions/neovim2/bin/python"
+let g:python3_host_prog = "~/.pyenv/versions/neovim3/bin/python"
 
 " reset auto
 augroup MyAuto
@@ -67,5 +67,7 @@ if !has('gui_running')
 endif
 
 runtime! options.rc.vim
+
+
 runtime! keymaps.rc.vim
 
