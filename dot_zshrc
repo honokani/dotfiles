@@ -75,8 +75,8 @@ setopt no_flow_control
 alias ws="~/ws"
 alias dot="~/git_clones/dotfiles"
 
-alias ll="ls -lrt  --color=auto "
-alias lll="ls -alrt  --color=auto "
+alias ll="ls -lrt --color=auto "
+alias lll="ls -alrt --color=auto "
 alias rm="rm -i "
 alias cp="cp -i "
 alias mv="mv -i "
@@ -108,13 +108,13 @@ alias nvk="nvim ~/.config/nvim/keymaps.rc.vim"
 alias nvd="nvim ~/.config/nvim/dein.toml"
 alias nvl="nvim ~/.config/nvim/dein_lazy.toml"
 
-alias gbr="git branch"
-alias gco="git checkout "
-alias gad="git add "
-alias gcm="git commit -m "
-alias gdf="git diff "
+alias ga="git add "
+alias gb="git branch"
+alias gc="git checkout "
+alias gmm="git commit -m "
 alias glo="git log --oneline "
-alias grb="git rebase -i HEAD~5"
+# git rebase alias is made by function.
+# git diff alias is made by function.
 
 alias oct="octave --no-gui "
 
@@ -133,6 +133,16 @@ function mkcd() {
   else
     mkdir -p $1 && cd $1
   fi
+}
+
+# git rebse alias
+function grb(){
+    git rebase -i HEAD~$1
+}
+
+# git diff alias
+function gd(){
+    git diff --name-only HEAD HEAD~$1
 }
 
 # {{{ methods for RPROMPT
