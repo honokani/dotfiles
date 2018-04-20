@@ -110,11 +110,11 @@ alias nvl="nvim ~/.config/nvim/dein_lazy.toml"
 
 alias ga="git add "
 alias gb="git branch"
-alias gc="git checkout "
-alias gmm="git commit -m "
+alias gco="git checkout "
+alias gcm="git commit -m "
 alias glo="git log --oneline "
-# git rebase alias is made by function.
-# git diff alias is made by function.
+# gd  : git diff alias is made by function.
+# grb : git rebase alias is made by function.
 
 alias oct="octave --no-gui "
 
