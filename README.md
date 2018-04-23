@@ -10,6 +10,6 @@
 
 ### Issue  
    *  only for zsh and nvim  
-   *  i would be happy if i succeed to include this file into my dockerfile  
+   *  i would be happy if i succeed in including this file into my dockerfile  
       but it is hassle  
 
