@@ -33,9 +33,6 @@ inoremap    '<SPACE>      '<SPACE>
 inoremap    (             ()<LEFT>
 inoremap    ()            ()
 inoremap    (<SPACE>      (<SPACE><SPACE>)<LEFT><LEFT>
-inoremap    <             <><LEFT>
-inoremap    <>            <>
-inoremap    <<SPACE>      <<SPACE><SPACE>><LEFT><LEFT>
 inoremap    [             []<LEFT>
 inoremap    []            []
 inoremap    [<SPACE>      [<SPACE><SPACE>]<LEFT><LEFT>
@@ -44,6 +41,10 @@ inoremap    {             {<SPACE><SPACE>}<LEFT><LEFT>
 inoremap    {}            {}
 inoremap    {<SPACE>      {<SPACE><SPACE>}<LEFT><LEFT>
 inoremap    {<CR>         {<ESC>yypr}<RIGHT>D<Up>$a<CR>
+inoremap    <             <><LEFT>
+inoremap    <>            <>
+inoremap    <<SPACE>      <<SPACE>
+inoremap    <<<SPACE>     <<<SPACE>
 
 inoremap    jj            <ESC>
 inoremap    kk            <ESC>
