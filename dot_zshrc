@@ -67,6 +67,10 @@ setopt hist_ignore_dups
 setopt extended_history
 setopt share_history
 
+bindkey '^P' history-beginning-search-backward
+bindkey '^N' history-beginning-search-forward
+
+
 ########################################  
 # else setting
 set clipboard=unnamed

@@ -2,6 +2,11 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 nnoremap    ;             :
 nnoremap    :             ;
+nnoremap    q;            q:
+nnoremap    q;            q:
+nnoremap    ;aw           :wa
+nnoremap    ;aq           :qa
+
 nnoremap    j             gj
 nnoremap    k             gk
 nnoremap    s             <Nop>
@@ -21,8 +26,6 @@ nnoremap    sh            <C-w>h
 nnoremap    st            :tabnew<CR>
 nnoremap    ss            5<C-w>h
 nnoremap    sv            :vsplit<CR>
-nnoremap    q;            q:
-nnoremap    q;            q:
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 inoremap    "             ""<LEFT>
@@ -44,11 +47,11 @@ inoremap    {<SPACE>      {<SPACE><SPACE>}<LEFT><LEFT>
 inoremap    {<CR>         {<ESC>yypr}<RIGHT>D<Up>$a<CR>
 
 inoremap    <             <><LEFT>
+inoremap    <<SPACE>      <<SPACE>
 inoremap    <>            <>
+inoremap    <<<SPACE>     <<<SPACE>
 inoremap    <-            <-
 inoremap    <-<SPACE>     <-<SPACE>
-inoremap    <<SPACE>      <<SPACE>
-inoremap    <<<SPACE>     <<<SPACE>
 inoremap    =<<           =<<
 inoremap    =<<<SPACE>    =<<<SPACE>
 
@@ -61,6 +64,12 @@ inoremap    ;wa           <ESC>:wa<Return>a
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 tnoremap    <silent><ESC> <C-\><C-n>
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+vnoremap    {             "zdi{<C-R>z}<ESC>
+vnoremap    [             "zdi[<C-R>z]<ESC>
+vnoremap    (             "zdi(<C-R>z)<ESC>
+vnoremap    "             "zdi"<C-R>z"<ESC>
+vnoremap    '             "zdi'<C-R>z'<ESC>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
