@@ -22,12 +22,15 @@ au MyAuto VimEnter * nested colorscheme molokai
 repo = 'cespare/vim-toml'
 on_ft = 'toml'
 
-[[plugins]] # toml syntax
+[[plugins]] # elm syntax
 repo = 'ElmCast/elm-vim'
 on_ft = 'elm'
 
 [[plugins]]
 repo = 'Shougo/unite.vim'
+
+[[plugins]]
+repo = 'Shougo/neomru.vim'
 
 [[plugins]]
 repo = 'Shougo/vimfiler'
