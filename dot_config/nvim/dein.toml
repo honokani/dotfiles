@@ -11,6 +11,23 @@ repo = 'Shougo/neosnippet-snippets'
 [[plugins]]
 repo = 'Shougo/context_filetype.vim'
 
+[[plugins]]
+repo = 'Shougo/unite.vim'
+
+[[plugins]]
+repo = 'Shougo/neomru.vim'
+
+[[plugins]]
+repo = 'Shougo/vimfiler'
+depends = 'unite.vim'
+hook_add = '''
+source ~/.config/nvim/plugins/vimfiler.rc.vim
+autocmd Filetype vimfiler nmap <buffer> <CR> <Plug>(vimfiler_expand_or_edit)
+'''
+
+[[plugins]]
+repo = 'airblade/vim-gitgutter'
+
 [[plugins]] # color
 repo = 'tomasr/molokai'
 hook_add = '''
@@ -25,20 +42,6 @@ on_ft = 'toml'
 [[plugins]] # elm syntax
 repo = 'ElmCast/elm-vim'
 on_ft = 'elm'
-
-[[plugins]]
-repo = 'Shougo/unite.vim'
-
-[[plugins]]
-repo = 'Shougo/neomru.vim'
-
-[[plugins]]
-repo = 'Shougo/vimfiler'
-depends = 'unite.vim'
-hook_add = '''
-source ~/.config/nvim/plugins/vimfiler.rc.vim
-autocmd Filetype vimfiler nmap <buffer> <CR> <Plug>(vimfiler_expand_or_edit)
-'''
 
 [[plugins]]
 repo = 'itchyny/lightline.vim'
