@@ -4,6 +4,7 @@ endif
 
 if has('win32') || has ('win64')
     set shellslash
+    let g:vimproc#download_windows_dll = 1
     let g:python_host_prog  = expand( "$USERPROFILE/Miniconda3/envs/neovim2/python.exe" )
     let g:python3_host_prog = expand( "$USERPROFILE/Miniconda3/envs/neovim3/python.exe" )
 else
