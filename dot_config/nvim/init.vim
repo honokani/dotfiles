@@ -2,11 +2,15 @@ if &compatible
     set nocompatible
 endif
 
-set sh=zsh
-
-" python
-let g:python_host_prog  = expand( "$HOME/.pyenv/versions/neovim2/bin/python" )
-let g:python3_host_prog = expand( "$HOME/.pyenv/versions/neovim3/bin/python" )
+if has('win32') || has ('win64')
+    set shellslash
+    let g:python_host_prog  = expand( "$USERPROFILE/Miniconda3/envs/neovim2/python.exe" )
+    let g:python3_host_prog = expand( "$USERPROFILE/Miniconda3/envs/neovim3/python.exe" )
+else
+    set sh=zsh
+    let g:python_host_prog  = expand( "$HOME/.pyenv/versions/neovim2/bin/python" )
+    let g:python3_host_prog = expand( "$HOME/.pyenv/versions/neovim3/bin/python" )
+endif
 
 " reset auto
 augroup MyAuto
