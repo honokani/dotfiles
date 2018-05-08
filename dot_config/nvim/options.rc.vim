@@ -3,6 +3,7 @@ set encoding=utf-8
 " swap, backup
 set noswapfile
 set nobackup
+set nowhitebackup
 " when scroll, can see bottom
 set scrolloff=5
 " power backspace
