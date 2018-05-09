@@ -123,6 +123,7 @@ alias glo="git log --oneline "
 # gd  : git diff alias is made by function.
 # grb : git rebase alias is made by function.
 
+alias untar="tar -xvf "
 alias oct="octave --no-gui "
 
 ########################################
