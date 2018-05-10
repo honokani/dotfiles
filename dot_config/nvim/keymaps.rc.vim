@@ -59,7 +59,7 @@ inoremap    jj            <ESC>
 inoremap    kk            <ESC>
 inoremap    ;;            <ESC>A
 inoremap    <C-[>         <ESC>
-inoremap    ;wa           <ESC>:wa<Return>a
+inoremap    ;wa           <ESC>:wa<Return><RIGHT>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 tnoremap    <silent><ESC> <C-\><C-n>
