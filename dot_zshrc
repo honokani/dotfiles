@@ -83,8 +83,6 @@ setopt no_flow_control
 alias ws="~/ws"
 alias dot="~/git_clones/dotfiles"
 
-alias -s py="python "
-
 alias ll="ls -lrt --color=auto "
 alias lll="ls -alrt --color=auto "
 alias rm="rm -i "
@@ -106,26 +104,31 @@ alias hall="fc -lt '%F %T' 1"
 alias h="fc -lt '%F %T' -20"
 alias zhis="hall | grep "
 
-alias pyev="pyenv versions "
-alias pyel="pyenv virtualenvs "
-alias pyea="pyenv activate "
-alias pyed="pyenv deactivate "
-
+# nvim
 alias nv="nvim "
 alias nvi="nvim ~/.config/nvim/init.vim"
 alias nvo="nvim ~/.config/nvim/options.rc.vim"
 alias nvk="nvim ~/.config/nvim/keymaps.rc.vim"
 alias nvd="nvim ~/.config/nvim/dein.toml"
 alias nvl="nvim ~/.config/nvim/dein_lazy.toml"
-
+# python
+alias -s py="python "
+alias pyev="pyenv versions "
+alias pyel="pyenv virtualenvs "
+alias pyea="pyenv activate "
+alias pyed="pyenv deactivate "
+# git
+# gd  : git diff alias is made by function.
+# grb : git rebase alias is made by function.
 alias ga="git add "
 alias gb="git branch"
+alias gs="git status"
 alias gco="git checkout "
 alias gcm="git commit -m "
 alias glo="git log --oneline "
-# gd  : git diff alias is made by function.
-# grb : git rebase alias is made by function.
-
+# haskell
+alias stb="stack build"
+# else
 alias untar="tar -xvf "
 alias oct="octave --no-gui "
 
@@ -156,6 +159,14 @@ function gd(){
     git diff --name-only HEAD HEAD~$1
 }
 
+# stack exec
+function ste(){
+    local x=$(basename `pwd`)
+    stack build
+    stack exec $x-exe
+}
+
+########################################
 # {{{ methods for RPROMPT
 # fg[color]表記と$reset_colorを使いたい
 # @see https://wiki.archlinux.org/index.php/zsh
