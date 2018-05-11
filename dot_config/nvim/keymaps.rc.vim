@@ -65,11 +65,13 @@ inoremap    ;wa           <ESC>:wa<Return><RIGHT>
 tnoremap    <silent><ESC> <C-\><C-n>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-vnoremap    {             "zdi{<C-R>z}<ESC>
-vnoremap    [             "zdi[<C-R>z]<ESC>
-vnoremap    (             "zdi(<C-R>z)<ESC>
-vnoremap    "             "zdi"<C-R>z"<ESC>
-vnoremap    '             "zdi'<C-R>z'<ESC>
+vmap        (             <S-s>(a<DELETE><ESC>%i<BS><ESC>
+vmap        {             <S-s>{a<DELETE><ESC>%i<BS><ESC>
+vmap        [             <S-s>[a<DELETE><ESC>%i<BS><ESC>
+vmap        "             <S-s>"
+vmap        '             <S-s>'
+vmap        `             <S-s>`
+vnoremap    <             "zdi<<C-R>z><ESC>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
