@@ -75,6 +75,7 @@ bindkey '^N' history-beginning-search-forward
 ########################################  
 # else setting
 set clipboard=unnamed
+setopt no_beep
 
 ########################################  
 # key bind
@@ -97,6 +98,8 @@ alias cd4="pushd +4 "
 alias cd5="pushd +5 "
 alias cd6="pushd +6 "
 alias cd7="pushd +7 "
+alias cd8="pushd +8 "
+alias cd9="pushd +9 "
 
 alias zsrc="source ~/.zshrc"
 alias zset="nvim ~/.zshrc"
