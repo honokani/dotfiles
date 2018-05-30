@@ -131,6 +131,7 @@ alias gcm="git commit -m "
 alias glo="git log --oneline "
 # haskell
 alias stb="stack build"
+alias stn="stack new "
 # else
 alias untar="tar -xvf "
 alias oct="octave --no-gui "
