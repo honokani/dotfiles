@@ -130,8 +130,11 @@ alias gco="git checkout "
 alias gcm="git commit -m "
 alias glo="git log --oneline "
 # haskell
+# ste : stack exec alias is made by function.
+alias -s hs="stack runghc "
 alias stb="stack build"
 alias stn="stack new "
+alias sti="stack ghci "
 # else
 alias untar="tar -xvf "
 alias oct="octave --no-gui "
