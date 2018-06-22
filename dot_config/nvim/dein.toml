@@ -21,8 +21,8 @@ repo = 'Shougo/neomru.vim'
 repo = 'Shougo/vimfiler'
 depends = 'unite.vim'
 hook_add = '''
-source ~/.config/nvim/plugins/vimfiler.rc.vim
-autocmd Filetype vimfiler nmap <buffer> <CR> <Plug>(vimfiler_expand_or_edit)
+    source ~/.config/nvim/plugins/vimfiler.rc.vim
+    autocmd Filetype vimfiler nmap <buffer> <CR> <Plug>(vimfiler_expand_or_edit)
 '''
 
 [[plugins]]
@@ -31,8 +31,8 @@ repo = 'airblade/vim-gitgutter'
 [[plugins]] # color
 repo = 'tomasr/molokai'
 hook_add = '''
-set background=dark
-au MyAuto VimEnter * nested colorscheme molokai
+    set background=dark
+    au MyAuto VimEnter * nested colorscheme molokai
 '''
 
 [[plugins]] # toml syntax
@@ -53,6 +53,13 @@ let g:lightline = {
 
 [[plugins]]
 repo = 'nathanaelkane/vim-indent-guides'
+hook_add = '''
+    let g:indent_guides_auto_colors=0
+    autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd   ctermbg=54
+    autocmd VimEnter,Colorscheme * :hi IndentGuidesEven  ctermbg=23
+    let g:indent_guides_enable_on_vim_startup=1
+    let g:indent_guides_guide_size=1
+'''
 
 [[plugins]]
 repo = 'kassio/neoterm'
