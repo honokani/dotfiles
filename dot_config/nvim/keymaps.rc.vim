@@ -44,7 +44,7 @@ inoremap    [<CR>         [<ESC>yyp$r,<Left>v0r<Space>yypr]2<Up>a<SPACE>
 inoremap    {             {<SPACE><SPACE>}<LEFT><LEFT>
 inoremap    {}            {}
 inoremap    {<SPACE>      {<SPACE><SPACE>}<LEFT><LEFT>
-inoremap    {<CR>         {<ESC>yypr}<RIGHT>D<Up>$a<CR>
+inoremap    {<CR>         {<ESC>yyp$r,<Left>v0r<Space>yypr}2<Up>a<SPACE>
 
 inoremap    <             <><LEFT>
 inoremap    <<SPACE>      <<SPACE>
