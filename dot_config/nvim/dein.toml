@@ -82,3 +82,7 @@ hook_add = '''
     let g:eighties_exta_width = 0
     let g:eighties_compute = 1
 '''
+
+[[plugins]]
+repo = 'LeafCage/yankround'
+
