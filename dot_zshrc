@@ -54,7 +54,7 @@ autoload -Uz colors
 colors
 # prompt
 # PROMPT='%F{blue}%n@%m%f %(!.#.$) '
-PROMPT='%F{blue}%n `branch-status-check` %f%(!.#.$) '
+PROMPT='%F{cyan}%n `branch-status-check` %f%(!.#.$) '
 RPROMPT='[%F{green}%~%f] %*'
 setopt prompt_subst
 setopt transient_rprompt
