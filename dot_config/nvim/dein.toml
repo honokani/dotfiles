@@ -84,5 +84,5 @@ hook_add = '''
 '''
 
 [[plugins]]
-repo = 'LeafCage/yankround'
+repo = 'LeafCage/yankround.vim'
 
