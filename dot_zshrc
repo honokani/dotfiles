@@ -147,7 +147,7 @@ function chpwd() {
 }
 
 # mkdirとcdを同時実行
-function mkcd() {
+function mc() {
   if [[ -d $1 ]]; then
     echo "$1 already exists!"
     cd $1
