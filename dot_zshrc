@@ -101,10 +101,10 @@ alias cd7="pushd +7 "
 alias cd8="pushd +8 "
 alias cd9="pushd +9 "
 
-alias zsrc="source ~/.zshrc"
-alias zset="nvim ~/.zshrc"
-alias hall="fc -lt '%F %T' 1"
-alias h="fc -lt '%F %T' -20"
+alias zsrc="source ~/.zshrc "
+alias zset="nvim ~/.zshrc "
+alias hall="fc -lt '%F %T' 1 "
+alias h="fc -lt '%F %T' -20 "
 alias zhis="hall | grep "
 
 # nvim
@@ -117,6 +117,7 @@ alias nvl="nvim ~/.config/nvim/dein_lazy.toml"
 # python
 alias -s py="python "
 alias pyev="pyenv versions "
+alias pyen="pyenv virtualenv "
 alias pyel="pyenv virtualenvs "
 alias pyea="pyenv activate "
 alias pyed="pyenv deactivate "
@@ -132,7 +133,7 @@ alias glo="git log --oneline "
 # haskell
 # ste : stack exec alias is made by function.
 alias -s hs="stack runghc "
-alias stb="stack build"
+alias stb="stack build "
 alias stn="stack new "
 alias sti="stack ghci "
 # else
