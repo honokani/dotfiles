@@ -83,6 +83,9 @@ setopt no_beep
 setopt no_flow_control
 alias ws="~/ws"
 alias dot="~/git_clones/dotfiles"
+alias ...=../..
+alias ....=../../..
+alias .....=../../../..
 
 alias ll="ls -lrt --color=auto "
 alias lll="ls -alrt --color=auto "
