@@ -2,10 +2,9 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 nnoremap    ;             :
 nnoremap    :             ;
+nnoremap    :;            $
 nnoremap    q;            q:
 nnoremap    q;            q:
-nnoremap    ;aw           :wa
-nnoremap    ;aq           :qa
 
 nnoremap    j             gj
 nnoremap    k             gk
@@ -22,9 +21,9 @@ nnoremap   <Esc><Esc>     :noh<CR>
 
 nnoremap    sa            <C-w><S-w>
 nnoremap    sd            <C-w>w
-nnoremap    sh            <C-w>h
-nnoremap    st            :tabnew<CR>
 nnoremap    ss            5<C-w>h
+nnoremap    st            :tabnew<CR>
+nnoremap    sh            :split<CR>
 nnoremap    sv            :vsplit<CR>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

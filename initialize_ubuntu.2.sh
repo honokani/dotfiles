@@ -1,7 +1,7 @@
 #!/usr/bin/zsh
 # make git clone directory
-GC=$HOME/gitclones
-mkdir $GC
+GC=$HOME/git_clones
+dir $GC
 
 # git must be installed.
 # because, this file must be got from github.
