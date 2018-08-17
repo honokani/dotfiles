@@ -2,11 +2,11 @@
 
 ### Purpose  
    *  make my life easy  
-   *  ride with the flow  
    *  learn to use github  
 
 ### Point  
-   *  executing `apply_dots.sh` makes dotfiles apply  
+   1. execute `initialize_ubuntu.1.sh`
+   1. execute `initialize_ubuntu.2.sh`
 
 ### Issue  
    *  only for zsh and nvim  

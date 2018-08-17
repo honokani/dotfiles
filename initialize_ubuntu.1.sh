@@ -6,5 +6,5 @@ curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/instal
 # change shell
 # $ chsh
 which zsh
-echo change_shell
+echo changeShell_and_reboot
 
