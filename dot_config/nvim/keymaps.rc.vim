@@ -75,11 +75,11 @@ vnoremap    <             "zdi<<C-R>z><ESC>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" For practice
-nnoremap    l             <Nop>
-nnoremap    h             <Nop>
-nnoremap    ll            <Right>
-nnoremap    hh            <Left>
+"" For practice
+"nnoremap    l             <Nop>
+"nnoremap    h             <Nop>
+"nnoremap    ll            <Right>
+"nnoremap    hh            <Left>
 
 " combination
 nmap        <Space>S      tt<Space>c<C-w>h<S-s>G<Up><Up><CR>
