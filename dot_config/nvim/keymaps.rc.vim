@@ -39,11 +39,11 @@ inoremap    (<SPACE>      (<SPACE><SPACE>)<LEFT><LEFT>
 inoremap    [             []<LEFT>
 inoremap    []            []
 inoremap    [<SPACE>      [<SPACE><SPACE>]<LEFT><LEFT>
-inoremap    [<CR>         [<ESC>yyp$r,<Left>v0r<Space>yypr]2<Up>a<SPACE>
+inoremap    [<CR>         [<ESC>yypv$r<SPACE>$r,yypr]2<Up>a<SPACE>
 inoremap    {             {<SPACE><SPACE>}<LEFT><LEFT>
 inoremap    {}            {}
 inoremap    {<SPACE>      {<SPACE><SPACE>}<LEFT><LEFT>
-inoremap    {<CR>         {<ESC>yyp$r,<Left>v0r<Space>yypr}2<Up>a<SPACE>
+inoremap    {<CR>         {<ESC>yypv$r<SPACE>$r,yypr}2<Up>a<SPACE>
 
 inoremap    <             <><LEFT>
 inoremap    <<SPACE>      <<SPACE>
