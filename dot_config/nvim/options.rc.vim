@@ -52,4 +52,6 @@ set switchbuf=useopen
 " set verbose=0
 " clipboard
 set clipboard+=unnamedplus
-
+" visualize json d-quote
+set conceallevel=0
+let g:vim_json_syntax_conceal = 0
