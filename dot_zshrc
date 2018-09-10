@@ -81,7 +81,7 @@ setopt no_beep
 # key bind
 # bindkey -v
 setopt no_flow_control
-alias ws="~/ws"
+alias cdw="~/ws"
 alias dot="~/git_clones/dotfiles"
 alias ...=../..
 alias ....=../../..
