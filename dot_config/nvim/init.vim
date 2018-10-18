@@ -71,8 +71,8 @@ if !has('gui_running')
     augroup END
 endif
 
+setlocal omnifunc=syntaxcomplete#Complete
+
 runtime! options.rc.vim
-
-
 runtime! keymaps.rc.vim
 
