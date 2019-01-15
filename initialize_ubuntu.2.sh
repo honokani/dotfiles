@@ -10,9 +10,9 @@ $GC/dotfiles/apply_dots.sh
 
 
 # prepare to install python3, to use visual libraries.
-sudo apt-get install -y gcc make openssl language-pack-ja
-sudo apt-get install -y libssl-dev libbz2-dev libreadline-dev libsqlite3-dev
-sudo apt-get install -y python3-tk tk-dev python-tk libfreetype6-dev 
+sudo apt install -y build-essential openssl language-pack-ja
+sudo apt install -y libssl-dev libbz2-dev libreadline-dev libsqlite3-dev
+sudo apt install -y python3-tk tk-dev python-tk libfreetype6-dev 
 
 
 # get pyenv, install pyenv-virtualenv

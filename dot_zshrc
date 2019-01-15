@@ -8,6 +8,12 @@ export PKG_CONFIG_PATH="/usr/bin/pkg-config"
 source $HOME/.zplug/init.zsh
 
 ########################################  
+# for useful key mapping
+xmodmap -e 'keycode 100 = Return'
+xmodmap -e 'keycode 101 = Return'
+xmodmap -e 'keycode 102 = BackSpace'
+
+########################################  
 # python
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"

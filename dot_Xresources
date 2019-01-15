@@ -1,8 +1,5 @@
 !! ~/.Xresources
-
-!!
 !! rxvt-unicode (urxvt)
-!!
 
 URxvt.geometry:             96x32
 URxvt.scrollBar_right:      true
@@ -16,8 +13,8 @@ URxvt.saveLines:            3000
 URxvt.fading:               40
 
 !! Font list and Spacing
-URxvt.font:                 xft:Cica-10,\
-                            xft:Cica-10
+URxvt.font:                 xft:Cica-12,\
+                            xft:Cica-12
 !URxvt.font:                 xft:Dejavu Sans Mono-9,\
 !                            xft:IPAGothic
 URxvt.letterSpace:          -1

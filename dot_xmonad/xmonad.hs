@@ -12,6 +12,12 @@ import XMonad.ManageHook           ((-->))-- avoid xmobar area
 import XMonad.Hooks.Place          (placeHook, fixed)
 -- key config
 import XMonad.Util.EZConfig -- removeKeys, additionalKeys
+-- loghook
+import XMonad.Hooks.FadeInactive   (fadeInactiveLogHook)
+
+
+-- window tranceparent ratio
+tranceparentRatio = 0xdddddddd
 -- my colors
 myGray      = "#676767"
 myGrayAlt   = "#313131"
@@ -23,6 +29,7 @@ myGreen     = "#adffbf"
 myNormalbg  = "#1a1e1b"
 
 
+
 -- * main *
 main = do
     xmonad defaultConfig { terminal = "urxvt"
@@ -30,6 +37,8 @@ main = do
                          , borderWidth = 2
                          , normalBorderColor = myGray
                          , focusedBorderColor = myGreen
+                         , startupHook = myStartups
+                         , logHook = myLogHook
                          , layoutHook = toggleLayouts (noBorders Full) $ avoidStruts $ myLayouts
                          , manageHook = placeHook myPlacement
                                         <+> myManageHookShift
@@ -37,6 +46,17 @@ main = do
                                         <+> manageDocks
                          , workspaces = mySpaceNames
                          }
+
+
+
+-- * startup hooks *
+myStartups = do
+    spawn "feh --bg-fill /home/honokani/.xmonad/wps/wp.jpg"
+    spawn "ibus-daemon --xim --replace &"
+    spawn "xcompmgr &"
+
+-- * log hooks *
+myLogHook = fadeInactiveLogHook tranceparentRatio
 
 
 
