@@ -5,10 +5,11 @@ import XMonad.Layout.DragPane      (DragType(Horizontal, Vertical), dragPane) --
 import XMonad.Layout.NoBorders     (noBorders) -- In Full mode, border is no use
 import XMonad.Layout.ResizableTile (ResizableTall(..)) -- Resizable Horizontal border
 import XMonad.Layout.Spacing       (spacing) -- this makes smart space around windows
+import XMonad.Layout.Simplest      (Simplest(..))
 import XMonad.Layout.ToggleLayouts (toggleLayouts) -- Full window at any time
 -- manage window position
-import XMonad.Hooks.ManageDocks    (manageDocks)-- avoid xmobar area
-import XMonad.ManageHook           ((-->))-- avoid xmobar area
+import XMonad.Hooks.ManageDocks    (manageDocks) -- avoid xmobar area
+import XMonad.ManageHook           ((-->)) -- avoid xmobar area
 import XMonad.Hooks.Place          (placeHook, fixed)
 -- key config
 import XMonad.Util.EZConfig -- removeKeys, additionalKeys
@@ -51,7 +52,7 @@ main = do
 
 -- * startup hooks *
 myStartups = do
-    spawn "feh --bg-fill /home/honokani/.xmonad/wps/wp.jpg"
+    spawn "feh --bg-fill $HOME/.xmonad/wps/wp.jpg"
     spawn "ibus-daemon --xim --replace &"
     spawn "xcompmgr &"
 
@@ -105,8 +106,12 @@ myPlacement = fixed (0.5, 0.5)
 
 
 -- * layout *
-myLayouts =   (spacing 18 $ ResizableTall 1 (3/100) (3/5) [])
-          ||| (spacing 2 $ dragPane Horizontal (1/10) (1/2))
-          ||| (dragPane Vertical   (1/10) (1/2))
-
+myLayouts =   ( surround_18px $ ResizableTall 1 (3/100) (2/3) [] )
+          ||| ( surround_02px $ dragPane Horizontal (1/10) (1/2) )
+          ||| ( surround_00px $ dragPane Vertical   (1/10) (1/2) )
+          ||| ( surround_00px $ Simplest                         )
+    where
+        surround_00px = id
+        surround_02px = spacing 2
+        surround_18px = spacing 18
 
