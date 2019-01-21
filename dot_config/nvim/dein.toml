@@ -99,3 +99,6 @@ hook_add = '''
 [[plugins]]
 repo = 'rhysd/github-complete.vim'
 
+[[plugins]]
+repo = 'osyo-manga/vim-brightest'
+
