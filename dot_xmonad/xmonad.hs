@@ -14,6 +14,8 @@ import XMonad.Hooks.Place          (placeHook, fixed)
 -- key config
 import XMonad.Util.EZConfig -- removeKeys, additionalKeys
 -- loghook
+import XMonad.Hooks.DynamicLog
+import XMonad.Util.Run             (spawnPipe, hPutStrLn)
 import XMonad.Hooks.FadeInactive   (fadeInactiveLogHook)
 
 
@@ -33,6 +35,7 @@ myNormalbg  = "#1a1e1b"
 
 -- * main *
 main = do
+    -- mb <- spawnPipe "xmobar"
     xmonad defaultConfig { terminal = "urxvt"
                          , modMask = mod1Mask
                          , borderWidth = 2
@@ -53,12 +56,14 @@ main = do
 -- * startup hooks *
 myStartups = do
     spawn "feh --bg-fill $HOME/.xmonad/wps/wp.jpg"
+    --spawn "$HOME/.xmonad/wps.sh"
     spawn "ibus-daemon --xim --replace &"
     spawn "xcompmgr &"
 
 -- * log hooks *
-myLogHook = fadeInactiveLogHook tranceparentRatio
-
+myLogHook = do
+    -- dynamicLogWithPP xmobarPP { ppOutput = hPutStrLn mb }
+    fadeInactiveLogHook tranceparentRatio
 
 
 -- * work spaces *

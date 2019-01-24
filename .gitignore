@@ -1,3 +1,4 @@
 /dot_xmonad/*
 !/dot_xmonad/xmonad.hs
+!/dot_xmonad/wp.sh
 
