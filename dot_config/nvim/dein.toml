@@ -18,8 +18,9 @@ repo = 'Shougo/vimfiler'
 depends = 'unite.vim'
 hook_add = '''
     source ~/.config/nvim/plugins/vimfiler.rc.vim
-    autocmd Filetype vimfiler nmap <buffer>  <CR>  <Plug>(vimfiler_expand_or_edit)
-    autocmd Filetype vimfiler nmap <buffer>  l     <Plug>(vimfiler_expand_or_edit)
+    autocmd Filetype vimfiler nmap <buffer>  <CR>   <Plug>(vimfiler_expand_or_edit)
+    autocmd Filetype vimfiler nmap <buffer>  l      <Plug>(vimfiler_expand_or_edit)
+    autocmd Filetype vimfiler nmap <buffer>  <C-l>  <Plug>(vimfiler_cd_or_edit)
 '''
 
 [[plugins]]

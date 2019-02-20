@@ -1,5 +1,5 @@
-if filereadable(expand("./keymaps.functions.vim"))
-    source ./keymaps.functions.vim
+if filereadable( expand('~/.config/nvim/keymaps.functions.vim') )
+    source ~/.config/nvim/keymaps.functions.vim
 endif
 
 
