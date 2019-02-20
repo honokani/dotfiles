@@ -5,8 +5,8 @@ endif
 if has('win32') || has ('win64')
     set shellslash
     let g:vimproc#download_windows_dll = 1
-    let g:python_host_prog  = expand( "$USERPROFILE/Miniconda3/envs/neovim2/python.exe" )
-    let g:python3_host_prog = expand( "$USERPROFILE/Miniconda3/envs/neovim3/python.exe" )
+    let g:python_host_prog  = expand( "C:/Python27/python.exe" )
+    let g:python3_host_prog = expand( "$USERPROFILE/AppData/Local/Programs/Python/Python36/python.exe" )
 else
     set sh=zsh
     let g:python_host_prog  = expand( "$HOME/.pyenv/versions/neovim2/bin/python" )
@@ -39,8 +39,8 @@ execute 'set runtimepath^=' . s:dein_dir
 if dein#load_state(s:dein_cache_path)
     call dein#begin(s:dein_cache_path)
 
-    call dein#load_toml('~/.config/nvim/dein.toml'     , {'lazy' : 0})
-    call dein#load_toml('~/.config/nvim/dein_lazy.toml', {'lazy' : 1})
+    call dein#load_toml('~/.config/nvim/dein.toml'     , {'lazy': 0})
+    call dein#load_toml('~/.config/nvim/dein_lazy.toml', {'lazy': 1})
 
     if exists('g:nyaovim_version')
         call dein#add('rhysd/nyaovim-popup-tooltip')

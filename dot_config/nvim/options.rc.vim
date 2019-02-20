@@ -10,7 +10,7 @@ set scrolloff=5
 set backspace=indent,eol,start
 " can see invisible chara
 set list
-set listchars=tab:»-,trail:-,extends:»,precedes:«,nbsp:%,eol:↲
+set listchars=tab:»-,trail:-,extends:»,precedes:«,nbsp:%,eol:↲,space:¯
 " line number, line ruler
 set number
 set ruler
@@ -55,3 +55,4 @@ set clipboard+=unnamedplus
 " visualize json d-quote
 set conceallevel=0
 let g:vim_json_syntax_conceal = 0
+
