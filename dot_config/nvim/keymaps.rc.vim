@@ -2,9 +2,9 @@ if filereadable( expand('~/.config/nvim/keymaps.functions.vim') )
     source ~/.config/nvim/keymaps.functions.vim
 endif
 
-
 nnoremap          [SP]          <Nop>
 nmap              <Space>       [SP]
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 nnoremap          ;             :
@@ -35,8 +35,6 @@ nnoremap          sh            :split<CR>
 nnoremap          sv            :vsplit<CR>
 nnoremap          st            :tabnew<CR>
 nnoremap          tl            gt
-nnoremap          th            gT
-
 
 nnoremap <silent> [SP]n         :call ToggleLineNum()<CR>
 
@@ -94,7 +92,7 @@ vnoremap          <             "zdi<<C-R>z><ESC>
 " combination
 "     with vimfiler
 nmap              [SP]T         tt<Space>c<C-w>h<S-s>G<Up><Up><CR>
-nmap              [SP]f         <Space>hsv<C-w>h<S-s>G<Up><Up><CR>
+nmap              [SP]f         <Space>hsv<C-w>h<S-s>G<Up><Up><CR>:bd<Space>1<CR>
 nmap              [SP]F         <Space>Hsv<C-w>h<S-s>G<Up><Up><CR>
 
 
