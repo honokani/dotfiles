@@ -101,3 +101,9 @@ repo = 'rhysd/github-complete.vim'
 [[plugins]]
 repo = 'osyo-manga/vim-brightest'
 
+[[plugins]]
+repo = 'ryanoasis/vim-devicons'
+hook_add = '''
+    let g:WebDevIconsUnicodeDecorateFolderNodes = 1
+'''
+
