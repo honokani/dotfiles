@@ -69,6 +69,9 @@ if !has('gui_running')
         autocmd VimEnter,ColorScheme * highlight VertSplit ctermbg=none
         autocmd VimEnter,ColorScheme * highlight NonText ctermbg=none
     augroup END
+    set ambiwidth=single
+else
+    set ambiwidth=single
 endif
 
 setlocal omnifunc=syntaxcomplete#Complete

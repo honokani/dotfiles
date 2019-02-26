@@ -14,3 +14,27 @@ hook_source = '''
     source ~/.config/nvim/plugins/neosnippet.rc.vim
 '''
 
+[[plugins]]
+repo = 'ryanoasis/vim-devicons'
+depends = ['vimfiler']
+hook_add = '''
+    set guifont=Cica:h11
+    set printfont=Cica:h8
+
+    let g:WebDevIconsUnicodeDecorateFolderNodes = 1
+
+    set guifont=Cica\ Nerd\ Font\ 11
+    let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols = {}
+    let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['html'] = ''
+    let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['css'] = ''
+    let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['md'] = ''
+    let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['txt'] = ''
+    let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['erb'] = ''
+    let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['slim'] = ''
+    let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['scss'] = ''
+    let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['sass'] = ''
+    let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['js'] = ''
+    let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['coffee'] = ''
+    let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['rb'] = ''
+'''
+

@@ -7,9 +7,12 @@ nmap              <Space>       [SP]
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+cnoremap          ;             :call JumpAtEnd()<CR>
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 nnoremap          ;             :
 nnoremap          :             ;
-nnoremap          :;            :call HIHI()<CR>
 nnoremap          q;            q:
 
 nnoremap          j             gj

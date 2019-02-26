@@ -6,6 +6,12 @@ function! ToggleLineNum() abort
     endif
 endfunction
 
+
+function! JumpAtEnd() abort
+    :execute ":normal $"
+endfunction
+
+
 function! MyTestFunc() abort
     setlocal relativenumber
 endfunction

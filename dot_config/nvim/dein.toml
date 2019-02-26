@@ -18,10 +18,19 @@ repo = 'Shougo/vimfiler'
 depends = 'unite.vim'
 hook_add = '''
     source ~/.config/nvim/plugins/vimfiler.rc.vim
+
     autocmd Filetype vimfiler nmap <buffer>  <CR>   <Plug>(vimfiler_expand_or_edit)
     autocmd Filetype vimfiler nmap <buffer>  l      <Plug>(vimfiler_expand_or_edit)
     autocmd Filetype vimfiler nmap <buffer>  <C-l>  <Plug>(vimfiler_cd_or_edit)
     autocmd FileType vimfiler setl nobl
+
+    let g:vimfiler_as_default_explorer = 1
+    let g:vimfiler_tree_opened_icon    = ' '
+    let g:vimfiler_tree_closed_icon    = ' '
+    let g:vimfiler_tree_leaf_icon      = " "
+    let g:vimfiler_file_icon           = '- '
+    let g:vimfiler_marked_file_icon    = '✓ '
+    let g:vimfiler_readonly_file_icon  = '✗ '
 '''
 
 [[plugins]]
@@ -100,10 +109,4 @@ repo = 'rhysd/github-complete.vim'
 
 [[plugins]]
 repo = 'osyo-manga/vim-brightest'
-
-[[plugins]]
-repo = 'ryanoasis/vim-devicons'
-hook_add = '''
-    let g:WebDevIconsUnicodeDecorateFolderNodes = 1
-'''
 
