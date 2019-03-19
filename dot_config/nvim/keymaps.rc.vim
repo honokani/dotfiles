@@ -18,7 +18,6 @@ nnoremap          q;            q:
 nnoremap          j             gj
 nnoremap          k             gk
 nnoremap          s             <NOP>
-nnoremap          t             <Nop>
 nnoremap          x             "_x
 nnoremap          S             <NOP>
 nnoremap          Q             <NOP>
