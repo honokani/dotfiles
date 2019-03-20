@@ -101,6 +101,7 @@ alias rm="rm -i "
 alias cp="cp -i "
 alias mv="mv -i "
 alias mkdir="mkdir -p "
+# cd  : cd is alias of pushd. this defined by function.
 alias cdd="dirs -v "
 alias cd1="pushd +1 "
 alias cd2="pushd +2 "
@@ -138,7 +139,7 @@ alias pyel="pyenv virtualenvs "
 alias pyea="pyenv activate "
 alias pyed="pyenv deactivate "
 # git
-# gd  : git diff alias is made by function.
+# gd  : git diff alias   is made by function.
 # grb : git rebase alias is made by function.
 alias ga="git add "
 alias gb="git branch"
@@ -157,6 +158,18 @@ alias untar="tar -xvf "
 alias oct="octave --no-gui "
 
 ########################################
+
+# cd is alias of pushd
+function cd {
+  if [ -z "$1" ] ; then
+    test "$PWD" != "$HOME" && pushd $HOME > /dev/null
+  elif ( echo "$1" | egrep "^\.\.\.+$" > /dev/null ) ; then
+    cd $( echo "$1" | perl -ne 'print "../" x ( tr/\./\./ - 1 )' )
+  else
+    pushd "$1" > /dev/null
+  fi
+  ls -ltr --color=auto
+}
 
 # cdの後にlsを実行
 function chpwd() {
