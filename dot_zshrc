@@ -95,6 +95,9 @@ alias ...=../..
 alias ....=../../..
 alias .....=../../../..
 
+alias hist="cat ${HOME}/.zhistory | grep "
+alias upbat="upower -i /org/freedesktop/UPower/devices/battery_BAT0"
+
 alias ll="ls -lrt --color=auto "
 alias lll="ls -alrt --color=auto "
 alias rm="rm -i "
