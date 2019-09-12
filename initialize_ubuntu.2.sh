@@ -1,12 +1,14 @@
 #!/usr/bin/zsh
 # make git clone directory
-GC=$HOME/git_clones
+GC_NAME=$(pwd|awk -F/ '{print $(NF-1)}')
+GC=$HOME/$GC_NAME
+DF_NAME=$(pwd|awk -F/ '{print $(NF)}')
 dir $GC
 
 # git must be installed.
 # because, this file must be got from github.
 # apply dotfiles
-$GC/dotfiles/apply_dots.sh
+$GC/$DF_NAME/apply_dots.sh
 
 
 # prepare to install python3, to use visual libraries.
@@ -20,13 +22,8 @@ git clone https://github.com/pyenv/pyenv $GC/pyenv
 ln -siv $GC/pyenv $HOME/.pyenv
 git clone https://github.com/pyenv/pyenv-virtualenv $GC/pyenv-virtualenv
 ln -siv $GC/pyenv-virtualenv $HOME/.pyenv/plugins/pyenv-virtualenv
-# install python3
-pyenv install 3.6.5
-pyenv global 3.6.5
-pip install --upgrade pip
 
 source $HOME/.zshrc
-
 
 # install neovim
 sudo apt-get install -y software-properties-common
@@ -41,8 +38,12 @@ pyenv activate neovim2
 pip install --upgrade pip
 pip install neovim
 
+pyenv install 3.6.5
 pyenv virtualenv 3.6.5 neovim3
 pyenv activate neovim3
 pip install --upgrade pip
 pip install neovim
 
+# install python3
+pip install --upgrade pip
+pyenv global 3.6.5
