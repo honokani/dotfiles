@@ -1,17 +1,26 @@
-export LANGUAGE=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-export LC_CTYPE=en_US.UTF-8
-export LANG=en_US.UTF-8
+: "Language" && {
+    export LANGUAGE=en_US.UTF-8
+    export LC_ALL=en_US.UTF-8
+    export LC_CTYPE=en_US.UTF-8
+    export LANG=en_US.UTF-8
+}
+
 export XDG_CONFIG_HOME="$HOME/.config"
 export PKG_CONFIG_PATH="/usr/bin/pkg-config"
 
-source $HOME/.zplug/init.zsh
+: "ZSH PLUGINS" && {
+    export ZPLUG_HOME=$HOME/.zplug
+    [ -f "$ZPLUG_HOME/init.zsh" ] || sudo apt install zplug
+    source $HOME/.zplug/init.zsh
+}
 
 ########################################  
-# for useful key mapping
-xmodmap -e 'keycode 100 = Return'
-xmodmap -e 'keycode 101 = Return'
-xmodmap -e 'keycode 102 = BackSpace'
+
+: "KEY MAPPING" && {
+    xmodmap -e 'keycode 100 = Return'
+    xmodmap -e 'keycode 101 = Return'
+    xmodmap -e 'keycode 102 = BackSpace'
+}
 
 ########################################  
 # python
