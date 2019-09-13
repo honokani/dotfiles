@@ -22,9 +22,11 @@
 
 : "ZSH" && {
     : "COMMON" && {
-        # 補完
+        # comp
         autoload -Uz compinit
         compinit
+        autoload -U select-word-style
+        select-word-style bash
         # else
         setopt no_beep
         setopt no_flow_control
@@ -56,6 +58,7 @@
         setopt auto_pushd
         setopt pushd_ignore_dups
         alias ..="cd .."
+        alias cdd="cd - "
     }
     : "HISTORY" && {
         export HISTFILE=${HOME}/.zhistory
@@ -68,7 +71,7 @@
         setopt share_history
         alias hall="fc -lt '%F %T' 1 "
         alias h="fc -lt '%F %T' -20 "
-        alias zhis="hall | fzf"
+        alias his="hall | fzf"
     }
     : "PROMPT" && {
         autoload -Uz colors
@@ -147,16 +150,6 @@
     alias mv="mv -i "
     alias mkdir="mkdir -p "
     # cd  : cd is alias of pushd. this defined by function.
-    alias cdd="dirs -v "
-    alias cd1="pushd +1 "
-    alias cd2="pushd +2 "
-    alias cd3="pushd +3 "
-    alias cd4="pushd +4 "
-    alias cd5="pushd +5 "
-    alias cd6="pushd +6 "
-    alias cd7="pushd +7 "
-    alias cd8="pushd +8 "
-    alias cd9="pushd +9 "
     alias fg1="fg %1 "
     alias fg2="fg %2 "
     alias fg3="fg %3 "
@@ -193,16 +186,16 @@
 ########################################
 
 # cd is alias of pushd
-function cd {
-  if [ -z "$1" ] ; then
-    test "$PWD" != "$HOME" && pushd $HOME > /dev/null
-  elif ( echo "$1" | egrep "^\.\.\.+$" > /dev/null ) ; then
-    cd $( echo "$1" | perl -ne 'print "../" x ( tr/\./\./ - 1 )' )
-  else
-    pushd "$1" > /dev/null
-  fi
-  ls -ltr --color=auto
-}
+#function cd {
+#  if [ -z "$1" ] ; then
+#    test "$PWD" != "$HOME" && pushd $HOME > /dev/null
+#  elif ( echo "$1" | egrep "^\.\.\.+$" > /dev/null ) ; then
+#    cd $( echo "$1" | perl -ne 'print "../" x ( tr/\./\./ - 1 )' )
+#  else
+#    pushd "$1" > /dev/null
+#  fi
+#  ls -ltr --color=auto
+#}
 
 # cdの後にlsを実行
 function chpwd() {
