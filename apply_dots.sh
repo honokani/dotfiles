@@ -3,7 +3,6 @@
 SCRIPT_DIR=$(cd $(dirname $0);pwd)
 
 
-
 # make .zshrc symbolic link
 ZSHRC_F=$HOME/.zshrc
 ZSHRC_TGT=$SCRIPT_DIR/dot_zshrc
@@ -19,8 +18,6 @@ if [ -e $ZSHENV_F ]; then
 	echo WARN: .zshenv file link has already exist.
 fi
 ln -bisv $ZSHENV_TGT $ZSHENV_F
-
-
 
 
 # make .config directory

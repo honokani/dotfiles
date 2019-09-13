@@ -1,55 +1,103 @@
-: "Language" && {
-    export LANGUAGE=en_US.UTF-8
-    export LC_ALL=en_US.UTF-8
-    export LC_CTYPE=en_US.UTF-8
-    export LANG=en_US.UTF-8
+: "LINUX" && {
+    : "COMMON" && {
+        export XDG_CONFIG_HOME="$HOME/.config"
+        export PKG_CONFIG_PATH="/usr/bin/pkg-config"
+    }
+
+    : "Language" && {
+        export LANGUAGE=en_US.UTF-8
+        export LC_ALL=en_US.UTF-8
+        export LC_CTYPE=en_US.UTF-8
+        export LANG=en_US.UTF-8
+    }
+    : "KEY MAPPING" && {
+        which xmodmap > /dev/null && { 
+            xmodmap -e 'keycode 100 = Return'
+            xmodmap -e 'keycode 101 = Return'
+            xmodmap -e 'keycode 102 = BackSpace'
+        }
+        bindkey '^P' history-beginning-search-backward
+        bindkey '^N' history-beginning-search-forward
+    }
 }
 
-export XDG_CONFIG_HOME="$HOME/.config"
-export PKG_CONFIG_PATH="/usr/bin/pkg-config"
+: "ZSH" && {
+    : "COMMON" && {
+        # 補完
+        autoload -Uz compinit
+        compinit
+        DIRSTACKSIZE=200
+        # cd
+        setopt auto_cd
+        setopt auto_pushd
+        setopt pushd_ignore_dups
+        # else
+        setopt no_beep
+        setopt no_flow_control
+        set clipboard=unnamed
+    }
+    : "PLUGINS" && {
+        export ZPLUG_HOME=$HOME/.zplug
+        [ -f "$ZPLUG_HOME/init.zsh" ] && {
+            source $HOME/.zplug/init.zsh
+        }
+        zplug "zsh-users/zsh-completions" # 入力補完
+        zplug "junegunn/fzf-bin", as:command, from:gh-r, rename-to:fzf
+        zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
+        zplug "junegunn/fzf", use:shell/completion.zsh
+        zplug "b4b4r07/enhancd"
 
-: "ZSH PLUGINS" && {
-    export ZPLUG_HOME=$HOME/.zplug
-    [ -f "$ZPLUG_HOME/init.zsh" ] || sudo apt install zplug
-    source $HOME/.zplug/init.zsh
+        zplug check || zplug install
+        zplug load
+    }
+    : "HISTORY" && {
+        export HISTFILE=${HOME}/.zhistory
+        export HISTSIZE=100000
+        export SAVEHIST=100000
+        setopt hist_ignore_dups
+        setopt hist_ignore_all_dups
+        setopt extended_history
+        setopt hist_reduce_blanks
+        setopt share_history
+    }
+    : "PROMPT" && {
+        autoload -Uz colors
+        colors
+        # PROMPT='%F{blue}%n@%m%f %(!.#.$) '
+        PROMPT='%F{cyan}%n `branch-status-check` %f%(!.#.$) '
+        RPROMPT='[%F{green}%~%f] %*'
+        setopt prompt_subst
+        setopt transient_rprompt
+    }
+}
+
+: "PROGRAMMING" && { 
+    : "PYTHON" && { 
+        export PYENV_ROOT="$HOME/.pyenv"
+        export PATH="$PYENV_ROOT/bin:$PATH"
+        eval "$(pyenv init -)"
+        eval "$(pyenv virtualenv-init -)"
+    }
+    : "NODEJS" && { 
+        : "NVM" && {
+            export NVM_DIR="$HOME/.nvm"
+            # This loads nvm
+            [ -s "$NVM_DIR/nvm.sh" ] && $NVM_DIR/nvm.sh
+            # This loads nvm bash_completion
+            [ -s "$NVM_DIR/bash_completion" ] && $NVM_DIR/bash_completion
+        }
+        : "YARN" && {
+            export PATH=~/.yarn/bin:$PATH
+        }
+    }
+    : "HASKELL" && {
+        export PATH=~/.local/bin:$PATH
+    }
 }
 
 ########################################  
-
-: "KEY MAPPING" && {
-    xmodmap -e 'keycode 100 = Return'
-    xmodmap -e 'keycode 101 = Return'
-    xmodmap -e 'keycode 102 = BackSpace'
-}
-
-########################################  
-# python
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-# nodejs
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-# stack
-export PATH=~/.local/bin:$PATH
-# yarn
-export PATH=~/.yarn/bin:$PATH
-
-########################################  
-# cd補助
-DIRSTACKSIZE=200
-setopt auto_cd
-setopt auto_pushd
-setopt pushd_ignore_dups
-
-########################################  
-# 補完
 # 補完機能を有効にする
 # fpath=(/usr/local/share/zsh-completions/src $fpath)
-autoload -Uz compinit
-compinit
 
 # 補完で小文字でも大文字にマッチさせる  
 # zstyle \':completion:*\' matcher-list \'m:{a-z}={A-Z}\'  
@@ -66,108 +114,80 @@ compinit
 
 
 ########################################  
-# color
-autoload -Uz colors
-colors
-# prompt
-# PROMPT='%F{blue}%n@%m%f %(!.#.$) '
-PROMPT='%F{cyan}%n `branch-status-check` %f%(!.#.$) '
-RPROMPT='[%F{green}%~%f] %*'
-setopt prompt_subst
-setopt transient_rprompt
-
-########################################  
-# history
-export HISTFILE=${HOME}/.zhistory
-export HISTSIZE=100000
-export SAVEHIST=100000
-setopt hist_ignore_dups
-setopt extended_history
-setopt share_history
-
-bindkey '^P' history-beginning-search-backward
-bindkey '^N' history-beginning-search-forward
-
-
-########################################  
-# else setting
-set clipboard=unnamed
-setopt no_beep
-
-########################################  
 # key bind
 # bindkey -v
-setopt no_flow_control
-alias cdw="~/ws"
-alias dot="~/git_clones/dotfiles"
-alias ...=../..
-alias ....=../../..
-alias .....=../../../..
+: "ALIASES" && {
+    alias cdw="~/ws"
+    alias dot="~/git_clones/dotfiles"
+    alias ...=../..
+    alias ....=../../..
+    alias .....=../../../..
 
-alias hist="cat ${HOME}/.zhistory | grep "
-alias upbat="upower -i /org/freedesktop/UPower/devices/battery_BAT0"
+    alias hist="cat ${HOME}/.zhistory | grep "
+    alias upbat="upower -i /org/freedesktop/UPower/devices/battery_BAT0"
 
-alias ll="ls -lrt --color=auto "
-alias lll="ls -alrt --color=auto "
-alias rm="rm -i "
-alias cp="cp -i "
-alias mv="mv -i "
-alias mkdir="mkdir -p "
-# cd  : cd is alias of pushd. this defined by function.
-alias cdd="dirs -v "
-alias cd1="pushd +1 "
-alias cd2="pushd +2 "
-alias cd3="pushd +3 "
-alias cd4="pushd +4 "
-alias cd5="pushd +5 "
-alias cd6="pushd +6 "
-alias cd7="pushd +7 "
-alias cd8="pushd +8 "
-alias cd9="pushd +9 "
-alias fg1="fg %1 "
-alias fg2="fg %2 "
-alias fg3="fg %3 "
-alias fg4="fg %4 "
-alias fg5="fg %5 "
+    alias ll="ls -lrt --color=auto "
+    alias lll="ls -alrt --color=auto "
+    alias rm="rm -i "
+    alias cp="cp -i "
+    alias mv="mv -i "
+    alias mkdir="mkdir -p "
+    # cd  : cd is alias of pushd. this defined by function.
+    alias cdd="dirs -v "
+    alias cd1="pushd +1 "
+    alias cd2="pushd +2 "
+    alias cd3="pushd +3 "
+    alias cd4="pushd +4 "
+    alias cd5="pushd +5 "
+    alias cd6="pushd +6 "
+    alias cd7="pushd +7 "
+    alias cd8="pushd +8 "
+    alias cd9="pushd +9 "
+    alias fg1="fg %1 "
+    alias fg2="fg %2 "
+    alias fg3="fg %3 "
+    alias fg4="fg %4 "
+    alias fg5="fg %5 "
 
-alias zsrc="source ~/.zshrc "
-alias zset="nvim ~/.zshrc "
-alias hall="fc -lt '%F %T' 1 "
-alias h="fc -lt '%F %T' -20 "
-alias zhis="hall | grep "
+    alias zsrc="source ~/.zshrc "
+    alias zset="nvim ~/.zshrc "
+    alias hall="fc -lt '%F %T' 1 "
+    alias h="fc -lt '%F %T' -20 "
+    alias zhis="hall | grep "
 
-# nvim
-alias nv="nvim "
-alias nvi="nvim ~/.config/nvim/init.vim"
-alias nvo="nvim ~/.config/nvim/options.rc.vim"
-alias nvk="nvim ~/.config/nvim/keymaps.rc.vim"
-alias nvd="nvim ~/.config/nvim/dein.toml"
-alias nvl="nvim ~/.config/nvim/dein_lazy.toml"
-# python
-alias -s py="python "
-alias pyev="pyenv versions "
-alias pyen="pyenv virtualenv "
-alias pyel="pyenv virtualenvs "
-alias pyea="pyenv activate "
-alias pyed="pyenv deactivate "
-# git
-# gd  : git diff alias   is made by function.
-# grb : git rebase alias is made by function.
-alias ga="git add "
-alias gb="git branch"
-alias gs="git status"
-alias gco="git checkout "
-alias gcm="git commit -m "
-alias glo="git log --oneline "
-# haskell
-# ste : stack exec alias is made by function.
-alias -s hs="stack runghc "
-alias stb="stack build "
-alias stn="stack new "
-alias sti="stack ghci "
-# else
-alias untar="tar -xvf "
-alias oct="octave --no-gui "
+    # nvim
+    alias nv="nvim "
+    alias nvi="nvim ~/.config/nvim/init.vim"
+    alias nvo="nvim ~/.config/nvim/options.rc.vim"
+    alias nvk="nvim ~/.config/nvim/keymaps.rc.vim"
+    alias nvd="nvim ~/.config/nvim/dein.toml"
+    alias nvl="nvim ~/.config/nvim/dein_lazy.toml"
+    # python
+    alias -s py="python "
+    alias pyev="pyenv versions "
+    alias pyen="pyenv virtualenv "
+    alias pyel="pyenv virtualenvs "
+    alias pyea="pyenv activate "
+    alias pyed="pyenv deactivate "
+    # git
+    # gd  : git diff alias   is made by function.
+    # grb : git rebase alias is made by function.
+    alias ga="git add "
+    alias gb="git branch"
+    alias gs="git status"
+    alias gco="git checkout "
+    alias gcm="git commit -m "
+    alias glo="git log --oneline "
+    # haskell
+    # ste : stack exec alias is made by function.
+    alias -s hs="stack runghc "
+    alias stb="stack build "
+    alias stn="stack new "
+    alias sti="stack ghci "
+    # else
+    alias untar="tar -xvf "
+    alias oct="octave --no-gui "
+}
 
 ########################################
 
@@ -219,7 +239,6 @@ function ste(){
 # {{{ methods for RPROMPT
 # fg[color]表記と$reset_colorを使いたい
 # @see https://wiki.archlinux.org/index.php/zsh
-autoload -U colors; colors
 function branch-status-check {
     local prefix branchname suffix
         # .gitの中だから除外
