@@ -9,7 +9,7 @@
         export LC_CTYPE=en_US.UTF-8
         export LANG=en_US.UTF-8
     }
-    : "KEY MAPPING" && {
+    : "KEY_MAPPING" && {
         which xmodmap > /dev/null && { 
             xmodmap -e 'keycode 100 = Return'
             xmodmap -e 'keycode 101 = Return'
@@ -44,6 +44,10 @@
             zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
             zplug "junegunn/fzf", use:shell/completion.zsh
             zplug "b4b4r07/enhancd", use:init.sh
+            zplug "zsh-users/zsh-autosuggestions"
+            zplug "zsh-users/zsh-history-substring-search"
+            zplug "zsh-users/zsh-syntax-highlighting"
+            ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
             # activate
             zplug check || zplug install
             zplug load
@@ -121,7 +125,7 @@
                 color='%{'${fg[yellow]}'%}'
             elif [[ $output =~ "[\n]? M " ]]; then
                 res='M:' # Modified
-                color='%{'${fg[red]}'%}'
+                color='%{'${fg[pink]}'%}'
             else
                 res='A:' # Added to commit
                 color='%{'${fg[cyan]}'%}'
@@ -207,6 +211,11 @@
         alias cp="cp -i "
         alias mv="mv -i "
         alias mkdir="mkdir -p "
+        alias du='du -ahcd 1| sed "s/.\///g" '
+        alias df='df -lTh '
+        alias free='free -h '
+        alias grep='grep --color=auto'
+        alias -g G="|grep "
     }
     : "PATH_SHORTCUT" && {
         alias cdw="~/ws"
@@ -232,6 +241,7 @@
         alias upbat="upower -i /org/freedesktop/UPower/devices/battery_BAT0"
     }
 }
+echo my zshrc loaded
 
 ########################################  
 # sudo の後ろでコマンド名を補完する  
