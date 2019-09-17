@@ -60,6 +60,17 @@
         setopt pushd_ignore_dups
         alias ..="cd .."
         alias cdd="cd - "
+        function chpwd() {
+            ls -ltr --color=auto
+        }
+        function mc() { # mkdirとcdを同時実行
+            if [[ -d $1 ]]; then
+                echo "$1 already exists!"
+                cd $1
+            else
+                mkdir -p $1 && cd $1
+            fi
+        }
     }
     : "HISTORY" && {
         export HISTFILE=${HOME}/.zhistory
@@ -77,15 +88,51 @@
     : "PROMPT" && {
         autoload -Uz colors
         colors
+        setopt prompt_subst
+        setopt transient_rprompt
         # PROMPT='%F{blue}%n@%m%f %(!.#.$) '
         PROMPT='%F{cyan}%n `branch-status-check` %f%(!.#.$) '
         RPROMPT='[%F{green}%~%f] %*'
-        setopt prompt_subst
-        setopt transient_rprompt
+        # @see https://wiki.archlinux.org/index.php/zsh
+        function branch-status-check {
+            local prefix branchname suffix
+            if [[ "$PWD" =~ '/\.git(/.*)?$' ]]; then
+                return # .gitの中だから除外
+            fi
+            branchname=`get-branch-name`
+            if [[ -z $branchname ]]; then
+                return # ブランチ名が無いので除外
+            fi
+            prefix=`get-branch-status` #色だけ返ってくる
+            suffix='%{'${reset_color}'%}'
+            echo ${prefix}${branchname}${suffix}
+        }
+        function get-branch-name { # gitディレクトリじゃない場合のエラーは捨て
+            echo `git rev-parse --abbrev-ref HEAD 2> /dev/null`
+        }
+        function get-branch-status {
+            local res color
+            output=`git status --short 2> /dev/null`
+            if [ -z "$output" ]; then
+                res=':' # status Clean
+                color='%{'${fg[green]}'%}'
+            elif [[ $output =~ "[\n]?\?\? " ]]; then
+                res='?:' # Untracked
+                color='%{'${fg[yellow]}'%}'
+            elif [[ $output =~ "[\n]? M " ]]; then
+                res='M:' # Modified
+                color='%{'${fg[red]}'%}'
+            else
+                res='A:' # Added to commit
+                color='%{'${fg[cyan]}'%}'
+            fi
+            # echo ${color}${res}'%{'${reset_color}'%}'
+            echo ${color} # 色だけ返す
+        }
     }
 }
 
-: "PROGRAMMING" && { 
+: "PG_LANGUAGE" && { 
     which python > /dev/null && { 
         export PYENV_ROOT="$HOME/.pyenv"
         export PATH="$PYENV_ROOT/bin:$PATH"
@@ -116,78 +163,80 @@
         alias stb="stack build "
         alias stn="stack new "
         alias sti="stack ghci "
-        function ste(){
+        function ste(){ # stack exec
             local x=$(basename `pwd`)
             stack build
             stack exec $x-exe
         }
     }
+    : "ELSE_LANGUAGE" && { 
+        alias oct="octave --no-gui "
+    }
+}
+
+: "APPLICATIONS" && { 
+    : "NEOVIM" && { 
+        alias nv="nvim "
+        alias nvi="nvim ~/.config/nvim/init.vim"
+        alias nvo="nvim ~/.config/nvim/options.rc.vim"
+        alias nvk="nvim ~/.config/nvim/keymaps.rc.vim"
+        alias nvd="nvim ~/.config/nvim/dein.toml"
+        alias nvl="nvim ~/.config/nvim/dein_lazy.toml"
+    }
+    : "GIT" && { 
+        alias ga="git add "
+        alias gb="git branch"
+        alias gs="git status"
+        alias gco="git checkout "
+        alias gcm="git commit -m "
+        alias glo="git log --oneline "
+        function grb(){ # git rebse alias
+            git rebase -i HEAD~$1
+        }
+        function gd(){ # git diff alias
+            git diff --name-only HEAD HEAD~$1
+        }
+    }
+}
+
+: "ALIAS" && {
+    : "COMMON" && { 
+        alias ll="ls -lrt --color=auto "
+        alias lll="ls -alrt --color=auto "
+        alias rm="rm -i "
+        alias cp="cp -i "
+        alias mv="mv -i "
+        alias mkdir="mkdir -p "
+    }
+    : "PATH_SHORTCUT" && {
+        alias cdw="~/ws"
+        alias dot="~/git_clones/dotfiles"
+    }
+    : "MASS_PRODUCTED_ALIAS" && { 
+        gen_alias "fg" "%" 5
+        gen_alias "bg" "%" 5
+        gen_alias "awk" "'{print $" 10 "}'"
+        function gen_alias {
+            for i in $(seq 1 $3) ; do
+                gen_simple_alias "$1" "$2" ${i} "$4"
+            done
+        }
+        function gen_simple_alias {
+            alias "$1$3"="$1 $2$3$4 "
+        }
+    }
+    : "ELSE_ALIAS" && { 
+        alias untar="tar -xvf "
+        alias psaux="ps -aux | fzf "
+        # for laptop pc
+        alias upbat="upower -i /org/freedesktop/UPower/devices/battery_BAT0"
+    }
 }
 
 ########################################  
-# 補完機能を有効にする
-# fpath=(/usr/local/share/zsh-completions/src $fpath)
-
-
 # sudo の後ろでコマンド名を補完する  
 # zstyle \':completion:*:sudo:*\' command-path /usr/local/sbin /usr/local/bin   
 #                    /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin  
-
-
-
-########################################  
-# key bind
-# bindkey -v
-: "ALIASES" && {
-    alias cdw="~/ws"
-    alias dot="~/git_clones/dotfiles"
-
-    alias upbat="upower -i /org/freedesktop/UPower/devices/battery_BAT0"
-
-    alias ll="ls -lrt --color=auto "
-    alias lll="ls -alrt --color=auto "
-    alias rm="rm -i "
-    alias cp="cp -i "
-    alias mv="mv -i "
-    alias mkdir="mkdir -p "
-
-    function gen_alias {
-    for i in $(seq 1 $3) ; do
-        gen_simple_alias "$1" "$2" ${i} "$4"
-    done
-    }
-
-    function gen_simple_alias {
-        alias "$1$3"="$1 $2$3$4 "
-    }
-
-    gen_alias "fg" "%" 5
-    gen_alias "bg" "%" 5
-    gen_alias "awk" "'{print $" 10 "}'"
-
-    # nvim
-    alias nv="nvim "
-    alias nvi="nvim ~/.config/nvim/init.vim"
-    alias nvo="nvim ~/.config/nvim/options.rc.vim"
-    alias nvk="nvim ~/.config/nvim/keymaps.rc.vim"
-    alias nvd="nvim ~/.config/nvim/dein.toml"
-    alias nvl="nvim ~/.config/nvim/dein_lazy.toml"
-    # git
-    # gd  : git diff alias   is made by function.
-    # grb : git rebase alias is made by function.
-    alias ga="git add "
-    alias gb="git branch"
-    alias gs="git status"
-    alias gco="git checkout "
-    alias gcm="git commit -m "
-    alias glo="git log --oneline "
-    # else
-    alias untar="tar -xvf "
-    alias psaux="ps -aux | fzf "
-    alias oct="octave --no-gui "
-}
-
-########################################
 
 # cd is alias of pushd
 #function cd {
@@ -200,75 +249,4 @@
 #  fi
 #  ls -ltr --color=auto
 #}
-
-# cdの後にlsを実行
-function chpwd() {
-  ls -ltr --color=auto
-}
-
-# mkdirとcdを同時実行
-function mc() {
-  if [[ -d $1 ]]; then
-    echo "$1 already exists!"
-    cd $1
-  else
-    mkdir -p $1 && cd $1
-  fi
-}
-
-# git rebse alias
-function grb(){
-    git rebase -i HEAD~$1
-}
-
-# git diff alias
-function gd(){
-    git diff --name-only HEAD HEAD~$1
-}
-
-# stack exec
-
 ########################################
-# {{{ methods for RPROMPT
-# fg[color]表記と$reset_colorを使いたい
-# @see https://wiki.archlinux.org/index.php/zsh
-function branch-status-check {
-    local prefix branchname suffix
-        # .gitの中だから除外
-        if [[ "$PWD" =~ '/\.git(/.*)?$' ]]; then
-            return
-        fi
-        branchname=`get-branch-name`
-        # ブランチ名が無いので除外
-        if [[ -z $branchname ]]; then
-            return
-        fi
-        prefix=`get-branch-status` #色だけ返ってくる
-        suffix='%{'${reset_color}'%}'
-        echo ${prefix}${branchname}${suffix}
-}
-function get-branch-name {
-    # gitディレクトリじゃない場合のエラーは捨てます
-    echo `git rev-parse --abbrev-ref HEAD 2> /dev/null`
-}
-function get-branch-status {
-    local res color
-        output=`git status --short 2> /dev/null`
-        if [ -z "$output" ]; then
-            res=':' # status Clean
-            color='%{'${fg[green]}'%}'
-        elif [[ $output =~ "[\n]?\?\? " ]]; then
-            res='?:' # Untracked
-            color='%{'${fg[yellow]}'%}'
-        elif [[ $output =~ "[\n]? M " ]]; then
-            res='M:' # Modified
-            color='%{'${fg[red]}'%}'
-        else
-            res='A:' # Added to commit
-            color='%{'${fg[cyan]}'%}'
-        fi
-        # echo ${color}${res}'%{'${reset_color}'%}'
-        echo ${color} # 色だけ返す
-}
-# }}}
-
