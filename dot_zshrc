@@ -97,7 +97,8 @@
         setopt prompt_subst
         setopt transient_rprompt
         # PROMPT='%F{blue}%n@%m%f %(!.#.$) '
-        PROMPT='%F{cyan}%n `branch-status-check` %f%(!.#.$) '
+        # PROMPT='%F{cyan}%n%f `branch-status-check` %(!.#.$) '
+        PROMPT='`branch-status-check` %F{cyan}%(!.#.$)%f '
         RPROMPT='[%F{green}%~%f] %*'
         # @see https://wiki.archlinux.org/index.php/zsh
         function branch-status-check {

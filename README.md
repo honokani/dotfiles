@@ -7,6 +7,8 @@
 ### Point  
    1. execute `initialize_ubuntu.1.sh`
    1. execute `initialize_ubuntu.2.sh`
+   1. execute `initialize_ubuntu.3.sh`
+   :call JumpAtEnd()
 
 ### Issue  
    *  only for zsh and nvim  
