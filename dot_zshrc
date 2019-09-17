@@ -191,6 +191,7 @@
     }
     : "GIT" && { 
         alias ga="git add "
+        alias ga.="git add . "
         alias gb="git branch"
         alias gs="git status"
         alias gco="git checkout "
@@ -245,18 +246,20 @@
 }
 
 : "TEST" &&{
-function google() {
-    local keyword request
-    if [ $# -eq 0 ]; then
-        w3m http://www.google.com/
-    else
-        for i in $*; do
-            keyword="$keyword+$i"
-        done
-        keyword=`echo $keyword | sed 's/^\+//'`
-        w3m "http://www.google.com/search?q=$keyword"
-    fi
-}
+    which w3m > /dev/null && {
+        function google() {
+            local keyword request
+            if [ $# -eq 0 ]; then
+                w3m http://www.google.com/
+            else
+                for i in $*; do
+                    keyword="$keyword+$i"
+                done
+                keyword=`echo $keyword | sed 's/^\+//'`
+                w3m "http://www.google.com/search?q=$keyword"
+            fi
+        }
+    }
 }
 
 : "FINISHED" && {
