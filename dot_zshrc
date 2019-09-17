@@ -98,7 +98,7 @@
         setopt transient_rprompt
         # PROMPT='%F{blue}%n@%m%f %(!.#.$) '
         # PROMPT='%F{cyan}%n%f `branch-status-check` %(!.#.$) '
-        PROMPT='`branch-status-check` %F{cyan}%(!.#.$)%f '
+        PROMPT='[`branch-status-check`] %F{cyan}%(!.#.$)%f '
         RPROMPT='[%F{green}%~%f] %*'
         # @see https://wiki.archlinux.org/index.php/zsh
         function branch-status-check {
@@ -108,11 +108,11 @@
             fi
             branchname=`get-branch-name`
             if [[ -z $branchname ]]; then
-                return # ブランチ名が無いので除外
+                branchname="no git"
             fi
             prefix=`get-branch-status` #色だけ返ってくる
             suffix='%{'${reset_color}'%}'
-            echo ${prefix}${branchname}${suffix}
+            echo "${prefix}${branchname}${suffix}"
         }
         function get-branch-name { # gitディレクトリじゃない場合のエラーは捨て
             echo `git rev-parse --abbrev-ref HEAD 2> /dev/null`
@@ -128,7 +128,7 @@
                 color='%{'${fg[yellow]}'%}'
             elif [[ $output =~ "[\n]? M " ]]; then
                 res='M:' # Modified
-                color='%{'${fg[pink]}'%}'
+                color='%{'${fg[red]}'%}'
             else
                 res='A:' # Added to commit
                 color='%{'${fg[cyan]}'%}'
