@@ -1,7 +1,7 @@
 #!/usr/bin/zsh
 
 : "USEFUL_APPS" && { 
-    sudo apt install -y gawk tree
+    sudo apt install -y gawk tree w3m
 }
 
 : "TMUX" && { 

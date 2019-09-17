@@ -10,7 +10,7 @@
         export LANG=en_US.UTF-8
     }
     : "KEY_MAPPING" && {
-        which xmodmap > /dev/null && { 
+        which xmodmap > /dev/null && {
             xmodmap -e 'keycode 100 = Return'
             xmodmap -e 'keycode 101 = Return'
             xmodmap -e 'keycode 102 = BackSpace'
@@ -55,6 +55,8 @@
             zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
             zstyle ':completion:*' ignore-parents parent pwd ..  
             zstyle ':completion:*:processes' command 'ps x -o pid,s,args' # upgrade ps-command
+            SUDO_TGTS="/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin"
+            zstyle ':completion:*:sudo:*' command-path "$SUDO_TGTS"
         }
     }
     : "CURRDIR_CONTROL" && {
@@ -136,8 +138,8 @@
     }
 }
 
-: "PG_LANGUAGE" && { 
-    which python > /dev/null && { 
+: "PG_LANGUAGE" && {
+    which python > /dev/null && {
         export PYENV_ROOT="$HOME/.pyenv"
         export PATH="$PYENV_ROOT/bin:$PATH"
         eval "$(pyenv init -)"
@@ -161,7 +163,7 @@
             export PATH=~/.yarn/bin:$PATH
         }
     }
-    which stack > /dev/null && { 
+    which stack > /dev/null && {
         export PATH=~/.local/bin:$PATH
         alias -s hs="stack runghc "
         alias stb="stack build "
@@ -222,9 +224,6 @@
         alias dot="~/git_clones/dotfiles"
     }
     : "MASS_PRODUCTED_ALIAS" && { 
-        gen_alias "fg" "%" 5
-        gen_alias "bg" "%" 5
-        gen_alias "awk" "'{print $" 10 "}'"
         function gen_alias {
             for i in $(seq 1 $3) ; do
                 gen_simple_alias "$1" "$2" ${i} "$4"
@@ -233,6 +232,9 @@
         function gen_simple_alias {
             alias "$1$3"="$1 $2$3$4 "
         }
+        gen_alias "fg" "%" 5
+        gen_alias "bg" "%" 5
+        gen_alias "awk" "'{print $" 10 "}'"
     }
     : "ELSE_ALIAS" && { 
         alias untar="tar -xvf "
@@ -241,12 +243,28 @@
         alias upbat="upower -i /org/freedesktop/UPower/devices/battery_BAT0"
     }
 }
-echo my zshrc loaded
+
+: "TEST" &&{
+function google() {
+    local keyword request
+    if [ $# -eq 0 ]; then
+        w3m http://www.google.com/
+    else
+        for i in $*; do
+            keyword="$keyword+$i"
+        done
+        keyword=`echo $keyword | sed 's/^\+//'`
+        w3m "http://www.google.com/search?q=$keyword"
+    fi
+}
+}
+
+: "FINISHED" && {
+    echo my zshrc loaded
+}
 
 ########################################  
 # sudo の後ろでコマンド名を補完する  
-# zstyle \':completion:*:sudo:*\' command-path /usr/local/sbin /usr/local/bin   
-#                    /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin  
 
 # cd is alias of pushd
 #function cd {
