@@ -66,10 +66,7 @@
         setopt pushd_ignore_dups
         alias ..="cd .."
         alias cdd="cd - "
-        function chpwd() {
-            ls -ltr --color=auto
-        }
-        function mc() { # mkdirとcdを同時実行
+        function mc() { # mkdir and cd
             if [[ -d $1 ]]; then
                 echo "$1 already exists!"
                 cd $1
@@ -77,6 +74,7 @@
                 mkdir -p $1 && cd $1
             fi
         }
+        function chpwd { cdhook }
     }
     : "HISTORY" && {
         export HISTFILE=${HOME}/.zhistory
@@ -205,12 +203,27 @@
             git diff --name-only HEAD HEAD~$1
         }
     }
+    : "EXA" && { # @ /usr/local/bin/exa
+        function set_ls_alias {
+            which exa > /dev/null && {
+                alias ll="exa -lh --git"
+                alias lll="exa -alhg --group-directories-first --git --time-style long-iso"
+                alias l1="exa -1"
+                function cdhook { exa -lh --git }
+            } || {
+                alias ll="ls -lrt --color=auto "
+                alias lll="ls -alrt --color=auto "
+                alias l1="ls -1G"
+                function cdhook { ls -lrt --color=auto }
+            }
+        }
+    }
 }
 
+
 : "ALIAS" && {
-    : "COMMON" && { 
-        alias ll="ls -lrt --color=auto "
-        alias lll="ls -alrt --color=auto "
+    : "COMMON" && {
+        set_ls_alias
         alias rm="rm -i "
         alias cp="cp -i "
         alias mv="mv -i "
@@ -223,6 +236,7 @@
     }
     : "PATH_SHORTCUT" && {
         alias cdw="~/ws"
+        alias cds="~/sandbox"
         alias dot="~/git_clones/dotfiles"
     }
     : "MASS_PRODUCTED_ALIAS" && { 

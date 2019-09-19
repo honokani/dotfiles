@@ -1,7 +1,12 @@
 #!/usr/bin/zsh
 
+: "COMMON_DIRS" && {
+    mkdir ~/ws
+    mkdir ~/sandbox
+}
+
 : "USEFUL_APPS" && { 
-    sudo apt install -y gawk tree w3m
+    sudo apt install -y gawk tree w3m zip
 }
 
 : "TMUX" && { 
