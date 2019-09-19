@@ -194,8 +194,40 @@
         alias gb="git branch"
         alias gs="git status"
         alias gco="git checkout "
-        alias gcm="git commit -m "
         alias glo="git log --oneline "
+        function gcm {
+            [ -z "$1" ] && {
+                echo put some command
+            } || {
+                local msg="${@:2}"
+                [ -z "$msg" ] && {
+                    case $1 in
+                        cmm) git commit -m ":memo: Fix comment" ;;
+                        tpo) git commit -m ":memo: Fix typo" ;;
+                        doc) git commit -m ":books: Change documents" ;;
+                        art) git commit -m ":arts: Change arts" ;;
+                        *)   echo "put some message" ;;
+                    esac
+                } || {
+                    case $1 in
+                        big) git commit -m ":tada: Creat $msg" ;;
+                        add) git commit -m ":sparkles: Add $msg" ;;
+                        chg) git commit -m ":hammer: Change $msg" ;;
+                        wip) git commit -m ":construction: WIP $msg" ;;
+                        rmv) git commit -m ":burn: Remove $msg" ;;
+                        cmm) git commit -m ":memo: Fix comment $msg" ;;
+                        tpo) git commit -m ":memo: Fix typo $msg" ;;
+                        fix) git commit -m ":ambulance: Fix bug of $msg" ;;
+                        doc) git commit -m ":books: Change documents $msg" ;;
+                        art) git commit -m ":arts: Change arts $msg" ;;
+                        tst) git commit -m ":rotating_light: Test $msg" ;;
+                        tag) git commit -m ":tag: Tag $msg" ;;
+                        ext) git commit -m "$msg" ;;
+                        *)   echo "put some known command"
+                    esac
+                }
+            }
+        }
         function grb(){ # git rebse alias
             git rebase -i HEAD~$1
         }
