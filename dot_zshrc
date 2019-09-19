@@ -22,18 +22,19 @@
 
 : "ZSH" && {
     : "COMMON" && {
-        # comp
         autoload -Uz compinit
         compinit
-        autoload -U select-word-style
+        autoload -Uz select-word-style
         select-word-style bash
+        autoload -Uz colors
+        colors
         setopt hist_expand
         # else
         setopt no_beep
         setopt no_flow_control
         set clipboard=unnamed
-        alias zsrc="source ~/.zshrc "
-        alias zset="nvim ~/.zshrc "
+        alias zrc="source ~/.zshrc "
+        alias zet="nvim ~/.zshrc "
     }
     : "PLUGINS" && {
         export ZPLUG_HOME=$HOME/.zplug
@@ -90,14 +91,13 @@
         alias his="hall | fzf"
     }
     : "PROMPT" && {
-        autoload -Uz colors
-        colors
         setopt prompt_subst
         setopt transient_rprompt
         # PROMPT='%F{blue}%n@%m%f %(!.#.$) '
         # PROMPT='%F{cyan}%n%f `branch-status-check` %(!.#.$) '
-        PROMPT='[`branch-status-check`] %F{cyan}%(!.#.$)%f '
-        RPROMPT='[%F{green}%~%f] %*'
+        PROMPT=' %F{cyan}%(!.#.$)%f '
+        # RPROMPT='[%F{green}%~%f] %*'
+        RPROMPT='[`branch-status-check`] %*'
         # @see https://wiki.archlinux.org/index.php/zsh
         function branch-status-check {
             local prefix branchname suffix
@@ -241,12 +241,18 @@
                 alias ll="exa -lh --git"
                 alias lll="exa -alhg --group-directories-first --git --time-style long-iso"
                 alias l1="exa -1"
-                function cdhook { exa -lh --git }
+                function cdhook {
+                    exa -lh --git
+                    pwd
+                }
             } || {
                 alias ll="ls -lrt --color=auto "
                 alias lll="ls -alrt --color=auto "
                 alias l1="ls -1G"
-                function cdhook { ls -lrt --color=auto }
+                function cdhook { 
+                    ls -lrt --color=auto
+                    pwd
+                }
             }
         }
     }
