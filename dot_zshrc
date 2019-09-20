@@ -21,6 +21,17 @@
 }
 
 : "ZSH" && {
+    : "COMPILE" && {
+        export COMPILED_ZRC="$HOME/.zshrc.zwc"
+        export ZSHRC_PATH="$HOME/.zshrc"
+        [ -f "$COMPILED_ZRC" ] && {
+            [ "$ZSHRC_PATH" -nt "$COMPILED_ZRC" ] && {
+                zcompile "$ZSHRC_PATH"
+            }
+        } || {
+            zcompile "$ZSHRC_PATH"
+        }
+    }
     : "COMMON" && {
         autoload -Uz compinit
         compinit
@@ -48,13 +59,14 @@
             zplug "zsh-users/zsh-autosuggestions"
             zplug "zsh-users/zsh-history-substring-search"
             zplug "zsh-users/zsh-syntax-highlighting"
-            ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
+            zplug "momo-lab/zsh-abbrev-alias"
             # activate
             zplug check || zplug install
             zplug load
             # options
+            ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
             zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
-            zstyle ':completion:*' ignore-parents parent pwd ..  
+            zstyle ':completion:*' ignore-parents parent pwd ..
             zstyle ':completion:*:processes' command 'ps x -o pid,s,args' # upgrade ps-command
             SUDO_TGTS="/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin"
             zstyle ':completion:*:sudo:*' command-path "$SUDO_TGTS"
@@ -99,41 +111,6 @@
         # RPROMPT='[%F{green}%~%f] %*'
         RPROMPT='[`branch-status-check`] %*'
         # @see https://wiki.archlinux.org/index.php/zsh
-        function branch-status-check {
-            local prefix branchname suffix
-            if [[ "$PWD" =~ '/\.git(/.*)?$' ]]; then
-                return # .gitの中だから除外
-            fi
-            branchname=`get-branch-name`
-            if [[ -z $branchname ]]; then
-                branchname="no git"
-            fi
-            prefix=`get-branch-status` #色だけ返ってくる
-            suffix='%{'${reset_color}'%}'
-            echo "${prefix}${branchname}${suffix}"
-        }
-        function get-branch-name { # gitディレクトリじゃない場合のエラーは捨て
-            echo `git rev-parse --abbrev-ref HEAD 2> /dev/null`
-        }
-        function get-branch-status {
-            local res color
-            output=`git status --short 2> /dev/null`
-            if [ -z "$output" ]; then
-                res=':' # status Clean
-                color='%{'${fg[green]}'%}'
-            elif [[ $output =~ "[\n]?\?\? " ]]; then
-                res='?:' # Untracked
-                color='%{'${fg[yellow]}'%}'
-            elif [[ $output =~ "[\n]? M " ]]; then
-                res='M:' # Modified
-                color='%{'${fg[red]}'%}'
-            else
-                res='A:' # Added to commit
-                color='%{'${fg[cyan]}'%}'
-            fi
-            # echo ${color}${res}'%{'${reset_color}'%}'
-            echo ${color} # 色だけ返す
-        }
     }
 }
 
@@ -150,7 +127,7 @@
         alias pyea="pyenv activate "
         alias pyed="pyenv deactivate "
     }
-    which node > /dev/null && { 
+    which node > /dev/null && {
         : "NVM" && {
             export NVM_DIR="$HOME/.nvm"
             # This loads nvm
@@ -174,13 +151,13 @@
             stack exec $x-exe
         }
     }
-    : "ELSE_LANGUAGE" && { 
+    : "ELSE_LANGUAGE" && {
         alias oct="octave --no-gui "
     }
 }
 
-: "APPLICATIONS" && { 
-    : "NEOVIM" && { 
+: "APPLICATIONS" && {
+    : "NEOVIM" && {
         alias nv="nvim "
         alias nvi="nvim ~/.config/nvim/init.vim"
         alias nvo="nvim ~/.config/nvim/options.rc.vim"
@@ -188,13 +165,21 @@
         alias nvd="nvim ~/.config/nvim/dein.toml"
         alias nvl="nvim ~/.config/nvim/dein_lazy.toml"
     }
-    : "GIT" && { 
-        alias ga="git add "
-        alias ga.="git add . "
-        alias gb="git branch"
-        alias gs="git status"
-        alias gco="git checkout "
-        alias glo="git log --oneline "
+    : "GIT" && {
+        set_alias ga="git add "
+        set_alias ga.="git add . "
+        set_alias gb="git branch "
+        set_alias gs="git status "
+        set_alias gpo="git push origin "
+        set_alias gco="git checkout "
+        set_alias glo="git log --oneline "
+        set_alias -g -e B="$(get-branch-name)"
+        function grb(){ # git rebse alias
+            git rebase -i HEAD~$1
+        }
+        function gd(){ # git diff alias
+            git diff --name-only HEAD HEAD~$1
+        }
         function gcm {
             [ -z "$1" ] && {
                 echo put some command
@@ -228,11 +213,40 @@
                 }
             }
         }
-        function grb(){ # git rebse alias
-            git rebase -i HEAD~$1
+        function branch-status-check {
+            local prefix branchname suffix
+            if [[ "$PWD" =~ '/\.git(/.*)?$' ]]; then
+                return # is in .git
+            fi
+            branchname=`get-branch-name`
+            if [[ -z $branchname ]]; then
+                branchname="no git"
+            fi
+            prefix=`get-branch-status`
+            suffix='%{'${reset_color}'%}'
+            echo "${prefix}${branchname}${suffix}"
         }
-        function gd(){ # git diff alias
-            git diff --name-only HEAD HEAD~$1
+        function get-branch-name { # is not controled by git
+            echo `git rev-parse --abbrev-ref HEAD 2> /dev/null`
+        }
+        function get-branch-status {
+            local res color
+            output=`git status --short 2> /dev/null`
+            if [ -z "$output" ]; then
+                res=':' # status Clean
+                color='%{'${fg[green]}'%}'
+            elif [[ $output =~ "[\n]?\?\? " ]]; then
+                res='?:' # Untracked
+                color='%{'${fg[yellow]}'%}'
+            elif [[ $output =~ "[\n]? M " ]]; then
+                res='M:' # Modified
+                color='%{'${fg[red]}'%}'
+            else
+                res='A:' # Added to commit
+                color='%{'${fg[cyan]}'%}'
+            fi
+            # echo ${color}${res}'%{'${reset_color}'%}'
+            echo ${color} # return only color
         }
     }
     : "EXA" && { # @ /usr/local/bin/exa
@@ -249,7 +263,7 @@
                 alias ll="ls -lrt --color=auto "
                 alias lll="ls -alrt --color=auto "
                 alias l1="ls -1G"
-                function cdhook { 
+                function cdhook {
                     ls -lrt --color=auto
                     pwd
                 }
@@ -260,6 +274,23 @@
 
 
 : "ALIAS" && {
+    : "EXTENDABLE_ALIAS" && {
+        type abbrev-alias > /dev/null &&{
+            alias "set_alias"="abbrev-alias"
+        } || {
+            alias "set_alias"=alias
+        }
+    }
+    : "MASS_PRODUCTED_ALIAS" && {
+        function gen_alias {
+            for i in $(seq 1 $3) ; do
+                gen_simple_alias "$1" "$2" ${i} "$4"
+            done
+        }
+        function gen_simple_alias {
+            set_alias -g "$1$3"="$2$3$4"
+        }
+    }
     : "COMMON" && {
         set_ls_alias
         alias rm="rm -i "
@@ -270,27 +301,18 @@
         alias df='df -lTh '
         alias free='free -h '
         alias grep='grep --color=auto'
-        alias -g G="|grep "
+        gen_alias "fg" "fg %" 9
+        gen_alias "bg" "fg %" 9
+        gen_alias "a" "|awk 'BEGIN{}{print $" 9 "}END{}'"
+        set_alias -g F="|fzf "
+        set_alias -g G="|grep "
     }
     : "PATH_SHORTCUT" && {
         alias cdw="~/ws"
         alias cds="~/sandbox"
         alias dot="~/git_clones/dotfiles"
     }
-    : "MASS_PRODUCTED_ALIAS" && { 
-        function gen_alias {
-            for i in $(seq 1 $3) ; do
-                gen_simple_alias "$1" "$2" ${i} "$4"
-            done
-        }
-        function gen_simple_alias {
-            alias "$1$3"="$1 $2$3$4 "
-        }
-        gen_alias "fg" "%" 5
-        gen_alias "bg" "%" 5
-        gen_alias "awk" "'{print $" 10 "}'"
-    }
-    : "ELSE_ALIAS" && { 
+    : "ELSE_ALIAS" && {
         alias untar="tar -xvf "
         alias psaux="ps -aux | fzf "
         # for laptop pc
@@ -319,18 +341,3 @@
     echo my zshrc loaded
 }
 
-########################################  
-# sudo の後ろでコマンド名を補完する  
-
-# cd is alias of pushd
-#function cd {
-#  if [ -z "$1" ] ; then
-#    test "$PWD" != "$HOME" && pushd $HOME > /dev/null
-#  elif ( echo "$1" | egrep "^\.\.\.+$" > /dev/null ) ; then
-#    cd $( echo "$1" | perl -ne 'print "../" x ( tr/\./\./ - 1 )' )
-#  else
-#    pushd "$1" > /dev/null
-#  fi
-#  ls -ltr --color=auto
-#}
-########################################
