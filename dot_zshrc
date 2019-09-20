@@ -336,7 +336,7 @@
         }
     }
     : "SQUASH_PATH" && {
-        export PATH=$(echo $PATH |sed -e "s/:/\n/g"|awk 'BEGIN{}{a[$0]=a[$0]+1}END{for (i in a){print i}}'| tr "\n" ":"|sed -e "s/.$//")
+        export PATH=$(echo $PATH |sed -e "s/:/\n/g"|awk '{a[$0]=a[$0]+1}END{for (i in a){print i}}'| tr "\n" ":"|sed -e "s/.$//")
     }
 }
 
