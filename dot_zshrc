@@ -199,7 +199,7 @@
                         add) git commit -m ":sparkles: Add $msg" ;;
                         chg) git commit -m ":hammer: Change $msg" ;;
                         wip) git commit -m ":construction: WIP $msg" ;;
-                        rmv) git commit -m ":burn: Remove $msg" ;;
+                        rmv) git commit -m ":fire: Remove $msg" ;;
                         cmm) git commit -m ":memo: Fix comment $msg" ;;
                         tpo) git commit -m ":memo: Fix typo $msg" ;;
                         fix) git commit -m ":ambulance: Fix bug of $msg" ;;
