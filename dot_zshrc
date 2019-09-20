@@ -10,7 +10,7 @@
         export LANG=en_US.UTF-8
     }
     : "KEY_MAPPING" && {
-        which xmodmap > /dev/null && {
+        : "XMODMAP" && type xmodmap > /dev/null && {
             xmodmap -e 'keycode 100 = Return'
             xmodmap -e 'keycode 101 = Return'
             xmodmap -e 'keycode 102 = BackSpace'
@@ -115,7 +115,7 @@
 }
 
 : "PG_LANGUAGE" && {
-    which python > /dev/null && {
+    : "PYTHON" && type python > /dev/null && {
         export PYENV_ROOT="$HOME/.pyenv"
         export PATH="$PYENV_ROOT/bin:$PATH"
         eval "$(pyenv init -)"
@@ -127,7 +127,7 @@
         alias pyea="pyenv activate "
         alias pyed="pyenv deactivate "
     }
-    which node > /dev/null && {
+    : "NODEJS" && type node > /dev/null && {
         : "NVM" && {
             export NVM_DIR="$HOME/.nvm"
             # This loads nvm
@@ -139,7 +139,7 @@
             export PATH=~/.yarn/bin:$PATH
         }
     }
-    which stack > /dev/null && {
+    : "HASKELL" && type stack > /dev/null && {
         export PATH=~/.local/bin:$PATH
         alias -s hs="stack runghc "
         alias stb="stack build "
@@ -251,7 +251,7 @@
     }
     : "EXA" && { # @ /usr/local/bin/exa
         function set_ls_alias {
-            which exa > /dev/null && {
+            : "EXA_SETTING" && type exa > /dev/null && {
                 alias ll="exa -lh --git"
                 alias lll="exa -alhg --group-directories-first --git --time-style long-iso"
                 alias l1="exa -1"
@@ -321,7 +321,7 @@
 }
 
 : "TEST" &&{
-    which w3m > /dev/null && {
+    : "W3M" && type w3m > /dev/null && {
         function google() {
             local keyword request
             if [ $# -eq 0 ]; then
@@ -334,6 +334,9 @@
                 w3m "http://www.google.com/search?q=$keyword"
             fi
         }
+    }
+    : "SQUASH_PATH" && {
+        export PATH=$(echo $PATH |sed -e "s/:/\n/g"|awk 'BEGIN{}{a[$0]=a[$0]+1}END{for (i in a){print i}}'| tr "\n" ":"|sed -e "s/.$//")
     }
 }
 

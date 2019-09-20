@@ -1,8 +1,8 @@
 #!/usr/bin/zsh
 
 : "COMMON_DIRS" && {
-    mkdir ~/ws
-    mkdir ~/sandbox
+    mkdir "$HOME/ws"
+    mkdir "$HOME/sandbox"
 }
 
 : "USEFUL_APPS" && { 
