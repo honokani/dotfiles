@@ -107,8 +107,8 @@
         setopt transient_rprompt
         # PROMPT='%F{blue}%n@%m%f %(!.#.$) '
         # PROMPT='%F{cyan}%n%f `branch-status-check` %(!.#.$) '
-        PROMPT=' %F{cyan}%(!.#.$)%f '
         # RPROMPT='[%F{green}%~%f] %*'
+        PROMPT=' %F{cyan}%(!.#.$)%f '
         RPROMPT='[`branch-status-check`] %*'
         # @see https://wiki.archlinux.org/index.php/zsh
     }
@@ -170,10 +170,10 @@
         set_alias ga.="git add . "
         set_alias gb="git branch "
         set_alias gs="git status "
-        set_alias gpo="git push origin "
+        set_alias gpo="git push origin"
         set_alias gco="git checkout "
         set_alias glo="git log --oneline "
-        set_alias -g -e B="$(get-branch-name)"
+        set_alias -g -e B=$(get-branch-name)
         function grb(){ # git rebse alias
             git rebase -i HEAD~$1
         }
