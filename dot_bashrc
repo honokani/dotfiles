@@ -1,0 +1,203 @@
+: "BASH" && { 
+    : "COMMON" && { 
+        alias bset="nv ~/.bashrc"
+        alias bsrc="source ~/.bashrc"
+    }
+    : "PROMPT" && { 
+        # export PS1='\[\e[36;49m\]${debian_chroot:+($debian_chroot)}\u\[\e[m\]@\h`branch-status-check` $ '
+        export PS1=' $ '
+        PROMPT_COMMAND=printPromptRight
+        export PS2='\w'
+        function printPromptRight() { 
+            local rp=`branch-status-check`
+            #local size=$(($COLUMNS - ${#rp} - 1))
+            #local col="\e[36;49m"
+            #local col_reset="\e[m"
+            #printf "%${size}s$col$rp$col_reset\r" ' '
+            local size=$(($COLUMNS - ${#rp} + 11))
+            printf "%${size}s$rp\r" ' '
+        }
+    }
+    : "CURRENT_DIR" && { 
+        shopt -s autocd
+        [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+        export ENHANCD_FILTER=fzf
+        export ENHANCD_HOOK_AFTER_CD=chpwd
+        source ~/git_clones/enhancd/init.sh
+        alias ..="cd .."
+        alias cdd="cd -"
+        function chpwd {
+            ls -ltr --color=auto
+            echo_colored_pwd
+        }
+    }
+    : "HISTRORY" && { 
+        export HISTFILE=${HOME}/.bhistory
+        export HISTSIZE=100000
+        export SAVEHIST=100000
+        alias his="history|fzf "
+    }
+}
+
+: "SETTING_PATH" && {
+    # python
+    export ANACONDA_ROOT="/opt/anaconda3"
+    export TMP_MY_PATH="$ANACONDA_ROOT/bin"
+    # go
+    export GO_PATH=${HOME}/local/go
+    export INFLUX_PATH=${HOME}/local/influxdb175
+    export TMP_MY_PATH="$GO_PATH/bin:$INFLUX_PATH/usr/bin:$TMP_MY_PATH"
+    # nodejs
+    export YARN_PATH=${HOME}/local/yarn
+    export TMP_MY_PATH="$YARN_PATH/bin:$TMP_MY_PATH"
+    # else
+    export YARN_MODEULES_PATH="${HOME}/.config/yarn/global/node_modules"
+    export ELM_PATH="$YARN_MODEULES_PATH/elm"
+    export SVR_PATH="$YARN_MODEULES_PATH/http-server"
+    export TMP_MY_PATH="$SVR_PATH/bin:$ELM_PATH/bin:$TMP_MY_PATH"
+    # update path
+    [ "$MY_PATH" == "$TMP_MY_PATH" ] || { 
+        export MY_PATH="$TMP_MY_PATH"
+        export PATH="$MY_PATH:$PATH"
+    }
+}
+
+: "PG_LANGUAGE" && {
+    : "PYTHON" && {
+        . /opt/anaconda3/etc/profile.d/conda.sh
+    }
+}
+
+: "APPLICATION" && {
+    : "GIT" && { 
+        alias ga="git add "
+        alias ga.="git add . "
+        alias gb="git branch"
+        alias gs="git status -s"
+        alias gco="git checkout "
+        alias glo="git log --oneline "
+        function gcm {
+            [ -z "$1" ] && {
+                echo put some command
+            } || {
+                local msg="${@:2}"
+                [ -z "$msg" ] && {
+                    case $1 in
+                        cmm) git commit -m ":memo: Fix comment" ;;
+                        tpo) git commit -m ":memo: Fix typo" ;;
+                        doc) git commit -m ":books: Change documents" ;;
+                        art) git commit -m ":arts: Change arts" ;;
+                        *)   echo "put some message" ;;
+                    esac
+                } || {
+                    case $1 in
+                        big) git commit -m ":tada: Creat $msg" ;;
+                        add) git commit -m ":sparkles: Add $msg" ;;
+                        chg) git commit -m ":hammer: Change $msg" ;;
+                        wip) git commit -m ":construction: WIP $msg" ;;
+                        rmv) git commit -m ":burn: Remove $msg" ;;
+                        cmm) git commit -m ":memo: Fix comment $msg" ;;
+                        tpo) git commit -m ":memo: Fix typo $msg" ;;
+                        fix) git commit -m ":ambulance: Fix bug of $msg" ;;
+                        doc) git commit -m ":books: Change documents $msg" ;;
+                        art) git commit -m ":arts: Change arts $msg" ;;
+                        tst) git commit -m ":rotating_light: Test $msg" ;;
+                        tag) git commit -m ":tag: Tag $msg" ;;
+                        ext) git commit -m "$msg" ;;
+                        *)   echo "put some known command" ;;
+                    esac
+                }
+            }
+        }
+        function branch-status-check {
+            local prefix branchname suffix
+            # is inside of ".git"
+            if [[ "$PWD" =~ '/\.git(/.*)?$' ]]; then
+                return
+            fi
+            branchname=`get-branch-name`
+            suffix=$'\e[m)'
+            # no branch
+            if [[ -z $branchname ]]; then
+                branchname="no_git"
+                prefix=$' (\e[90;49m'
+                echo ${prefix}${branchname}${suffix}
+                return
+            fi
+            prefix=' ('`get-branch-status`
+            echo ${prefix}${branchname}${suffix}
+        }
+        function get-branch-name {
+            echo `git rev-parse --abbrev-ref HEAD 2> /dev/null`
+        }
+        function get-branch-status {
+            local res color
+            output=`git status --short 2> /dev/null`
+            if [ -z "$output" ]; then
+                # Clean, green
+                color=$'\e[32;49m'
+            elif [[ $output =~ [\n]?\?\? ]]; then
+                # Untracked, violet
+                color=$'\e[35;49m'
+            elif [[ $output =~ [\n]?\ M\  ]]; then
+                # Modified, red
+                color=$'\e[31;49m'
+            else
+                # AddedToCommit, blue
+                color=$'\e[36;49m'
+            fi
+            echo ${color}
+        }
+    }
+    : "VI" && { 
+        alias vi="vim"
+        alias nv="nvim "
+        alias nvi="nvim ~/.config/nvim/init.vim"
+        alias nvo="nvim ~/.config/nvim/options.rc.vim"
+    }
+}
+
+: "ALIAS" && { 
+    function gen_alias {
+        for i in $(seq 1 $3) ; do
+            gen_simple_alias "$1" "$2" ${i} "$4"
+        done
+    }
+    function gen_simple_alias {
+        alias "$1$3"="$1 $2$3$4 "
+    }
+    gen_alias "fg" "%" 5
+    gen_alias "bg" "%" 5
+    gen_alias "awk" "'{print $" 9 "}'"
+
+    alias dot="~/gitlab/dotfiles"
+
+    alias ls="ls --color=auto"
+    #alias ll="ls -lrt --color=auto"
+    #alias lll="ls -alrt --color=auto"
+    alias rm="rm -i "
+    alias cp="cp -i "
+    alias mv="mv -i "
+    alias mkdir="mkdir -p "
+
+    function ll {
+        if [ -z $1 ]; then
+            ls -ltr --color=auto $1
+        else
+            ls -ltr --color=auto $1
+        fi
+        echo_colored_pwd
+    }
+    function lll {
+        if [ -z $1 ]; then
+            ls -altr --color=auto
+        else
+            ls -altr --color=auto $1
+        fi
+        echo_colored_pwd
+    }
+    function echo_colored_pwd {
+        echo -e '\e[36;49m'$(pwd)'\e[m'
+    }
+}
+
