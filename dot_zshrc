@@ -188,7 +188,7 @@
                 [ -z "$msg" ] && {
                     case $1 in
                         cmm) git commit -m ":memo: Fix comment" ;;
-                        tpo) git commit -m ":memo: Fix typo" ;;
+                        typ) git commit -m ":memo: Fix typo" ;;
                         doc) git commit -m ":books: Change documents" ;;
                         art) git commit -m ":arts: Change arts" ;;
                         *)   echo "put some message" ;;
@@ -201,7 +201,7 @@
                         wip) git commit -m ":construction: WIP $msg" ;;
                         rmv) git commit -m ":fire: Remove $msg" ;;
                         cmm) git commit -m ":memo: Fix comment $msg" ;;
-                        tpo) git commit -m ":memo: Fix typo $msg" ;;
+                        typ) git commit -m ":memo: Fix typo $msg" ;;
                         fix) git commit -m ":ambulance: Fix bug of $msg" ;;
                         doc) git commit -m ":books: Change documents $msg" ;;
                         art) git commit -m ":arts: Change arts $msg" ;;
