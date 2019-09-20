@@ -169,7 +169,7 @@
         set_alias ga="git add "
         set_alias ga.="git add . "
         set_alias gb="git branch "
-        set_alias gs="git status "
+        set_alias gs="git status -s "
         set_alias gpo="git push origin"
         set_alias gco="git checkout "
         set_alias glo="git log --oneline "
