@@ -21,17 +21,6 @@
 }
 
 : "ZSH" && {
-    # : "COMPILE" && {
-    #     export COMPILED_ZRC="$HOME/.zshrc.zwc"
-    #     export ZSHRC_PATH="$HOME/.zshrc"
-    #     [ -f "$COMPILED_ZRC" ] && {
-    #         [ "$ZSHRC_PATH" -nt "$COMPILED_ZRC" ] && {
-    #             zcompile "$ZSHRC_PATH"
-    #         }
-    #     } || {
-    #         zcompile "$ZSHRC_PATH"
-    #     }
-    # }
     : "COMMON" && {
         autoload -Uz compinit
         compinit
@@ -337,6 +326,18 @@
     }
     : "SQUASH_PATH" && {
         export PATH=$(echo $PATH |sed -e "s/:/\n/g"|awk '{a[$0]=a[$0]+1}END{for (i in a){print i}}'| tr "\n" ":"|sed -e "s/.$//")
+    }
+}
+
+: "COMPILE" && {
+    export COMPILED_ZRC="$HOME/.zshrc.zwc"
+    export ZSHRC_PATH="$HOME/.zshrc"
+    [ -f "$COMPILED_ZRC" ] && {
+        [ "$ZSHRC_PATH" -nt "$COMPILED_ZRC" ] && {
+            zcompile "$ZSHRC_PATH"
+        }
+    } || {
+        zcompile "$ZSHRC_PATH"
     }
 }
 
