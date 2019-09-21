@@ -2,6 +2,7 @@
     : "COMMON" && {
         export XDG_CONFIG_HOME="$HOME/.config"
         export PKG_CONFIG_PATH="/usr/bin/pkg-config"
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu/gtk-2.0/modules/
     }
     : "Language" && {
         export LANGUAGE=en_US.UTF-8
@@ -253,7 +254,7 @@
                 alias l1="exa -1"
                 function cdhook {
                     exa -lh --git
-                    pwd
+                    echo '[ '$(pwd)' ]'
                 }
             } || {
                 alias ll="ls -lrt --color=auto "
@@ -261,7 +262,7 @@
                 alias l1="ls -1G"
                 function cdhook {
                     ls -lrt --color=auto
-                    pwd
+                    echo '[ '$(pwd)' ]'
                 }
             }
         }
