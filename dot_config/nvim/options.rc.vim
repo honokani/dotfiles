@@ -50,10 +50,11 @@ if has("autocmd")
   augroup myFileIndent
     autocmd!
     if expand("%:r") =~ "dot_zshrc"
-      setlocal softtabstop=4
-      setlocal shiftwidth=4
-      setlocal expandtab
-      setlocal syn=sh
+      " setlocal softtabstop=4
+      " setlocal shiftwidth=4
+      " setlocal expandtab
+      " setlocal syn=sh
+      setlocal filetype=zsh
     endif
     "sw=softtabstop, sts=shiftwidth, ts=tabstop, et=expandtab
     autocmd FileType zsh         setlocal sw=4 sts=4 ts=4 et
