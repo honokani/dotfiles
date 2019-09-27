@@ -68,6 +68,8 @@ if !has('gui_running')
         autocmd VimEnter,ColorScheme * highlight SignColumn ctermbg=none
         autocmd VimEnter,ColorScheme * highlight VertSplit ctermbg=none
         autocmd VimEnter,ColorScheme * highlight NonText ctermbg=none
+        autocmd VimEnter,ColorScheme * highlight Comment ctermfg=102
+        autocmd VimEnter,ColorScheme * highlight Visual ctermbg=200
     augroup END
     set ambiwidth=single
 else

@@ -7,6 +7,8 @@
 
 : "USEFUL_APPS" && { 
     sudo apt install -y gawk tree w3m zip
+    sudo apt install exuberant-ctags
+    git config --global core.editor neovim
 }
 
 : "TMUX" && { 

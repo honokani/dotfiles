@@ -128,3 +128,17 @@ hook_add = '''
     omap / <Plug>(easymotion-tn)
 '''
 
+[[plugins]]
+repo = 'simeji/winresizer'
+
+[[plugins]]
+repo = 'sheerun/vim-polyglot'
+
+[[plugins]]
+repo = 'terryma/vim-expand-region'
+hook_add = '''
+    vmap v <Plug>(expand_region_expand)
+    vmap <C-v> <Plug>(expand_region_shrink)
+'''
+
+

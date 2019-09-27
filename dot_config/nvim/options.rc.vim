@@ -19,6 +19,9 @@ set nocursorline
 autocmd InsertEnter,InsertLeave * set cursorline!
 " autocmd ColorScheme * highlight MatchPattern gui=bold, underline guibg=NONE guifg=cyan
 autocmd ColorScheme * highlight MatchPattern cterm=underline ctermbg=NONE ctermfg=50
+"if &term == "xterm-256color"
+"endif
+
 " search
 set matchpairs& matchpairs+=<:>
 set showmatch
@@ -50,16 +53,11 @@ if has("autocmd")
   augroup myFileIndent
     autocmd!
     if expand("%:r") =~ "dot_zshrc"
-      " setlocal softtabstop=4
-      " setlocal shiftwidth=4
-      " setlocal expandtab
-      " setlocal syn=sh
       setlocal filetype=zsh
     endif
     "sw=softtabstop, sts=shiftwidth, ts=tabstop, et=expandtab
     autocmd FileType zsh         setlocal sw=4 sts=4 ts=4 et
     autocmd FileType vim         setlocal sw=2 sts=2 ts=2 et
-    autocmd FileType markdown    setlocal sw=3 sts=3 ts=3 et
 
     autocmd FileType c           setlocal sw=4 sts=4 ts=4 et
     autocmd FileType scala       setlocal sw=4 sts=4 ts=4 et
@@ -76,6 +74,9 @@ if has("autocmd")
 
     autocmd FileType js          setlocal sw=4 sts=4 ts=4 et
     autocmd FileType javascript  setlocal sw=4 sts=4 ts=4 et
+
+    autocmd FileType markdown    setlocal sw=3 sts=3 ts=3 et
+    autocmd FileType toml        setlocal sw=4 sts=4 ts=4 et
   augroup END
 endif
 

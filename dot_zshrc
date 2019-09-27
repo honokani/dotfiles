@@ -3,6 +3,7 @@
         export XDG_CONFIG_HOME="$HOME/.config"
         export PKG_CONFIG_PATH="/usr/bin/pkg-config"
         export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu/gtk-2.0/modules/
+        export TERM=xterm-256color
     }
     : "Language" && {
         export LANGUAGE=en_US.UTF-8
@@ -170,11 +171,10 @@
         set_alias gpo="git push origin"
         set_alias gco="git checkout "
         set_alias glo="git log --oneline "
+        set_alias gd="git diff"
+        set_alias gdn="git diff --name-only HEAD"
         function grb(){ # git rebse alias
             git rebase -i HEAD~$1
-        }
-        function gd(){ # git diff alias
-            git diff --name-only HEAD HEAD~$1
         }
         function gcm {
             [ -z "$1" ] && {
