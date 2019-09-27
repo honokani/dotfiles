@@ -9,6 +9,11 @@ repo = 'Shougo/context_filetype.vim'
 
 [[plugins]]
 repo = 'Shougo/unite.vim'
+hook_add = '''
+    nnoremap  <Space>B  :Unite bookmark<CR>
+    nnoremap  <Space>b  :Unite buffer<CR>
+    nnoremap  <Space>r  :Unite file_mru<CR>
+'''
 
 [[plugins]]
 repo = 'Shougo/neomru.vim'

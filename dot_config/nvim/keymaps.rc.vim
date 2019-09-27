@@ -93,8 +93,8 @@ vmap              <Tab>         %
 "     with vimfiler
 nmap              <Tab>         %
 nmap              [SP]T         tt<Space>c<C-w>h<S-s>G<Up><Up><CR>
-nmap              [SP]f         <Space>h<C-w>h<S-s>G<Up><Up><CR>:bd<Space>1<CR>
-nmap              [SP]F         <Space>H<C-w>h<S-s>G<Up><Up><CR>
+"nmap              [SP]r         <Space>h<C-w>h<S-s>G<Up><Up><CR>:bd<Space>1<CR>
+"nmap              [SP]R         <Space>H<C-w>h<S-s>G<Up><Up><CR>
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
