@@ -1,13 +1,10 @@
 if filereadable( expand('~/.config/nvim/keymaps.functions.vim') )
     source ~/.config/nvim/keymaps.functions.vim
+    cnoremap      ;             :call JumpAtEnd()<CR>
 endif
 
 nnoremap          [SP]          <Nop>
 nmap              <Space>       [SP]
-
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-cnoremap          ;             :call JumpAtEnd()<CR>
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -88,14 +85,16 @@ vmap              "             <S-s>"
 vmap              '             <S-s>'
 vmap              `             <S-s>`
 vnoremap          <             "zdi<<C-R>z><ESC>
+vmap              <Tab>         %
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " combination
 "     with vimfiler
+nmap              <Tab>         %
 nmap              [SP]T         tt<Space>c<C-w>h<S-s>G<Up><Up><CR>
-nmap              [SP]f         <Space>hsv<C-w>h<S-s>G<Up><Up><CR>:bd<Space>1<CR>
-nmap              [SP]F         <Space>Hsv<C-w>h<S-s>G<Up><Up><CR>
+nmap              [SP]f         <Space>h<C-w>h<S-s>G<Up><Up><CR>:bd<Space>1<CR>
+nmap              [SP]F         <Space>H<C-w>h<S-s>G<Up><Up><CR>
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

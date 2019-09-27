@@ -116,13 +116,15 @@ repo = 'Lokaltog/vim-easymotion'
 hook_add = '''
     let g:EasyMotion_do_mapping = 0
     let g:EasyMotion_enter_jump_first = 1
-    map  f  <Plug>(easymotion-fl)
-    map  F  <Plug>(easymotion-Fl)
-    nmap t  <Plug>(easymotion-s2)
-    xmap t  <Plug>(easymotion-s2)
-    omap t  <Plug>(easymotion-s2)
-    nmap g/ <Plug>(easymotion-sn)
-    xmap g/ <Plug>(easymotion-sn)
-    omap g/ <Plug>(easymotion-tn)
+    map  f <Plug>(easymotion-bd-f)
+    nmap f <Plug>(easymotion-overwin-f)
+    nmap t <Plug>(easymotion-overwin-f2)
+    xmap t <Plug>(easymotion-overwin-f2)
+    omap t <Plug>(easymotion-overwin-f2)
+    nmap F <Plug>(easymotion-F)
+    map  n <Plug>(easymotion-next)
+    map  N <Plug>(easymotion-prev)
+    map  / <Plug>(easymotion-sn)
+    omap / <Plug>(easymotion-tn)
 '''
 
