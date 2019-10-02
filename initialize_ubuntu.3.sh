@@ -8,6 +8,9 @@
 : "USEFUL_APPS" && { 
     sudo apt install -y gawk tree w3m zip
     sudo apt install exuberant-ctags
+    type node > /dev/null || {
+        curl -sL install-node.now.sh/lts | sh
+    }
     git config --global core.editor neovim
 }
 

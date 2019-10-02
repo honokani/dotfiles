@@ -70,13 +70,13 @@ if has("autocmd")
     autocmd FileType css         setlocal sw=4 sts=4 ts=4 et
     autocmd FileType scss        setlocal sw=4 sts=4 ts=4 et
     autocmd FileType sass        setlocal sw=4 sts=4 ts=4 et
-    autocmd FileType json        setlocal sw=4 sts=4 ts=4 et
 
     autocmd FileType js          setlocal sw=4 sts=4 ts=4 et
     autocmd FileType javascript  setlocal sw=4 sts=4 ts=4 et
 
     autocmd FileType markdown    setlocal sw=3 sts=3 ts=3 et
     autocmd FileType toml        setlocal sw=4 sts=4 ts=4 et
+    autocmd FileType json        setlocal sw=4 sts=4 ts=4 et
   augroup END
 endif
 
@@ -93,3 +93,4 @@ set clipboard+=unnamedplus
 set conceallevel=0
 let g:vim_json_syntax_conceal = 0
 
+set relativenumber

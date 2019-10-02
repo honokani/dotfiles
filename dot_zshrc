@@ -75,7 +75,7 @@
         setopt auto_cd
         setopt auto_pushd
         setopt pushd_ignore_dups
-        alias ..="cd .."
+        alias ..="cd ../"
         alias cdd="cd - "
         function mc() { # mkdir and cd
             if [[ -d $1 ]]; then
@@ -155,13 +155,18 @@
 }
 
 : "APPLICATIONS" && {
-    : "NEOVIM" && {
+    : "NVIM" && {
         alias nv="nvim "
         alias nvi="nvim ~/.config/nvim/init.vim"
         alias nvo="nvim ~/.config/nvim/options.rc.vim"
         alias nvk="nvim ~/.config/nvim/keymaps.rc.vim"
         alias nvd="nvim ~/.config/nvim/dein.toml"
         alias nvl="nvim ~/.config/nvim/dein_lazy.toml"
+        function fv() {
+            files=$(git ls-files) &&
+            selected_files=$(echo "$files" | fzf -m --preview 'head -100 {}') &&
+            nvim $selected_files
+        }
     }
     : "GIT" && {
         set_alias ga="git add "
@@ -249,7 +254,7 @@
     : "EXA" && { # @ /usr/local/bin/exa
         function set_ls_alias {
             : "EXA_SETTING" && type exa > /dev/null && {
-                alias ll="exa -lh --git"
+                alias ll=cdhook
                 alias lll="exa -alhg --group-directories-first --git --time-style long-iso"
                 alias l1="exa -1"
                 function cdhook {
@@ -257,7 +262,7 @@
                     echo '[ '$(pwd)' ]'
                 }
             } || {
-                alias ll="ls -lrt --color=auto "
+                alias ll=cdhook
                 alias lll="ls -alrt --color=auto "
                 alias l1="ls -1G"
                 function cdhook {
@@ -266,6 +271,13 @@
                 }
             }
         }
+    }
+    : "RIPGREP" && {
+        set_alias -g G="|rg "
+        alias -g grep="rg "
+    } || {
+        set_alias -g G="|grep "
+        alias grep='grep --color=auto'
     }
 }
 
@@ -290,12 +302,10 @@
         alias du='du -ahcd 1| sed "s/.\///g" '
         alias df='df -lTh '
         alias free='free -h '
-        alias grep='grep --color=auto'
         gen_alias "fg" "fg %" 9
         gen_alias "bg" "fg %" 9
         gen_alias "a" "|awk 'BEGIN{}{print $" 9 "}END{}'"
         set_alias -g F="|fzf "
-        set_alias -g G="|grep "
     }
     : "PATH_SHORTCUT" && {
         alias cdw="~/ws"

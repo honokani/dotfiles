@@ -8,7 +8,57 @@ repo = 'Shougo/neosnippet-snippets'
 repo = 'Shougo/context_filetype.vim'
 
 [[plugins]]
+repo = 'Shougo/denite.nvim'
+if = "has('nvim')"
+hook_add = '''
+    nnoremap <silent> <Space>r  :Denite file_mru<CR>
+    nnoremap <silent> <Space>b  :Denite buffer<CR>
+    nnoremap <silent> <Space>B  :Denite bookmark<CR>
+    nnoremap <silent> <Space>c :<C-u>Denite command_history -split=floating<CR>
+    autocmd FileType denite call s:denite_my_settings()
+    function! s:denite_my_settings() abort
+        nnoremap <silent><buffer><expr> <CR>   denite#do_map('do_action')
+        nnoremap <silent><buffer><expr> l      denite#do_map('do_action')
+        nnoremap <silent><buffer><expr> h      denite#do_map('do_action', 'split')
+        nnoremap <silent><buffer><expr> v      denite#do_map('do_action', 'vsplit')
+        nnoremap <silent><buffer><expr> <Esc>  denite#do_map('quit')
+        nnoremap <silent><buffer><expr> q      denite#do_map('quit')
+        nnoremap <silent><buffer><expr> i      denite#do_map('open_filter_buffer')
+    endfunction
+'''
+
+[[plugins]]
+repo = 'Shougo/defx.nvim'
+if = "has('nvim')"
+depends = 'denite.nvim'
+hook_add = '''
+    nnoremap <silent> <Space>f :<C-u>Defx -listed -resume -buffer-name=tab`tabpagenr()`<CR>
+    nnoremap <silent> <Space>h :<C-u>Defx<CR>
+    "call defx#custom#option('_', {
+    "\   'columns': 'indent:git:icons:filename',
+    "\})
+    let g:defx_icons_enable_syntax_highlight = 1
+    let g:defx_icons_column_length = 2
+    autocmd FileType defx call s:defx_my_setting()
+    function! s:defx_my_setting() abort
+        nnoremap <silent><buffer><expr> ~    defx#do_action('cd')
+        nnoremap <silent><buffer><expr> .    defx#do_action('toggle_ignored_files')
+        nnoremap <silent><buffer><expr> q    defx#do_action('quit')
+        nnoremap <silent><buffer><expr> r    defx#do_action('rename')
+        nnoremap <silent><buffer><expr> l    defx#do_action('open')
+        nnoremap <silent><buffer><expr> <CR> defx#do_action('open')
+        nnoremap <silent><buffer><expr> h    defx#do_action('cd', ['..'])
+        nnoremap <silent><buffer><expr> j    line('.') == line('$') ? 'gg' : 'j'
+        nnoremap <silent><buffer><expr> k    line('.') == 1 ? 'G' : 'k'
+        nnoremap <silent><buffer><expr> K    defx#do_action('new_directory')
+        nnoremap <silent><buffer><expr> N    defx#do_action('new_file')
+        nnoremap <silent><buffer><expr> yy   defx#do_action('yank_path')
+    endfunction
+'''
+
+[[plugins]]
 repo = 'Shougo/unite.vim'
+if = "has('vim')"
 hook_add = '''
     nnoremap  <Space>B  :Unite bookmark<CR>
     nnoremap  <Space>b  :Unite buffer<CR>
@@ -16,10 +66,8 @@ hook_add = '''
 '''
 
 [[plugins]]
-repo = 'Shougo/neomru.vim'
-
-[[plugins]]
 repo = 'Shougo/vimfiler'
+if = "has('vim')"
 depends = 'unite.vim'
 hook_add = '''
     source ~/.config/nvim/plugins/vimfiler.rc.vim
@@ -38,6 +86,9 @@ hook_add = '''
     let g:vimfiler_marked_file_icon    = '✓ '
     let g:vimfiler_readonly_file_icon  = '✗ '
 '''
+
+[[plugins]]
+repo = 'Shougo/neomru.vim'
 
 [[plugins]]
 repo = 'airblade/vim-gitgutter'
@@ -146,4 +197,25 @@ hook_add = '''
     vmap <C-v> <Plug>(expand_region_shrink)
 '''
 
+[[plugins]]
+repo = 'junegunn/fzf'
+build = './install --bin'
+merged = 0
+
+[[plugins]]
+repo = 'junegunn/fzf.vim'
+depends = 'fzf'
+hook_add = '''
+    nnoremap <silent> ,f :GFiles<CR>
+    nnoremap <silent> ,F :GFiles?<CR>
+    nnoremap <silent> ,b :Buffers<CR>
+    nnoremap <silent> ,l :BLines<CR>
+    nnoremap <silent> ,h :History<CR>
+    nnoremap <silent> ,m :Mark<CR>
+    command! -bang -nargs=* Rg
+    \ call fzf#vim#grep(
+    \   'rg --line-number --no-heading '.shellescape(<q-args>), 0,
+    \   fzf#vim#with_preview({'options': '--exact --reverse'}, 'right:50%:wrap')
+    \ )
+'''
 
