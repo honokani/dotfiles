@@ -1,4 +1,6 @@
 import XMonad
+-- fot mobar
+import System.IO
 -- layout
 import XMonad.Hooks.ManageDocks    (avoidStruts)-- avoid xmobar area
 import XMonad.Layout.DragPane      (DragType(Horizontal, Vertical), dragPane) -- see only two window
@@ -12,11 +14,13 @@ import XMonad.Hooks.ManageDocks    (manageDocks) -- avoid xmobar area
 import XMonad.ManageHook           ((-->)) -- avoid xmobar area
 import XMonad.Hooks.Place          (placeHook, fixed)
 -- key config
-import XMonad.Util.EZConfig -- removeKeys, additionalKeys
+--import XMonad.Util.EZConfig removeKeys, additionalKeys
+import XMonad.Util.EZConfig        (additionalKeysP)
 -- loghook
 import XMonad.Hooks.DynamicLog
 import XMonad.Util.Run             (spawnPipe, hPutStrLn)
 import XMonad.Hooks.FadeInactive   (fadeInactiveLogHook)
+import XMonad.Hooks.EwmhDesktops   (ewmh)
 
 
 -- window tranceparent ratio
@@ -35,34 +39,43 @@ myNormalbg  = "#1a1e1b"
 
 -- * main *
 main = do
-    -- mb <- spawnPipe "xmobar"
-    xmonad defaultConfig { terminal = "urxvt"
-                         , modMask = mod1Mask
-                         , borderWidth = 2
-                         , normalBorderColor = myGray
-                         , focusedBorderColor = myGreen
-                         , startupHook = myStartups
-                         , logHook = myLogHook
-                         , layoutHook = toggleLayouts (noBorders Full) $ avoidStruts $ myLayouts
-                         , manageHook = placeHook myPlacement
-                                        <+> myManageHookShift
-                                        <+> myManageHookFloat
-                                        <+> manageDocks
-                         , workspaces = mySpaceNames
-                         }
+    mb <- spawnPipe "xmobar"
+    xmonad $ ewmh defaultConfig { terminal = "urxvt"
+                                , modMask = mod1Mask
+                                , borderWidth = 2
+                                , normalBorderColor = myGray
+                                , focusedBorderColor = myGreen
+                                , startupHook = myStartups
+                                , logHook = myLogHook mb
+                                , layoutHook = toggleLayouts (noBorders Full) $ avoidStruts $ myLayouts
+                                , manageHook = placeHook myPlacement
+                                               <+> myManageHookShift
+                                               <+> myManageHookFloat
+                                               <+> manageDocks
+                                , workspaces = mySpaceNames
+                                }
+                                `additionalKeysP` keyBlightAndSound
 
+--main = xmonad =<< xmobar (def
+
+keyBlightAndSound = [ ("<XF86AudioRaiseVolume>", spawn "pactl set-sink-volume 0 +5%") -- Volume up
+                    , ("<XF86AudioLowerVolume>", spawn "pactl set-sink-volume 0 -5%") -- Volume down
+                    , ("<XF86AudioMute>", spawn "pactl set-sink-mute 0 toggle") -- Toggle volume mute
+                    , ("<XF86MonBrightnessUp>", spawn "xbacklight + 5 -time 100 -steps 1") -- Monitor brightness up
+                    , ("<XF86MonBrightnessDown>", spawn "xbacklight - 5 -time 100 -steps 1") -- Monitor brightness down
+                    ]
 
 
 -- * startup hooks *
 myStartups = do
-    spawn "feh --bg-fill $HOME/.xmonad/wps/wp.jpg"
-    --spawn "$HOME/.xmonad/wps.sh"
+    --spawn "feh --bg-fill $HOME/.xmonad/wps/wp.jpg"
+    spawn "$HOME/.xmonad/wp.sh &"
     spawn "ibus-daemon --xim --replace &"
     spawn "xcompmgr &"
 
 -- * log hooks *
-myLogHook = do
-    -- dynamicLogWithPP xmobarPP { ppOutput = hPutStrLn mb }
+myLogHook mb = do
+    dynamicLogWithPP xmobarPP { ppOutput = hPutStrLn mb }
     fadeInactiveLogHook tranceparentRatio
 
 

@@ -178,8 +178,6 @@ hook_add = '''
     xmap t <Plug>(easymotion-overwin-f2)
     omap t <Plug>(easymotion-overwin-f2)
     nmap F <Plug>(easymotion-F)
-    map  n <Plug>(easymotion-next)
-    map  N <Plug>(easymotion-prev)
     map  / <Plug>(easymotion-sn)
     omap / <Plug>(easymotion-tn)
 '''
