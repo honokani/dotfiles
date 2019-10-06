@@ -69,7 +69,7 @@ if !has('gui_running')
         autocmd VimEnter,ColorScheme * highlight VertSplit ctermbg=none
         autocmd VimEnter,ColorScheme * highlight NonText ctermbg=none
         autocmd VimEnter,ColorScheme * highlight Comment ctermfg=102
-        autocmd VimEnter,ColorScheme * highlight Visual ctermbg=62
+        autocmd VimEnter,ColorScheme * highlight Visual ctermbg=98
         autocmd VimEnter,ColorScheme * highlight Search ctermbg=202
         autocmd VimEnter,ColorScheme * highlight CursorColumn ctermbg=235
     augroup END

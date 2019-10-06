@@ -92,7 +92,7 @@ myWorkspacesAll = [minBound..maxBound]
 makeSpaceName :: MyWorkspaces -> String
 makeSpaceName = wrap2spaces.showWithout'My'
     where
-        showWithout'My' = drop 2.show
+        showWithout'My' = drop 2 . show
         wrap2spaces x = "  " ++ x ++ "  "
 mySpaceNames :: [String]
 mySpaceNames = map makeSpaceName myWorkspacesAll
