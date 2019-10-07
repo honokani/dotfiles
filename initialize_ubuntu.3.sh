@@ -6,12 +6,12 @@
 }
 
 : "USEFUL_APPS" && { 
-    sudo apt install -y gawk tree w3m zip
+    sudo apt install -y gawk tree w3m zip ripgrep
     sudo apt install exuberant-ctags
     type node > /dev/null || {
         curl -sL install-node.now.sh/lts | sh
     }
-    git config --global core.editor neovim
+    git config --global core.editor nvim
 }
 
 : "TMUX" && { 
@@ -46,10 +46,17 @@
     }
 }
 
+: "with handle" && {
+echo "-- -- -- -- --"
+    type exa > /dev/null || {
+        echo "To install exa, see 'https://the.exa.website/'"
+    }
+    type stack > /dev/null || {
+        echo "To install stack, see 'https://docs.haskellstack.org/en/stable/README/'"
+    }
+echo "-- -- -- -- --"
+}
+
 echo "done."
 echo ""
-echo "-- -- -- -- --"
-echo "To install exa, see 'https://the.exa.website/'"
-echo "To install stack, see 'https://docs.haskellstack.org/en/stable/README/'"
-echo "-- -- -- -- --"
 
