@@ -16,7 +16,7 @@
 
 : "TMUX" && { 
     sudo apt install -y tmux
-    which tmux && { 
+    type tmux > /dev/null && {
         TM_CONF=$HOME/.tmux.conf
         touch $TM_CONF
         echo "set-option -g default-shell $SHELL" > $TM_CONF
