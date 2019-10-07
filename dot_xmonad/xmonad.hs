@@ -11,7 +11,7 @@ import XMonad.Layout.Simplest      (Simplest(..))
 import XMonad.Layout.ToggleLayouts (toggleLayouts) -- Full window at any time
 -- manage window position
 import XMonad.Hooks.ManageDocks    (manageDocks) -- avoid xmobar area
-import XMonad.ManageHook           ((-->)) -- avoid xmobar area
+import XMonad.ManageHook           ((-->))
 import XMonad.Hooks.Place          (placeHook, fixed)
 -- key config
 --import XMonad.Util.EZConfig removeKeys, additionalKeys
@@ -56,7 +56,6 @@ main = do
                                 }
                                 `additionalKeysP` keyBlightAndSound
 
---main = xmonad =<< xmobar (def
 
 keyBlightAndSound = [ ("<XF86AudioRaiseVolume>", spawn "pactl set-sink-volume 0 +5%") -- Volume up
                     , ("<XF86AudioLowerVolume>", spawn "pactl set-sink-volume 0 -5%") -- Volume down
@@ -68,7 +67,6 @@ keyBlightAndSound = [ ("<XF86AudioRaiseVolume>", spawn "pactl set-sink-volume 0 
 
 -- * startup hooks *
 myStartups = do
-    --spawn "feh --bg-fill $HOME/.xmonad/wps/wp.jpg"
     spawn "$HOME/.xmonad/wp.sh &"
     spawn "ibus-daemon --xim --replace &"
     spawn "xcompmgr &"
