@@ -258,7 +258,7 @@
                 alias lll="exa -alhg --group-directories-first --git --time-style long-iso"
                 alias l1="exa -1"
                 function cdhook {
-                    exa -lh --git
+                    exa -lh --git $1
                     echo '[ '$(pwd)' ]'
                 }
             } || {
@@ -266,7 +266,7 @@
                 alias lll="ls -alrt --color=auto "
                 alias l1="ls -1G"
                 function cdhook {
-                    ls -lrt --color=auto
+                    ls -lrt --color=auto $1
                     echo '[ '$(pwd)' ]'
                 }
             }

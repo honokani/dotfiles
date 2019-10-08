@@ -7,7 +7,7 @@
 
 : "USEFUL_APPS" && { 
     sudo apt install -y gawk tree w3m zip ripgrep
-    sudo apt install exuberant-ctags
+    sudo apt install -y exuberant-ctags
     type node > /dev/null || {
         curl -sL install-node.now.sh/lts | sh
     }
