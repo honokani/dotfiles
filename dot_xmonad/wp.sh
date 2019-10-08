@@ -31,6 +31,6 @@ while true; do
         NUM_C=$(ls "$TGTDIR"| wc -l)
     }
     PICNUM=$(( $(od -vAn -N4 -tu4 < /dev/random) % $RANGE ))
-    sleep 15m
+    sleep 10m
 done
 
