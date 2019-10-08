@@ -23,7 +23,10 @@ ln -siv $GC/pyenv $HOME/.pyenv
 git clone https://github.com/pyenv/pyenv-virtualenv $GC/pyenv-virtualenv
 ln -siv $GC/pyenv-virtualenv $HOME/.pyenv/plugins/pyenv-virtualenv
 
-source $HOME/.zshrc
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
 
 # install neovim
 sudo apt-get install -y software-properties-common
