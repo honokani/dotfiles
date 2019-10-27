@@ -1,7 +1,7 @@
 #!/bin/bash
 shopt -s nullglob
 
-TGTDIR="$HOME/Dropbox/kabegami"
+TGTDIR="$HOME/Pictures/kabegami"
 test -d "$TGTDIR" || {
     TGTDIR="$HOME/.xmonad/wps"
 }

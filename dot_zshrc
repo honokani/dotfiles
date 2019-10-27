@@ -16,6 +16,10 @@
             xmodmap -e 'keycode 100 = Return'
             xmodmap -e 'keycode 101 = Return'
             xmodmap -e 'keycode 102 = BackSpace'
+            xmodmap -e 'keycode 66  = Control_L'
+            xmodmap -e 'clear Lock'
+            xmodmap -e 'add Control = Control_L'
+            # xmodmap -e 'pointer = 1 2 3 5 4 6 7 8 9 10'
         }
         bindkey '^P' history-beginning-search-backward
         bindkey '^N' history-beginning-search-forward
@@ -134,11 +138,16 @@
             [ -s "$NVM_DIR/bash_completion" ] && $NVM_DIR/bash_completion
         }
         : "YARN" && {
-            export PATH=~/.yarn/bin:$PATH
+            [ -d "$HOME/.npm_global" ] && {
+                export PATH=~/.npm_global/bin:$PATH
+            } || {
+                export PATH=~/.yarn/bin:$PATH
+            }
         }
     }
     : "HASKELL" && type stack > /dev/null && {
         export PATH=~/.local/bin:$PATH
+        export GHC_PACKAGE_PATH=$(stack path --local-pkg-db):$(stack path --snapshot-pkg-db):$(stack path --global-pkg-db)
         alias -s hs="stack runghc "
         alias stb="stack build "
         alias stn="stack new "

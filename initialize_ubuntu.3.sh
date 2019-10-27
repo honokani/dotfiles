@@ -8,8 +8,19 @@
 : "USEFUL_APPS" && { 
     sudo apt install -y gawk tree w3m zip ripgrep
     sudo apt install -y exuberant-ctags
-    type node > /dev/null || {
-        curl -sL install-node.now.sh/lts | sh
+    sudo apt install -y nodejs npm
+    type npm && npm install -g yarn neovim && {
+        echo ok
+        #sudo apt remove -y npm
+        #yarn global add neovim
+    } || {
+        NPM_G="$HOME/.npm_global"
+        mkdir $NPM_G
+        npm config set prefix $NPM_G
+        export PATH="$NPM_G/bin:$PATH"
+        npm install -g yarn neovim
+        #yarn global add neovim
+        #sudo apt remove -y npm
     }
     git config --global core.editor nvim
 }
@@ -53,6 +64,12 @@ echo "-- -- -- -- --"
     }
     type stack > /dev/null || {
         echo "To install stack, see 'https://docs.haskellstack.org/en/stable/README/'"
+    }
+    : "FontSetting" && {
+        echo "To add font CICA, see 'https://github.com/miiton/Cica' and download file"
+        echo "Then copy font to '~/.font/ , and order folloing command'"
+        echo 'UUID=$(gsettings get org.gnome.Terminal.ProfilesList default | tr -d \'"'"')'
+        echo 'gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:${UUID}/ font "Cica 15"'
     }
 echo "-- -- -- -- --"
 }
