@@ -91,7 +91,7 @@ vmap              <Tab>         %
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " combination
 "     with vimfiler
-nmap              <Tab>         %
+nnoremap          <Tab>         %
 nmap              [SP]T         tt<Space>c<C-w>h<S-s>G<Up><Up><CR>
 "nmap              [SP]r         <Space>h<C-w>h<S-s>G<Up><Up><CR>:bd<Space>1<CR>
 "nmap              [SP]R         <Space>H<C-w>h<S-s>G<Up><Up><CR>

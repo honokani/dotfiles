@@ -65,27 +65,27 @@ hook_add = '''
     nnoremap  <Space>r  :Unite file_mru<CR>
 '''
 
-[[plugins]]
-repo = 'Shougo/vimfiler'
-if = "has('vim')"
-depends = 'unite.vim'
-hook_add = '''
-    source ~/.config/nvim/plugins/vimfiler.rc.vim
-
-    autocmd Filetype vimfiler nmap <buffer>  <CR>   <Plug>(vimfiler_expand_or_edit)
-    autocmd Filetype vimfiler nmap <buffer>  l      <Plug>(vimfiler_expand_or_edit)
-    autocmd Filetype vimfiler nmap <buffer>  <C-l>  <Plug>(vimfiler_cd_or_edit)
-    autocmd FileType vimfiler setl nobl
-
-    let g:vimfiler_as_default_explorer = 1
-    let g:vimfiler_tree_opened_icon    = '↩ '
-    let g:vimfiler_tree_closed_icon    = '↪ '
-    let g:vimfiler_tree_leaf_icon      = " "
-
-    let g:vimfiler_file_icon           = '- '
-    let g:vimfiler_marked_file_icon    = '✓ '
-    let g:vimfiler_readonly_file_icon  = '✗ '
-'''
+#[[plugins]]
+#repo = 'Shougo/vimfiler'
+#if = "has('vim')"
+#depends = 'unite.vim'
+#hook_add = '''
+#    source ~/.config/nvim/plugins/vimfiler.rc.vim
+#
+#    autocmd Filetype vimfiler nmap <buffer>  <CR>   <Plug>(vimfiler_expand_or_edit)
+#    autocmd Filetype vimfiler nmap <buffer>  l      <Plug>(vimfiler_expand_or_edit)
+#    autocmd Filetype vimfiler nmap <buffer>  <C-l>  <Plug>(vimfiler_cd_or_edit)
+#    autocmd FileType vimfiler setl nobl
+#
+#    let g:vimfiler_as_default_explorer = 1
+#    let g:vimfiler_tree_opened_icon    = '↩ '
+#    let g:vimfiler_tree_closed_icon    = '↪ '
+#    let g:vimfiler_tree_leaf_icon      = " "
+#
+#    let g:vimfiler_file_icon           = '- '
+#    let g:vimfiler_marked_file_icon    = '✓ '
+#    let g:vimfiler_readonly_file_icon  = '✗ '
+#'''
 
 [[plugins]]
 repo = 'Shougo/neomru.vim'
@@ -172,12 +172,13 @@ repo = 'Lokaltog/vim-easymotion'
 hook_add = '''
     let g:EasyMotion_do_mapping = 0
     let g:EasyMotion_enter_jump_first = 1
+    let g:EasyMotion_smartcase = 1
+    let g:EasyMotion_smartsign_jp = 1
     map  f <Plug>(easymotion-bd-f)
-    nmap f <Plug>(easymotion-overwin-f)
-    nmap t <Plug>(easymotion-overwin-f2)
-    xmap t <Plug>(easymotion-overwin-f2)
-    omap t <Plug>(easymotion-overwin-f2)
-    nmap F <Plug>(easymotion-F)
+    nmap f <Plug>(easymotion-overwin-f2)
+    nmap t <Plug>(easymotion-overwin-f)
+    xmap t <Plug>(easymotion-overwin-f)
+    omap t <Plug>(easymotion-overwin-f)
     map  / <Plug>(easymotion-sn)
     omap / <Plug>(easymotion-tn)
 '''
@@ -246,3 +247,4 @@ hook_add = '''
     nmap <leader>rn <Plug>(coc-rename)
     nnoremap <silent> K :call <SID>show_documentation()<CR>
 '''
+
