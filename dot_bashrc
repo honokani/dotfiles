@@ -179,6 +179,15 @@
     alias cp="cp -i "
     alias mv="mv -i "
     alias mkdir="mkdir -p "
+    alias df='df -lTh '
+    alias free='free -h '
+    function du {
+        [ $# -eq 0 ] && {
+            /usr/bin/du -ahcd 1 ./ | sed "s/.\///g"
+        } || {
+            /usr/bin/du -ahcd 1 $1 | sed "s/.\///g"
+        }
+    }
 
     function ll {
         if [ -z $1 ]; then

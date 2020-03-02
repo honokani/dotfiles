@@ -315,6 +315,15 @@
         gen_alias "bg" "fg %" 9
         gen_alias "a" "|awk 'BEGIN{}{print $" 9 "}END{}'"
         set_alias -g F="|fzf "
+        alias df='df -lTh '
+        alias free='free -h '
+        function du {
+            [ $# -eq 0 ] && {
+                /usr/bin/du -ahcd 1 ./ | sed "s/.\///g"
+            } || {
+                /usr/bin/du -ahcd 1 $1 | sed "s/.\///g"
+            }
+        }
     }
     : "PATH_SHORTCUT" && {
         alias cdw="~/ws"
