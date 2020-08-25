@@ -11,16 +11,16 @@
         export LC_CTYPE=en_US.UTF-8
         export LANG=en_US.UTF-8
     }
-    : "KEY_MAPPING" && {
-        : "XMODMAP" && type xmodmap > /dev/null && {
-            xmodmap -e 'keycode 100 = Return'
-            xmodmap -e 'keycode 101 = Return'
-            xmodmap -e 'keycode 102 = BackSpace'
-            xmodmap -e 'keycode 66  = Control_L'
-            xmodmap -e 'clear Lock'
-            xmodmap -e 'add Control = Control_L'
-            # xmodmap -e 'pointer = 1 2 3 5 4 6 7 8 9 10'
-        }
+:    : "KEY_MAPPING" && {
+:        : "XMODMAP" && type xmodmap > /dev/null && {
+:            xmodmap -e 'keycode 100 = Return'
+:            xmodmap -e 'keycode 101 = Return'
+:            xmodmap -e 'keycode 102 = BackSpace'
+:            xmodmap -e 'keycode 66  = Control_L'
+:            xmodmap -e 'clear Lock'
+:            xmodmap -e 'add Control = Control_L'
+:            # xmodmap -e 'pointer = 1 2 3 5 4 6 7 8 9 10'
+:        }
         bindkey '^P' history-beginning-search-backward
         bindkey '^N' history-beginning-search-forward
     }
@@ -117,7 +117,8 @@
 }
 
 : "PG_LANGUAGE" && {
-    : "PYTHON" && type python > /dev/null && {
+    # : "PYTHON" && type python > /dev/null && {
+    : "PYTHON" && [ -e $HOME/.pyenv ] && {
         export PYENV_ROOT="$HOME/.pyenv"
         export PATH="$PYENV_ROOT/bin:$PATH"
         eval "$(pyenv init -)"
