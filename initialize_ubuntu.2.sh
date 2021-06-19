@@ -28,26 +28,5 @@ export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
+source ~/.zshrc
 
-# install neovim
-sudo apt-get install -y software-properties-common
-sudo add-apt-repository ppa:neovim-ppa/stable
-sudo apt-get update
-sudo apt-get install -y neovim
-
-# make envs python2 and 3 for neovim
-pyenv install 2.7.15
-pyenv virtualenv 2.7.15 neovim2
-pyenv activate neovim2
-pip install --upgrade pip
-pip install neovim
-
-pyenv install 3.6.5
-pyenv virtualenv 3.6.5 neovim3
-pyenv activate neovim3
-pip install --upgrade pip
-pip install neovim
-
-# install python3
-pip install --upgrade pip
-pyenv global 3.6.5
