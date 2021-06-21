@@ -24,6 +24,13 @@
         bindkey '^P' history-beginning-search-backward
         bindkey '^N' history-beginning-search-forward
     }
+    : "WSL2" && {
+        export CANDI_CMD_PATH=$(which cmd.exe)
+        [ -f $CANDI_CMD_PATH ] && {
+            echo "now_in_wsl2"
+            export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{ print $2 }')":0.0"
+        }
+    }
 }
 
 : "ZSH" && {
