@@ -1,0 +1,391 @@
+: "LINUX" && {
+    : "COMMON" && {
+        export XDG_CONFIG_HOME="$HOME/.config"
+        export PKG_CONFIG_PATH="/usr/bin/pkg-config"
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu/gtk-2.0/modules/
+        export TERM=xterm-256color
+    }
+    : "Language" && {
+        export LANGUAGE=en_US.UTF-8
+        export LC_ALL=en_US.UTF-8
+        export LC_CTYPE=en_US.UTF-8
+        export LANG=en_US.UTF-8
+    }
+:    : "KEY_MAPPING" && {
+:        : "XMODMAP" && type xmodmap > /dev/null && {
+:            xmodmap -e 'keycode 100 = Return'
+:            xmodmap -e 'keycode 101 = Return'
+:            xmodmap -e 'keycode 102 = BackSpace'
+:            xmodmap -e 'keycode 66  = Control_L'
+:            xmodmap -e 'clear Lock'
+:            xmodmap -e 'add Control = Control_L'
+:            # xmodmap -e 'pointer = 1 2 3 5 4 6 7 8 9 10'
+:        }
+        bindkey '^P' history-beginning-search-backward
+        bindkey '^N' history-beginning-search-forward
+    }
+    : "WSL2" && {
+        export CANDI_CMD_PATH=$(which cmd.exe)
+        [ -f $CANDI_CMD_PATH ] && {
+            echo "now_in_wsl2"
+            export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{ print $2 }')":0.0"
+        }
+    }
+}
+
+: "ZSH" && {
+    : "COMMON" && {
+        autoload -Uz compinit
+        compinit
+        autoload -Uz select-word-style
+        select-word-style bash
+        autoload -Uz colors
+        colors
+        setopt hist_expand
+        # else
+        setopt no_beep
+        setopt no_flow_control
+        set clipboard=unnamed
+        alias zrc="source ~/.zshrc "
+        alias zet="nvim ~/.zshrc "
+    }
+    : "PLUGINS" && {
+        export ZPLUG_HOME=$HOME/.zplug
+        [ -f "$ZPLUG_HOME/init.zsh" ] && {
+            source $HOME/.zplug/init.zsh
+            zplug "zsh-users/zsh-completions"
+            zplug "junegunn/fzf-bin", as:command, from:gh-r, rename-to:fzf
+            zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
+            zplug "junegunn/fzf", use:shell/completion.zsh
+            zplug "b4b4r07/enhancd", use:init.sh
+            zplug "zsh-users/zsh-autosuggestions"
+            zplug "zsh-users/zsh-history-substring-search"
+            zplug "zsh-users/zsh-syntax-highlighting"
+            zplug "momo-lab/zsh-abbrev-alias"
+            # activate
+            zplug check || zplug install
+            zplug load
+            # options
+            ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
+            zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+            zstyle ':completion:*' ignore-parents parent pwd ..
+            zstyle ':completion:*:processes' command 'ps x -o pid,s,args' # upgrade ps-command
+            SUDO_TGTS="/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin"
+            zstyle ':completion:*:sudo:*' command-path "$SUDO_TGTS"
+            : "EXTENDABLE_ALIAS" && {
+                type abbrev-alias > /dev/null &&{
+                    alias "set_alias"="abbrev-alias"
+                } || {
+                    alias "set_alias"=alias
+                }
+            }
+        }
+    }
+    : "CURRDIR_CONTROL" && {
+        DIRSTACKSIZE=200
+        setopt auto_cd
+        setopt auto_pushd
+        setopt pushd_ignore_dups
+        alias ..="cd ../"
+        alias cdd="cd - "
+        function mc() { # mkdir and cd
+            if [[ -d $1 ]]; then
+                echo "$1 already exists!"
+                cd $1
+            else
+                mkdir -p $1 && cd $1
+            fi
+        }
+        function chpwd { cdhook }
+    }
+    : "HISTORY" && {
+        export HISTFILE=${HOME}/.zhistory
+        export HISTSIZE=100000
+        export SAVEHIST=100000
+        setopt hist_ignore_dups
+        setopt hist_ignore_all_dups
+        setopt extended_history
+        setopt hist_reduce_blanks
+        setopt share_history
+        alias hall="fc -lt '%F %T' 1 "
+        alias h="fc -lt '%F %T' -20 "
+        alias his="hall | fzf"
+    }
+    : "PROMPT" && {
+        setopt prompt_subst
+        setopt transient_rprompt
+        # PROMPT='%F{blue}%n@%m%f %(!.#.$) '
+        # PROMPT='%F{cyan}%n%f `branch-status-check` %(!.#.$) '
+        # RPROMPT='[%F{green}%~%f] %*'
+        PROMPT=' %F{cyan}%(!.#.$)%f '
+        RPROMPT='[`branch-status-check`] %*'
+        # @see https://wiki.archlinux.org/index.php/zsh
+    }
+}
+
+: "PG_LANGUAGE" && {
+    # : "PYTHON" && type python > /dev/null && {
+    : "PYTHON" && [ -e $HOME/.pyenv ] && {
+        export PYENV_ROOT="$HOME/.pyenv"
+        export PATH="$PYENV_ROOT/bin:$PATH"
+        # eval "$(pyenv init -)"
+        if command -v pyenv 1>/dev/null 2>&1; then
+            eval "$(pyenv init --path)"
+            eval "$(pyenv init -)"
+        fi
+
+
+
+        eval "$(pyenv virtualenv-init -)"
+        alias -s py="python "
+        alias pyev="pyenv versions "
+        alias pyen="pyenv virtualenv "
+        alias pyel="pyenv virtualenvs "
+        alias pyea="pyenv activate "
+        alias pyed="pyenv deactivate "
+    }
+    : "NODEJS" && type node > /dev/null && {
+        : "NVM" && {
+            export NVM_DIR="$HOME/.nvm"
+            # This loads nvm
+            [ -s "$NVM_DIR/nvm.sh" ] && $NVM_DIR/nvm.sh
+            # This loads nvm bash_completion
+            [ -s "$NVM_DIR/bash_completion" ] && $NVM_DIR/bash_completion
+        }
+        : "YARN" && {
+            [ -d "$HOME/.npm_global" ] && {
+                export PATH=~/.npm_global/bin:$PATH
+            } || {
+                export PATH=~/.yarn/bin:$PATH
+            }
+        }
+    }
+    : "HASKELL" && type stack > /dev/null && {
+        export PATH=~/.local/bin:$PATH
+        export GHC_PACKAGE_PATH=$(stack path --local-pkg-db):$(stack path --snapshot-pkg-db):$(stack path --global-pkg-db)
+        alias -s hs="stack runghc "
+        alias stb="stack build "
+        alias stn="stack new "
+        alias sti="stack ghci "
+        function ste(){ # stack exec
+            local x=$(basename `pwd`)
+            stack build
+            stack exec $x-exe
+        }
+    }
+    : "ELSE_LANGUAGE" && {
+        alias oct="octave --no-gui "
+    }
+}
+
+: "APPLICATIONS" && {
+    : "NVIM" && {
+        alias nv="nvim "
+        alias nvi="nvim ~/.config/nvim/init.vim"
+        alias nvo="nvim ~/.config/nvim/options.rc.vim"
+        alias nvk="nvim ~/.config/nvim/keymaps.rc.vim"
+        alias nvd="nvim ~/.config/nvim/dein.toml"
+        alias nvl="nvim ~/.config/nvim/dein_lazy.toml"
+        function fv() {
+            files=$(git ls-files) &&
+            selected_files=$(echo "$files" | fzf -m --preview 'head -100 {}') &&
+            nvim $selected_files
+        }
+    }
+    : "GIT" && {
+        set_alias ga="git add "
+        set_alias ga.="git add . "
+        set_alias gb="git branch "
+        set_alias gs="git status -s "
+        set_alias gpo="git push origin"
+        set_alias gco="git checkout "
+        set_alias glo="git log --oneline "
+        set_alias gd="git diff"
+        set_alias gdn="git diff --name-only HEAD"
+        function grb(){ # git rebse alias
+            git rebase -i HEAD~$1
+        }
+        function gcm {
+            [ -z "$1" ] && {
+                echo put some command
+            } || {
+                local msg="${@:2}"
+                [ -z "$msg" ] && {
+                    case $1 in
+                        cmm) git commit -m ":memo: Fix comment" ;;
+                        typ) git commit -m ":memo: Fix typo" ;;
+                        doc) git commit -m ":books: Change documents" ;;
+                        art) git commit -m ":arts: Change arts" ;;
+                        *)   echo "put some message" ;;
+                    esac
+                } || {
+                    case $1 in
+                        big) git commit -m ":tada: Creat $msg" ;;
+                        add) git commit -m ":sparkles: Add $msg" ;;
+                        chg) git commit -m ":hammer: Change $msg" ;;
+                        wip) git commit -m ":construction: WIP $msg" ;;
+                        rmv) git commit -m ":fire: Remove $msg" ;;
+                        cmm) git commit -m ":memo: Fix comment $msg" ;;
+                        typ) git commit -m ":memo: Fix typo : $msg" ;;
+                        fix) git commit -m ":ambulance: Fix bug : $msg" ;;
+                        doc) git commit -m ":books: Change documents : $msg" ;;
+                        art) git commit -m ":arts: Change arts : $msg" ;;
+                        tst) git commit -m ":rotating_light: Test $msg" ;;
+                        tag) git commit -m ":tag: Tag $msg" ;;
+                        ext) git commit -m "$msg" ;;
+                        *)   echo "put some known command"
+                    esac
+                }
+            }
+        }
+        function branch-status-check {
+            local prefix branchname suffix
+            if [[ "$PWD" =~ '/\.git(/.*)?$' ]]; then
+                return # is in .git
+            fi
+            branchname=`get-branch-name`
+            if [[ -z $branchname ]]; then
+                branchname="no git"
+            fi
+            prefix=`get-branch-status`
+            suffix='%{'${reset_color}'%}'
+            echo "${prefix}${branchname}${suffix}"
+        }
+        function get-branch-name { # is not controled by git
+            echo `git rev-parse --abbrev-ref HEAD 2> /dev/null`
+        }
+        function get-branch-status {
+            local res color
+            output=`git status --short 2> /dev/null`
+            if [ -z "$output" ]; then
+                res=':' # status Clean
+                color='%{'${fg[green]}'%}'
+            elif [[ $output =~ "[\n]?\?\? " ]]; then
+                res='?:' # Untracked
+                color='%{'${fg[yellow]}'%}'
+            elif [[ $output =~ "[\n]? M " ]]; then
+                res='M:' # Modified
+                color='%{'${fg[red]}'%}'
+            else
+                res='A:' # Added to commit
+                color='%{'${fg[cyan]}'%}'
+            fi
+            # echo ${color}${res}'%{'${reset_color}'%}'
+            echo ${color} # return only color
+        }
+        set_alias -g -e B='$(get-branch-name)'
+    }
+    : "EXA" && { # @ /usr/local/bin/exa
+        function set_ls_alias {
+            : "EXA_SETTING" && type exa > /dev/null && {
+                alias ll=cdhook
+                alias lll="exa -alhg --group-directories-first --git --time-style long-iso"
+                alias l1="exa -1"
+                function cdhook {
+                    exa -lh --git $1
+                    echo '[ '$(pwd)' ]'
+                }
+            } || {
+                alias ll=cdhook
+                alias lll="ls -alrt --color=auto "
+                alias l1="ls -1G"
+                function cdhook {
+                    ls -lrt --color=auto $1
+                    echo '[ '$(pwd)' ]'
+                }
+            }
+        }
+    }
+    type rg > /dev/null && {
+        set_alias -g G="|rg "
+        alias -g grep="rg "
+    } || {
+        set_alias -g G="|grep "
+        alias grep='grep --color=auto'
+    }
+}
+
+
+: "ALIAS" && {
+    : "MASS_PRODUCTED_ALIAS" && {
+        function gen_alias {
+            for i in $(seq 1 $3) ; do
+                gen_simple_alias "$1" "$2" ${i} "$4"
+            done
+        }
+        function gen_simple_alias {
+            set_alias -g "$1$3"="$2$3$4"
+        }
+    }
+    : "COMMON" && {
+        set_ls_alias
+        alias rm="rm -i "
+        alias cp="cp -i "
+        alias mv="mv -i "
+        alias mkdir="mkdir -p "
+        alias du='du -ahcd 1| sed "s/.\///g" '
+        alias df='df -lTh '
+        alias free='free -h '
+        gen_alias "fg" "fg %" 9
+        gen_alias "bg" "fg %" 9
+        gen_alias "a" "|awk 'BEGIN{}{print $" 9 "}END{}'"
+        set_alias -g F="|fzf "
+        alias df='df -lTh '
+        alias free='free -h '
+        function du {
+            [ $# -eq 0 ] && {
+                /usr/bin/du -ahcd 1 ./ | sed "s/.\///g"
+            } || {
+                /usr/bin/du -ahcd 1 $1 | sed "s/.\///g"
+            }
+        }
+    }
+    : "PATH_SHORTCUT" && {
+        alias cdw="~/ws"
+        alias cds="~/sandbox"
+        alias dot="~/git_clones/dotfiles"
+    }
+    : "ELSE_ALIAS" && {
+        alias untar="tar -xvf "
+        alias psaux="ps -aux | fzf "
+        # for laptop pc
+        alias upbat="upower -i /org/freedesktop/UPower/devices/battery_BAT0"
+    }
+}
+
+: "TEST" &&{
+    : "W3M" && type w3m > /dev/null && {
+        function google() {
+            local keyword request
+            if [ $# -eq 0 ]; then
+                w3m http://www.google.com/
+            else
+                for i in $*; do
+                    keyword="$keyword+$i"
+                done
+                keyword=`echo $keyword | sed 's/^\+//'`
+                w3m "http://www.google.com/search?q=$keyword"
+            fi
+        }
+    }
+    : "SQUASH_PATH" && {
+        export PATH=$(echo $PATH|sed -e "s/:/\n/g"|awk '{if(a[$0]=="")a[$0]=NR}END{for(k in a){b[a[k]]=k}for(i in b){print b[i]}}'|tr "\n" ":"|sed -e "s/.$//")
+    }
+}
+
+: "COMPILE" && {
+    export COMPILED_ZRC="$HOME/.zshrc.zwc"
+    export ZSHRC_PATH="$HOME/.zshrc"
+    [ -f "$COMPILED_ZRC" ] && {
+        [ "$ZSHRC_PATH" -nt "$COMPILED_ZRC" ] && {
+            zcompile "$ZSHRC_PATH"
+        }
+    } || {
+        zcompile "$ZSHRC_PATH"
+    }
+}
+
+: "FINISHED" && {
+    echo my zshrc loaded
+}
+

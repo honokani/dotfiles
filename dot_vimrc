@@ -1,0 +1,128 @@
+colorscheme elflord
+set noswapfile
+set nobackup
+set nowritebackup
+set enc=utf-8
+
+set list
+set listchars=tab:≫-,trail:-,extends:≫,precedes:≪,nbsp:%,eol:↓,space:⁻
+hi NonText    ctermbg=NONE ctermfg=59 guibg=NONE guifg=NONE
+hi SpecialKey ctermbg=NONE ctermfg=59 guibg=NONE guifg=NONE
+
+set scrolloff=5
+set backspace=indent,eol,start
+set softtabstop=4
+set shiftwidth=4
+set expandtab
+
+set number
+set ruler
+set cursorcolumn
+set cursorline
+set relativenumber
+
+set ignorecase
+set ignorecase
+set smartcase
+
+set history=10000
+set hlsearch
+set incsearch
+set wrapscan
+set gdefault
+set shiftround
+
+nnoremap : ;
+nnoremap ; :
+nnoremap q; q:
+
+nnoremap j gj
+nnoremap ｊｊ <ESC>
+nnoremap k gk
+nnoremap s <NOP>
+nnoremap Q <NOP>
+nnoremap Y y$
+
+
+let g:my_brackets_pair = {"(":")","[":"]","{":"}", "<":">", "'":"'",'"':'"', "`":"`"}
+
+function! Make_map_trade( b1,b2 ) abort
+    return "vi".a:b1."xr".g:my_brackets_pair[a:b2]."<Left>r".a:b2."p"
+endfunction
+
+function! Setmap_bracket_trade( tgt ) abort
+    for k1 in keys( g:my_brackets_pair )
+        for k2 in keys( g:my_brackets_pair )
+            if k1==k2
+                continue
+            endif
+            execute "nnoremap ".a:tgt.k1.k2." ".Make_map_trade(k1,k2)
+        endfor
+    endfor
+endfunction
+
+function! Make_v_map_wrap( b ) abort
+    return "c".a:b.g:my_brackets_pair[a:b]."<ESC>P"
+endfunction
+
+function! Make_i_map_wrap( b ) abort
+    return a:b.g:my_brackets_pair[a:b]."<Left>"
+endfunction
+
+function! Make_i_map_wrap_with_space( b ) abort
+    return a:b."<Space><Space>".g:my_brackets_pair[a:b]."<Left><Left>"
+endfunction
+
+function! Make_i_map_quit( b ) abort
+    return a:b."<ESC>"
+endfunction
+
+function! Make_i_map_do_nothing( b ) abort
+    return "<NOP>"
+endfunction
+
+function! Setmap_bracket_kind( ) abort
+    for k in keys( g:my_brackets_pair )
+        execute "vnoremap ".k." ".Make_v_map_wrap(k)
+        execute "inoremap ".k." ".Make_i_map_wrap(k)
+        execute "inoremap ".k."jj ".Make_i_map_quit(k)
+        execute "inoremap ".k."kk ".Make_i_map_quit(k)
+        execute "inoremap ".k."<BS> ".Make_i_map_do_nothing(k)
+        execute "inoremap ".k.g:my_brackets_pair[k]." ".k.g:my_brackets_pair[k]
+    endfor
+endfunction
+
+nnoremap S <NOP>
+:call Setmap_bracket_trade( "S" )
+:call Setmap_bracket_kind( )
+
+
+inoremap hhh <ESC><Left>
+inoremap lll <ESC><Right>
+inoremap jj <ESC>
+inoremap kk <ESC>
+inoremap ｊｊ <ESC>
+inoremap ｋｋ <ESC>
+inoremap ;w<CR> <ESC>:w<CR>
+
+
+nnoremap l <NOP>
+nnoremap h <NOP>
+nnoremap <ESC><ESC> :nohlsearch<CR>
+nnoremap sh :split<CR>
+nnoremap sv :vsplit<CR>
+nnoremap sa <C-w><S-w>
+nnoremap sd <C-w>w
+nnoremap <SPACE>f :e%:p:h<CR>
+
+augroup netrw_mapping
+    autocmd!
+    autocmd filetype netrw call NetrwMapping()
+augroup END
+
+function! NetrwMapping()
+    noremap <buffer> sh :split<CR>
+    noremap <buffer> sv :vsplit<CR>
+    noremap <buffer> h -
+endfunction
+
