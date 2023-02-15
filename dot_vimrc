@@ -1,13 +1,17 @@
 colorscheme elflord
+set enc=utf-8
+
 set noswapfile
 set nobackup
 set nowritebackup
-set enc=utf-8
+
+set belloff=all
 
 set list
 set listchars=tab:≫-,trail:-,extends:≫,precedes:≪,nbsp:%,eol:↓,space:⁻
 hi NonText    ctermbg=NONE ctermfg=59 guibg=NONE guifg=NONE
 hi SpecialKey ctermbg=NONE ctermfg=59 guibg=NONE guifg=NONE
+
 
 set scrolloff=5
 set backspace=indent,eol,start
@@ -21,7 +25,6 @@ set cursorcolumn
 set cursorline
 set relativenumber
 
-set ignorecase
 set ignorecase
 set smartcase
 
