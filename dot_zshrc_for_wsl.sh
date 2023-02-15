@@ -20,7 +20,7 @@
     : "Zsh" && {
         setopt no_beep
         alias zrc="source ~/.zshrc"
-        alias zet="vim ~/.zshrc_for_wsl ~/.zshrc"
+        alias zet="vim -p ~/.zshrc_for_wsl ~/.zshrc"
         : "History" && {
             HISTCONTROL=erasedups
             export HISTSIZE=100000
