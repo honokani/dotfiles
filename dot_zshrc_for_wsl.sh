@@ -101,9 +101,9 @@
                 pref=$'(\e[90;49m'
                 bname="NotGit"
             else
-                pref='('`get_b_status`
+                pref='( '`get_b_status`
             fi
-            suff=$'\e[m)'
+            suff=$'\e[m )'
             echo "${pref}${bname}${suff}"
         }
         get_b_status () {
