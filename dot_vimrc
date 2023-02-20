@@ -126,6 +126,7 @@ augroup END
 function! NetrwMapping()
     noremap <buffer> sh :split<CR>
     noremap <buffer> sv :vsplit<CR>
-    noremap <buffer> h -
+    nmap <buffer> h -
+    nmap <buffer> l <CR>
 endfunction
 
