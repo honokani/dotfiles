@@ -1,4 +1,5 @@
 colorscheme elflord
+"colorscheme default
 set enc=utf-8
 
 set noswapfile
@@ -9,8 +10,8 @@ set belloff=all
 
 set list
 set listchars=tab:≫-,trail:-,extends:≫,precedes:≪,nbsp:%,eol:↓,space:⁻
-hi NonText    ctermbg=NONE ctermfg=59 guibg=NONE guifg=NONE
-hi SpecialKey ctermbg=NONE ctermfg=59 guibg=NONE guifg=NONE
+highlight NonText    ctermbg=NONE ctermfg=59 guibg=NONE guifg=NONE
+highlight SpecialKey ctermbg=NONE ctermfg=59 guibg=NONE guifg=NONE
 
 
 set scrolloff=5
@@ -35,22 +36,63 @@ set wrapscan
 set gdefault
 set shiftround
 
+
+
+
+nnoremap <SPACE> <NOP>
+nnoremap <BS> <NOP>
+nnoremap l <NOP>
+nnoremap h <NOP>
+nnoremap Q <NOP>
+
+function! SetVimrc() abort
+    if filereadable( expand('~/.vimrc') )
+        :execute ":e ~/.vimrc"
+    endif
+endfunction
+
+if filereadable( expand('~/.vimrc') )
+    nnoremap <SPACE>vt :call SetVimrc()<CR>
+    nnoremap <SPACE>vr :source ~/.vimrc<CR>
+endif
+
 nnoremap : ;
 nnoremap ; :
 nnoremap q; q:
-
-nnoremap j gj
-nnoremap ｊｊ <ESC>
-nnoremap k gk
-nnoremap s <NOP>
-nnoremap Q <NOP>
 nnoremap Y y$
+
+nnoremap s <NOP>
+nnoremap sh :split<CR>
+nnoremap sv :vsplit<CR>
+nnoremap sa <C-w><S-w>
+nnoremap sd <C-w>w
+nnoremap ss 5<C-w>h
+
+nnoremap <ESC><ESC> :nohlsearch<CR>
+nnoremap <SPACE>f :e%:p:h<CR>
+nnoremap <SPACE>ls :ls<CR>:buf<SPACE>
+
+inoremap lll <ESC><RIGHT>
+inoremap hhh <ESC><LEFT>
+inoremap j gj
+inoremap k gk
+inoremap jj <ESC>
+inoremap kk <ESC>
+inoremap ｊｊ <ESC>
+inoremap ｋｋ <ESC>
+
+inoremap :w<CR> <ESC>:w<CR>
+inoremap ;w<CR> <ESC>:w<CR>
+
+tnoremap <ESC><ESC> <C-\><C-n>
+
+
 
 
 let g:my_brackets_pair = {"(":")","[":"]","{":"}", "<":">", "'":"'",'"':'"', "`":"`"}
 
 function! Make_map_trade( b1,b2 ) abort
-    return "vi".a:b1."xr".g:my_brackets_pair[a:b2]."<Left>r".a:b2."p"
+    return "vi".a:b1."xr".g:my_brackets_pair[a:b2]."<LEFT>r".a:b2."p"
 endfunction
 
 function! Setmap_bracket_trade( tgt ) abort
@@ -69,11 +111,11 @@ function! Make_v_map_wrap( b ) abort
 endfunction
 
 function! Make_i_map_wrap( b ) abort
-    return a:b.g:my_brackets_pair[a:b]."<Left>"
+    return a:b.g:my_brackets_pair[a:b]."<LEFT>"
 endfunction
 
 function! Make_i_map_wrap_with_space( b ) abort
-    return a:b."<Space><Space>".g:my_brackets_pair[a:b]."<Left><Left>"
+    return a:b."<SPACE><SPACE>".g:my_brackets_pair[a:b]."<LEFT><LEFT>"
 endfunction
 
 function! Make_i_map_quit( b ) abort
@@ -97,26 +139,10 @@ endfunction
 
 nnoremap S <NOP>
 :call Setmap_bracket_trade( "S" )
-:call Setmap_bracket_kind( )
+:call Setmap_bracket_kind()
 
 
-inoremap hhh <ESC><Left>
-inoremap lll <ESC><Right>
-inoremap jj <ESC>
-inoremap kk <ESC>
-inoremap ｊｊ <ESC>
-inoremap ｋｋ <ESC>
-inoremap ;w<CR> <ESC>:w<CR>
 
-
-nnoremap l <NOP>
-nnoremap h <NOP>
-nnoremap <ESC><ESC> :nohlsearch<CR>
-nnoremap sh :split<CR>
-nnoremap sv :vsplit<CR>
-nnoremap sa <C-w><S-w>
-nnoremap sd <C-w>w
-nnoremap <SPACE>f :e%:p:h<CR>
 
 augroup netrw_mapping
     autocmd!
@@ -129,4 +155,11 @@ function! NetrwMapping()
     nmap <buffer> h -
     nmap <buffer> l <CR>
 endfunction
+
+highlight ColorColumn ctermbg=236 ctermfg=240 guibg=NONE guifg=NONE
+augroup changeBG
+    autocmd!
+    autocmd WinEnter * setlocal wincolor=Normal
+    autocmd WinLeave * setlocal wincolor=ColorColumn
+augroup END
 
