@@ -97,7 +97,7 @@
             local bname pref suff
             bname=`git rev-parse --abbrev-ref HEAD 2> /dev/null`
             if [[ -z $bname ]]; then
-                pref=$'(\e[90;49m'
+                pref=$'( \e[90;49m'
                 bname="NotGit"
             else
                 pref='( '`get_b_status`
