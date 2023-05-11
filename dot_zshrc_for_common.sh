@@ -12,10 +12,10 @@
 
 : "COMMON_SETTING" && {
     : "Language" && {
-        export LANGUAGE=en_US.UTF-8
-        export LC_ALL=en_US.UTF-8
-        export LC_CTYPE=en_US.UTF-8
-        export LANG=en_US.UTF-8
+        export LANGUAGE=ja_JP.UTF-8
+        export LC_ALL=ja_JP.UTF-8
+        export LC_CTYPE=ja_JP.UTF-8
+        export LANG=ja_JP.UTF-8
     }
     : "Zsh" && {
         setopt no_beep
@@ -85,6 +85,9 @@
             }
         fi
         #alias cdd="cd -"
+        alias mkbdnv="nv $HOME/mtk/qmk_firmware/keyboards/mtk/mtk64e/keymaps/via_mykey"
+        alias mkbdcd="cd $HOME/qmk/"
+        alias mkbdmk="make -j8 SKIP_GIT=yes mtk/mtk64e:via_mykey"
     }
 }
 
@@ -138,6 +141,9 @@
                 alias pyed="pyenv deactivate "
             fi
         }
+    }
+    : "cuda" && {
+        export PATH="/usr/local/cuda/bin:$PATH"
     }
     : "Haskell" && {
         [ -f "/Users/shoto.miki/.ghcup/env" ] && {

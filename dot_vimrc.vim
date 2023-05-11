@@ -64,14 +64,15 @@ nnoremap q; q:
 nnoremap Y y$
 nnoremap <TAB> %
 
+nnoremap j gj
+nnoremap k gk
+
 nnoremap <ESC><ESC> :nohlsearch<CR>
 nnoremap <SPACE>f :e%:p:h<CR>
 nnoremap <SPACE>ls :ls<CR>:buf<SPACE>
 
 inoremap lll <ESC><RIGHT>
 inoremap hhh <ESC><LEFT>
-inoremap j gj
-inoremap k gk
 inoremap jj <ESC>
 inoremap kk <ESC>
 inoremap ｊｊ <ESC>
