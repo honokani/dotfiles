@@ -38,40 +38,35 @@
         : "Prompt" && {
             PROMPT='%F{cyan}%(!.#.$)%f '
         }
-        : "Hook" && {
-            precmd() {
-                print "[ `date +%H:%M` | `pwd` `git_b_check` ]"
-            }
-            chpwd() {
-                ll
-            }
-        }
 
     }
     : "Vim setting" && {
         alias vi=vim
         alias nv=vim
         alias vet="vim ~/.vimrc"
+        alias vim9="$HOME""/git_clones/vim9/src/gvim.exe"
     }
     : "Basic Controll" && {
         alias ..="cd .."
         if [ -v MY_FLG_EXA ]; then
-            ll () {
+            _lsa () {
                 if [ $# -eq 0 ]; then exa -l; else exa -l $1; fi
             }
-            lll () {
+            _lsal() {
                 if [ $# -eq 0 ]; then exa -al; else exa -al $1; fi
             }
         else
-            ll () {
+            _lsa () {
                 if [ $# -eq 0 ]; then ls -l; else ls -l $1; fi
             }
-            lll () {
+            _lsal () {
                 if [ $# -eq 0 ]; then ls -al; else ls -al $1; fi
             }
         fi
+        alias ll=_lsa
+        alias ll=_lsal
         if [ -v MY_FLG_FZF ]; then
-            cdd () {
+            _find_old_cd () {
                 pname=$(find ~ -name "*" | fzf +m)
                 [ -f $pname ] && {
                     cd ${pname%/*}
@@ -80,20 +75,30 @@
                 }
             }
         else
-            cdd () {
-                echo no_fzf_cdd
+            _find_old_cd () {
+                echo no_fzf
             }
         fi
-        #alias cdd="cd -"
+        alias cdd=_find_old_cd
+        alias cdw="cd $HOME/ws"
+
         alias mkbdnv="nv $HOME/mtk/qmk_firmware/keyboards/mtk/mtk64e/keymaps/via_mykey"
         alias mkbdcd="cd $HOME/qmk/"
         alias mkbdmk="make -j8 SKIP_GIT=yes mtk/mtk64e:via_mykey"
+    }
+    : "Hook" && {
+        precmd() {
+            print "[ `date +%H:%M` | `pwd` `_git_b_check` ]"
+        }
+        chpwd() {
+            _lsa
+        }
     }
 }
 
 : "GIT_SETTING" && {
     if [ -v MY_FLG_GIT ]; then
-        git_b_check () {
+        _git_b_check () {
             if [[ "%PWD" =~ '/\.git(/.*)?$' ]]; then
                 return
             fi
@@ -103,12 +108,12 @@
                 pref=$'( \e[90;49m'
                 bname="NotGit"
             else
-                pref='( '`get_b_status`
+                pref='( '`_get_b_status`
             fi
             suff=$'\e[m )'
             echo "${pref}${bname}${suff}"
         }
-        get_b_status () {
+        _get_b_status () {
             local color bstate
             bstate=`git status --short 2> /dev/null`
             if [ -z "$bstate" ]; then
@@ -128,18 +133,37 @@
 : "PG_SETTING" && {
     : "Python" && {
         : "pyenv" && {
-            if [ -d "$HOME/.pyenv" ]; then
-                export PYENV_ROOT="$HOME/.pyenv"
-                export PATH="$PYENV_ROOT/bin:$PATH"
-                if command -v pyenv 1>/dev/null 2>&1; then
-                    eval "$(pyenv init --path)"
-                    eval "$(pyenv init -)"
+            # this function was called in each setting if necessary.
+            _activate_pyenv () {
+                if [ -d "$HOME/.pyenv" ]; then
+                    export PYENV_ROOT="$HOME/.pyenv"
+                    export PATH="$PYENV_ROOT/bin:$PATH"
+                    if command -v pyenv 1>/dev/null 2>&1; then
+                        eval "$(pyenv init --path)"
+                        eval "$(pyenv init -)"
+                    fi
+                    eval "$(pyenv virtualenv-init -)"
+                    alias pyem="pyenv virtualenv " # arg: version, env_name
+                    alias pyel="pyenv virtualenvs"
+                    alias pyea="pyenv activate "
+                    alias pyed="pyenv deactivate "
                 fi
-                eval "$(pyenv virtualenv-init -)"
-                alias pyel="pyenv virtualenvs"
-                alias pyea="pyenv activate "
-                alias pyed="pyenv deactivate "
-            fi
+            }
+            _run_env_win () {
+                if [ $# -eq 0 ]; then
+                    echo "need env name"
+                else
+                    source "./""$1""/Scripts/activate"
+                fi
+            }
+            _activate_pyenv_win () {
+                if [ -d "$HOME/.pyenv" ]; then
+                    alias pyem=create_python_venv
+                    alias pyea=_run_env_win
+                    alias pyed="deactivate "
+                    
+                fi
+            }
         }
     }
     : "cuda" && {
