@@ -344,50 +344,9 @@
             fi
         }
 
-        _git_clone_smart () {
-            repo_url="$1"
-
-            if [[ -z "$repo_url" ]]; then
-                echo -n "GitHubのリポジトリURLを入力してください: "
-                read repo_url
-                if [[ -z "$repo_url" ]]; then
-                echo "URLが入力されませんでした。"
-                return 1
-                fi
-            fi
-            
-            # git@github.com:user/repo.git から user と repo を抽出
-            if [[ "$repo_url" =~ "git@github.com:([^/]+)/(.+)\.git" ]]; then
-                user="${match[1]}"
-                repo="${match[2]}"
-            else
-                echo "想定外のURL形式です: $repo_url"
-                return 1
-            fi
-            
-            # ユーザー名によってホストを切り替える
-            case "$user" in
-                honokani)
-                ssh_host="github-private"
-                ;;
-                staraijp|show-sai)
-                ssh_host="github-work"
-                ;;
-                *)
-                echo "ユーザー '$user' は既知のアカウントではありません。github.com を使います。"
-                ssh_host="github.com"
-                ;;
-            esac
-            
-            # clone 実行
-            echo "Cloning via $ssh_host: $user/$repo.git"
-            git clone "git@$ssh_host:$user/$repo.git"
-        }
-
         alias gisw=_git_b_switch
         alias gicm=_git_commit
         alias giad=_git_add
-        alias gicl=_git_clone_smart
 
     fi
 }
