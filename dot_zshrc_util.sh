@@ -1,4 +1,4 @@
-select_items() {
+select_items_stepwise() {
     local max_select=$1
     local -a choices=("${(@P)2}")
     local choices_with_explains_name=$3
@@ -36,8 +36,9 @@ select_items() {
 
     # インタラクティブ選択ループ
     while [[ ${#selected} -lt $max_select ]]; do
-        # 0番：終了オプションを表示
-        print -r -- "  0) 終了/キャンセル" >&2
+        # q,c：終了・キャンセルオプションを表示
+        print -r -- "   q) 終了" >&2
+        print -r -- "   c) キャンセル" >&2
         
         # 選択肢の表示 - すべて標準エラー出力に送る
         for ((i=1; i<=${#choices}; i++)); do
@@ -47,35 +48,43 @@ select_items() {
             fi
             
             local item="${choices[$i]}"
+            local myval=""
+            if [[ $i -lt 10 ]]; then
+                myval=" "
+            fi
+            
             if [[ -n "${explains[$item]}" ]]; then
-                print -r -- "  $i) $item - ${explains[$item]}" >&2
+                print -r -- "  $myval$i) $item - ${explains[$item]}" >&2
             else
-                print -r -- "  $i) $item" >&2
+                print -r -- "  $myval$i) $item" >&2
             fi
         done
 
         # 選択プロンプト表示
-        print -n "選択数(${#selected}/${max_select}) | 選択(0で終了)：" >&2
+        print -n "選択数(${#selected}/${max_select}) | 選択(q:終了/c:キャンセル)：" >&2
         read "choice"
 
-        # 0が選択された場合は終了
-        if [[ "$choice" == "0" ]]; then
+        # q/cが選択された場合の処理
+        if [[ "$choice" == "q" ]]; then
             print -r -- "選択を終了しました" >&2
+            break
+        elif [[ "$choice" == "c" ]]; then
+            print -r -- "選択をキャンセルしました" >&2
+            selected=()
             break
         fi
 
-        # 有効な選択かチェック
+        # 有効な選択かチェック（数字の場合）
         if [[ "$choice" =~ ^[0-9]+$ && $choice -ge 1 && $choice -le ${#choices} ]]; then
             # 既に選択済みでないかチェック
             if (( ! ${selected_indices[(I)$choice]} )); then
                 selected+=("${choices[$choice]}")
                 selected_indices+=($choice)
-                # print -r -- "「${choices[$choice]}」を選択しました" >&2
             else
                 print -r -- "既に選択済みです。別の選択肢を選んでください。" >&2
             fi
         else
-            print -r -- "無効な選択です。0から${#choices}の間の数字を入力してください。" >&2
+            print -r -- "無効な選択です。1から${#choices}の間の数字、またはq/cを入力してください。" >&2
         fi
     done
 
@@ -88,11 +97,117 @@ select_items() {
 select_1_item() {
     local choices_name=$1
     local explains_name=${2:-""}
-    local -a selected=($(select_items 1 "$choices_name" "$explains_name"))
+    local -a selected=($(select_items_stepwise 1 "$choices_name" "$explains_name"))
     if [[ ${#selected} -gt 0 ]]; then
         print "${selected[1]}"
     fi
 }
+
+select_items_at_once() {
+    local max_select=$1
+    local -a choices=("${(@P)2}")
+    local choices_with_explains_name=$3
+    local -a choices_with_explains=("${(@P)3}")
+    local -a selected=()
+    local -a selected_indices=()
+    local choice
+    
+    if [[ ${#choices} -eq 0 ]]; then
+        print -l "${selected[@]}"
+        return 0
+    fi
+
+    if [[ $max_select -le 0 ]]; then
+        print -l "${selected[@]}"
+        return 0
+    fi
+
+    if [[ $max_select -gt ${#choices} ]]; then
+        print -l "${choices[@]}"
+        return 0
+    fi
+
+    # 選択肢と説明のマッピングを作成
+    local -A explains
+    local i=0
+    local item explain
+    for item in "${choices_with_explains[@]}"; do
+        if [[ "$item" =~ ":" ]]; then
+            local key="${item%%:*}"
+            local value="${item#*:}"
+            explains[$key]="$value"
+        fi
+    done
+
+    # インタラクティブ選択ループ
+    while [[ ${#selected} -lt $max_select ]]; do
+        # q,c：選択完了・キャンセルオプションを表示
+        print -r -- "   q) 選択完了" >&2
+        print -r -- "   c) キャンセル" >&2
+        
+        # 選択肢の表示 - すべて標準エラー出力に送る
+        for ((i=1; i<=${#choices}; i++)); do
+            local item="${choices[$i]}"
+            local myval=""
+            local prefix=""
+            
+            # 選択済みかどうかをチェック
+            if (( ${selected_indices[(I)$i]} )); then
+                prefix=" o "
+            else
+                prefix="   "
+            fi
+            
+            # 1桁の場合は調整
+            if [[ $i -lt 10 ]]; then
+                myval=" "
+            fi
+            
+            if [[ -n "${explains[$item]}" ]]; then
+                print -r -- "$prefix$myval$i) $item - ${explains[$item]}" >&2
+            else
+                print -r -- "$prefix$myval$i) $item" >&2
+            fi
+        done
+
+        # 選択プロンプト表示
+        print -n "選択数(${#selected}/${max_select}) | 選択(q:選択完了/c:キャンセル)：" >&2
+        read "choice"
+
+        # q/cが選択された場合の処理
+        if [[ "$choice" == "q" ]]; then
+            print -r -- "選択を完了しました" >&2
+            break
+        elif [[ "$choice" == "c" ]]; then
+            print -r -- "選択をキャンセルしました" >&2
+            selected=()
+            break
+        fi
+
+        # 有効な選択かチェック（数字の場合）
+        if [[ "$choice" =~ ^[0-9]+$ && $choice -ge 1 && $choice -le ${#choices} ]]; then
+            # 既に選択済みかチェック（トグル動作）
+            local selected_pos=${selected_indices[(I)$choice]}
+            if (( selected_pos )); then
+                # 既に選択済み → 選択解除
+                selected=("${selected[@]:0:$((selected_pos-1))}" "${selected[@]:$selected_pos}")
+                selected_indices=("${selected_indices[@]:0:$((selected_pos-1))}" "${selected_indices[@]:$selected_pos}")
+            else
+                # 未選択 → 選択追加
+                selected+=("${choices[$choice]}")
+                selected_indices+=($choice)
+            fi
+        else
+            print -r -- "無効な選択です。1から${#choices}の間の数字、またはq/cを入力してください。" >&2
+        fi
+    done
+
+    # 最終的な選択結果を標準出力に返す
+    for item in "${selected[@]}"; do
+        print "$item"
+    done
+}
+
 
 parse_pyenv_versions() {
     local pyenv_output=$1

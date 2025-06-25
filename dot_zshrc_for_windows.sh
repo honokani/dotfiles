@@ -112,7 +112,6 @@
                 # WSL環境をインストール
                 print -r -- "[$wsl_distro] をインストールします..."
                 wsl --install -d "$wsl_distro"
-                # echo "ここで" "$wsl_distro" "がインストールされる"
                 
                 # 結果確認
                 if [[ $? -eq 0 ]]; then
@@ -136,6 +135,8 @@
 
                     # 先頭空白除去
                     local trimmed="${cleaned_line#"${cleaned_line%%[! ]*}"}"
+                    trimmed="${trimmed#\*}"  # 先頭の*を除去
+                    trimmed="${trimmed#"${trimmed%%[! ]*}"}"  # 再度空白除去
 
                     # Running状態の行のみ処理
                     if [[ "$trimmed" =~ Running ]]; then
@@ -155,7 +156,6 @@
 
             # 起動中WSL環境選択関数
             _wsl_select_running_distributions() {
-                # wsl --list --verbose の実行結果を取得
                 local wsl_output=$(wsl --list --verbose)
 
                 # 起動中ディストリビューションを解析
@@ -169,7 +169,7 @@
                 print -r -- "停止するWSL環境を選択してください（複数選択可能）:" >&2
 
                 # 複数選択（最大で起動中の全部まで選択可能）
-                local -a selected_distros=($(select_items ${#WSL_RUNNING_DISTRIBUTIONS} WSL_RUNNING_DISTRIBUTIONS WSL_RUNNING_DISTRIBUTIONS_WITH_EXPLAINS))
+                local -a selected_distros=($(select_items_stepwise ${#WSL_RUNNING_DISTRIBUTIONS} WSL_RUNNING_DISTRIBUTIONS WSL_RUNNING_DISTRIBUTIONS_WITH_EXPLAINS))
 
                 # 選択結果を返す
                 if [[ ${#selected_distros} -gt 0 ]]; then
@@ -518,7 +518,7 @@
                 print -r -- "⚠️  削除すると環境は完全に消去され、復元できません！" >&2
                 
                 # 複数選択
-                local -a selected_distros=($(select_items ${#WSL_STOPPED_DISTRIBUTIONS} WSL_STOPPED_DISTRIBUTIONS WSL_STOPPED_DISTRIBUTIONS_WITH_EXPLAINS))
+                local -a selected_distros=($(select_items_stepwise ${#WSL_STOPPED_DISTRIBUTIONS} WSL_STOPPED_DISTRIBUTIONS WSL_STOPPED_DISTRIBUTIONS_WITH_EXPLAINS))
                 
                 # 選択結果を返す
                 if [[ ${#selected_distros} -gt 0 ]]; then

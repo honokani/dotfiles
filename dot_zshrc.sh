@@ -1,6 +1,7 @@
 echo $SHELL
 : "Call_zsh_core_for_each_OS" && {
     . "$HOME/.zshrc_util"
+    . "$HOME/.zshrc_sandbox"
     if [[ "$(uname)" =~ 'Darwin' ]]; then
         CURR_OS='Mac'
         printf "Platform is ""$CURR_OS"". "
