@@ -87,21 +87,156 @@ tnoremap <ESC><ESC> <C-\><C-n>
 
 
 let g:my_brackets_pair = { "(":")", "[":"]", "{":"}", "<":">", "'":"'", '"':'"', "`":"`" }
+let g:my_brackets_reverse = {}
+for [open, close] in items(g:my_brackets_pair)
+    let g:my_brackets_reverse[close] = open
+endfor
 
-function! Make_map_trade( b1,b2 ) abort
-    return "vi".a:b1."xr".g:my_brackets_pair[a:b2]."<LEFT>r".a:b2."p"
+function! Make_map_trade_close( c1,c2 ) abort
+    let b1 = g:my_brackets_reverse[a:c1]
+    let b2 = g:my_brackets_reverse[a:c2]
+    return ":\<C-u>call Check_and_trade('".b1."','".b2."')\<CR>"
+endfunction
+
+function! Make_map_auto( b2 ) abort
+    return ":\<C-u>call Auto_detect_and_trade('".a:b2."')\<CR>"
+endfunction
+
+function! Detect_surrounding_bracket(target_bracket) abort
+    let line = getline('.')
+    let col = col('.')
+    
+    " カーソルがブラケット上にあるかチェック
+    let brackets_to_check = a:target_bracket == '' ? keys(g:my_brackets_pair) : [a:target_bracket]
+    for b1 in brackets_to_check
+        let b1_right = g:my_brackets_pair[b1]
+        if line[col-1] == b1 || line[col-1] == b1_right
+            return b1
+        endif
+    endfor
+    
+    " 左右両方からスキャンして、両方でオープン状態のブラケットのみ採用
+    let left_results = Search_bracket_direction(a:target_bracket, 1)
+    let right_results = Search_bracket_direction(a:target_bracket, 0)
+    let valid_brackets = []
+    for bracket in keys(left_results)
+        if has_key(right_results, bracket) && left_results[bracket].opening > 0 && right_results[bracket].opening > 0
+            let range_size = abs(right_results[bracket].last_pos - left_results[bracket].last_pos)
+            call add(valid_brackets, {'bracket': bracket, 'range': range_size})
+        endif
+    endfor
+    
+    " 最も小さい範囲のブラケットを返す
+    if len(valid_brackets) > 0
+        call sort(valid_brackets, {a, b -> a.range - b.range})
+        return valid_brackets[0].bracket
+    endif
+    
+    return ''
+endfunction
+
+function! Search_bracket_direction(target_bracket, from_left) abort
+    let line = getline('.')
+    let col = col('.')
+    let line_len = len(line)
+    
+    let brackets_to_check = a:target_bracket == '' ? keys(g:my_brackets_pair) : [a:target_bracket]
+    
+    if a:from_left
+        let start_pos = 0
+        let increment = 1
+    else
+        let start_pos = line_len - 1
+        let increment = -1
+    endif
+    let end_pos = col - 1
+    
+    " 各ブラケットの状態
+    let bracket_state = {}
+    for b1 in brackets_to_check
+        let bracket_state[b1] = {'opening': 0, 'last_pos': -1}
+    endfor
+    
+    " 方向に応じたスキャン
+    let i = start_pos
+    while ! (i==end_pos)
+        for b1 in brackets_to_check
+            let b1_right = g:my_brackets_pair[b1]
+            if b1 == b1_right
+                " quote系（open == close）は特別処理
+                if line[i] == b1
+                    if bracket_state[b1].opening == 0
+                        let bracket_state[b1].opening = 1
+                        let bracket_state[b1].last_pos = i
+                    else
+                        let bracket_state[b1].opening = 0
+                        let bracket_state[b1].last_pos = i
+                    endif
+                endif
+            else
+                let open_char = a:from_left ? b1 : b1_right
+                let close_char = a:from_left ? b1_right : b1
+                
+                if line[i] == open_char
+                    let bracket_state[b1].opening += 1
+                    let bracket_state[b1].last_pos = i
+                elseif line[i] == close_char && bracket_state[b1].opening > 0
+                    let bracket_state[b1].opening -= 1
+                endif
+            endif
+        endfor
+        let i += increment
+    endwhile
+    
+    return bracket_state
+endfunction
+
+function! Auto_detect_and_trade(b2) abort
+    let bracket = Detect_surrounding_bracket('')
+    if bracket == ''
+        echom "command S: Not IN bracket"
+        return
+    endif
+    call Check_and_trade(bracket, a:b2)
+endfunction
+
+function! Check_and_trade(b1, b2) abort
+    let line = getline('.')
+    let col = col('.')
+    let b1_right = g:my_brackets_pair[a:b1]
+    let b2_right = g:my_brackets_pair[a:b2]
+
+    " IF cursor in RIGHT brackt: jump LEFT
+    if !(line[col-1] == a:b1)
+        execute 'normal! %'
+        let line = getline('.')
+        let col = col('.')
+    endif    
+
+    if line[col-1] == a:b1 && line[col] == b1_right
+        execute 'normal! r' . a:b2 . 'lr' . b2_right
+    else
+        execute 'normal! vi' . a:b1 . 'xr' . b2_right . "\<LEFT>r" . a:b2 . 'p'
+    endif
 endfunction
 
 function! Setmap_bracket_trade( tgt ) abort
-    for k1 in keys( g:my_brackets_pair )
-        for k2 in keys( g:my_brackets_pair )
-            if k1==k2
+    " using 2 close brackets
+    for c1 in values( g:my_brackets_pair )
+        for c2 in values( g:my_brackets_pair )
+            if c1==c2
                 continue
             endif
-            execute "nnoremap ".a:tgt.k1.k2." ".Make_map_trade(k1,k2)
+            execute "nnoremap ".a:tgt.c1.c2." ".Make_map_trade_close(c1,c2)
         endfor
     endfor
+    
+    " using just 1 open bracket
+    for k in keys( g:my_brackets_pair )
+        execute "nnoremap ".a:tgt.k." ".Make_map_auto(k)
+    endfor
 endfunction
+
 
 function! Make_v_map_wrap( b ) abort
     return "c".a:b.g:my_brackets_pair[a:b]."<ESC>P"

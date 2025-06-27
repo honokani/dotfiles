@@ -1,4 +1,11 @@
 : "UNIQUE_SETTING" && {
+    : "PRE_CALLING_COMMON" && {
+        MY_WORK_DIR="/c/ws"
+        MY_GITCLONE_DIR="/c/git_clone"
+    }
+    : "CALLING_COMMON_SETTIG" && {
+        . "$HOME/.zshrc_for_common"
+    }
     : "UNIQUE_SETTING" && {
         zet() {
             vim -O ~/.zshrc_for_common ~/.zshrc \
@@ -8,6 +15,7 @@
         }
 
         _activate_pyenv_win
+        alias vim9="$MY_GITCLONE_DIR/vim9/src/gvim.exe"
 
         : "wsl2 distro control" && {
             _parse_wsl_distributions_clean() {

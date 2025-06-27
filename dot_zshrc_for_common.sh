@@ -1,3 +1,16 @@
+: "PRESETTING" && {
+    if [ -z "$MY_WORK_DIR" ]; then
+        if [ -z "$1" ]; then
+            MY_WORK_DIR="$HOME/ws"
+        fi
+    fi
+    if [ -z "$MY_GITCLONE_DIR" ]; then
+        if [ -z "$2" ]; then
+            MY_GITCLONE_DIR="$HOME/git_clone"
+        fi
+    fi
+}
+
 : "FLAGS_FOR_SETTING" && {
     if type fzf > /dev/null 2>&1; then
         MY_FLG_FZF=1
@@ -23,6 +36,8 @@
         setopt no_beep
         alias zrc="source ~/.zshrc"
         : "History" && {
+            export HISTFILE=${HOME}/.zsh_history
+            touch "$HISTFILE"
             HISTCONTROL=erasedups
             export HISTSIZE=100000
             export SAVEHIST=100000
@@ -46,27 +61,34 @@
         alias vi=vim
         alias nv=vim
         alias vet="vim ~/.vimrc"
-        alias vim9="$HOME""/git_clones/vim9/src/gvim.exe"
     }
     : "Basic Controll" && {
         alias ..="cd .."
         if [ -v MY_FLG_EXA ]; then
-            _lsa () {
+            _lsl () {
                 if [ $# -eq 0 ]; then exa -l; else exa -l $1; fi
             }
-            _lsal() {
-                if [ $# -eq 0 ]; then exa -al; else exa -al $1; fi
+            _lsla() {
+                if [ $# -eq 0 ]; then exa -la; else exa -la $1; fi
             }
         else
-            _lsa () {
+            _lsl () {
                 if [ $# -eq 0 ]; then ls -l; else ls -l $1; fi
             }
-            _lsal () {
-                if [ $# -eq 0 ]; then ls -al; else ls -al $1; fi
+            _lsla () {
+                if [ $# -eq 0 ]; then ls -la|grep -v '\.$'; else ls -la $1|grep -v '\.$'; fi
+            }
+            _lsld () {
+                if [ $# -eq 0 ]; then
+                    print -rl -- .[^.]* .??* | sort -u | xargs ls -ld;
+                else 
+                    print -rl -- $1/.[^.]* $1/.??* | sort -u | xargs ls -ld;
+                fi
             }
         fi
-        alias ll=_lsa
-        alias ll=_lsal
+        alias ll=_lsl
+        alias lll=_lsla
+        alias lld=_lsld
         if [ -v MY_FLG_FZF ]; then
             _find_old_cd () {
                 pname=$(find ~ -name "*" | fzf +m)
@@ -81,19 +103,36 @@
                 echo no_fzf
             }
         fi
+        _cd_my_workdir() {
+            mkdir -p "$MY_WORK_DIR"
+            cd "$MY_WORK_DIR"
+        }
+        _cd_my_gitclone() {
+            mkdir -p "$MY_GITCLONE_DIR"
+            cd "$MY_GITCLONE_DIR"
+        }
+        _cd_my_dotfiles() {
+            _cd_my_gitclone
+            mkdir -p "dotfiles"
+            cd "dotfiles"
+        }
         alias cdd=_find_old_cd
-        alias cdw="cd $HOME/ws"
+        alias cdw=_cd_my_workdir
+        alias cdg=_cd_my_gitclone
+        alias cdgd=_cd_my_dotfiles
 
         alias mkbdnv="nv $HOME/mtk/qmk_firmware/keyboards/mtk/mtk64e/keymaps/via_mykey"
         alias mkbdcd="cd $HOME/qmk/"
         alias mkbdmk="make -j8 SKIP_GIT=yes mtk/mtk64e:via_mykey"
     }
     : "Hook" && {
+        MY_PRECMD_C_CYAN=$'\e[36m'
+        MY_PRECMD_C_RESET=$'\e[0m'
         precmd() {
-            print "[ `date +%H:%M` | `pwd` `_git_b_check` ]"
+            print "[ `date +%H:%M` | ${MY_PRECMD_C_CYAN}`pwd`${MY_PRECMD_C_RESET} `_git_b_check` ]"
         }
         chpwd() {
-            _lsa
+            _lsl
         }
     }
 }
@@ -347,6 +386,7 @@
         alias gisw=_git_b_switch
         alias gicm=_git_commit
         alias giad=_git_add
+        alias gist="git status"
 
     fi
 }
