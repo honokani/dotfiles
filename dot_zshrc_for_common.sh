@@ -268,7 +268,7 @@
             # コミットメッセージを入力
             print -n "コミットメッセージを入力してください: "
             local commit_message
-            read "commit_message"
+            vared -p '' -c commit_message
             
             if [[ -z "$commit_message" ]]; then
                 print "コミットメッセージが入力されませんでした。" >&2
