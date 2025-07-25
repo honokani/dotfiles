@@ -1,3 +1,5 @@
+export TWILIO_ACCOUNT_SID=""
+export TWILIO_AUTH_TOKEN=""
 : "PRESETTING" && {
     if [ -z "$MY_WORK_DIR" ]; then
         if [ -z "$1" ]; then
@@ -59,7 +61,6 @@
     }
     : "Vim setting" && {
         alias vi=vim
-        alias nv=vim
         alias vet="vim ~/.vimrc"
     }
     : "Basic Controll" && {
@@ -343,15 +344,40 @@
                     local status_code="${line:0:2}"
                     local filename="${line:3}"
                     
-                    # notStaged (修正済み未ステージ) または Untracked をチェック
-                    if [[ "$status_code" == " M" ]] || [[ "$status_code" == " D" ]] || [[ "$status_code" == " T" ]]; then
-                        # 2文字目がM/D/T = notStaged
-                        target_files+=("$filename")
-                        files_with_explains+=("$filename:notStaged")
-                    elif [[ "$status_code" == "??" ]]; then
-                        # Untracked
-                        target_files+=("$filename")
-                        files_with_explains+=("$filename:Untracked")
+                    # ダブルクォートで囲まれたファイル名の処理
+                    if [[ "$filename" =~ ^\".*\"$ ]]; then
+                        # 前後のダブルクォートを削除
+                        filename="${filename:1:-1}"
+                        # エスケープされた文字を解釈（例：\343\201\223 → こ）
+                        filename=$(printf "%b" "$filename")
+                    fi
+                    
+                    # ステータスコードの解釈
+                    # 1文字目: インデックス（ステージング）の状態
+                    # 2文字目: 作業ツリーの状態
+                    local index_status="${status_code:0:1}"
+                    local work_status="${status_code:1:1}"
+                    
+                    # 作業ツリーに変更がある場合（2文字目が空白以外）
+                    if [[ "$work_status" != " " ]]; then
+                        if [[ "$work_status" == "M" ]]; then
+                            target_files+=("$filename")
+                            if [[ "$index_status" != " " ]]; then
+                                files_with_explains+=("$filename:modified (staged+unstaged)")
+                            else
+                                files_with_explains+=("$filename:modified")
+                            fi
+                        elif [[ "$work_status" == "D" ]]; then
+                            target_files+=("$filename")
+                            files_with_explains+=("$filename:deleted")
+                        elif [[ "$work_status" == "T" ]]; then
+                            target_files+=("$filename")
+                            files_with_explains+=("$filename:typechange")
+                        elif [[ "$work_status" == "?" ]]; then
+                            # ?? の場合（未追跡）
+                            target_files+=("$filename")
+                            files_with_explains+=("$filename:untracked")
+                        fi
                     fi
                 fi
             done <<< "$status_output"
@@ -364,12 +390,17 @@
             local -a selected_files=($(select_items_at_once ${#target_files} target_files files_with_explains))
             
             if [[ ${#selected_files} -gt 0 ]]; then
-                for file in "${selected_files[@]}"; do
-                    print "  $file" >&2
-                done
+                # for file in "${selected_files[@]}"; do
+                #     print "  $file" >&2
+                # done
                 
                 # git add実行
+                local git_root=$(git rev-parse --show-toplevel 2>/dev/null)
+                pushd "$git_root" > /dev/null
+                pwd
+                echo "adding | ""${selected_files[@]}"
                 git add "${selected_files[@]}"
+                popd > /dev/null
                 
                 if [[ $? -eq 0 ]]; then
                     print "git add: done."

@@ -1,4 +1,4 @@
-: "Call_zsh_core_for_each_OS" && {
+: "Call_zsh_core_for_each_OS" ; {
     . "$HOME/.zshrc_util"
 
     CURR_OS=""
@@ -7,6 +7,7 @@
             CURR_OS="Mac"
             . "$HOME/.zshrc_for_common"
             . "$HOME/.zshrc_for_mac"
+            ;;
         Linux)
             if [ -f /proc/sys/fs/binfmt_misc/WSLInterop ]; then
                 CURR_OS='WSL on Windows'

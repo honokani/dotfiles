@@ -7,6 +7,10 @@
         . "$HOME/.zshrc_for_common"
     }
     : "UNIQUE_SETTING" && {
+        if [ -e "$HOME/scoop/shims/vim.exe" ]; then
+            alias vim="$HOME/scoop/shims/vim.exe"
+        fi
+
         zet() {
             vim -O ~/.zshrc_for_common ~/.zshrc \
                 -c "wincmd l" \
@@ -15,7 +19,12 @@
         }
 
         _activate_pyenv_win
-        alias vim9="$MY_GITCLONE_DIR/vim9/src/gvim.exe"
+
+        : "wsl2 setting" && {
+            # CSVファイルパス
+            WSL_BACKUP_DIR="$HOME/wsl_backups"
+            WSL_BACKUP_CSV="$WSL_BACKUP_DIR/backup_records.csv"
+        }
 
         : "wsl2 distro control" && {
             _parse_wsl_distributions_clean() {
@@ -290,9 +299,6 @@
             }
 
             
-            # CSVファイルパス
-            WSL_BACKUP_DIR="$HOME/wsl_backups"
-            WSL_BACKUP_CSV="$WSL_BACKUP_DIR/backup_records.csv"
 
             # バックアップディレクトリとCSVの初期化
             _init_wsl_backup() {

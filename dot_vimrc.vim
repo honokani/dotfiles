@@ -1,7 +1,5 @@
 set enc=utf-8
 syntax enable
-colorscheme elflord
-"colorscheme default
 
 set noswapfile
 set nobackup
@@ -11,10 +9,6 @@ set belloff=all
 
 set list
 set ambiwidth=double
-"set listchars=tab:≫-,trail:-,extends:≫,precedes:≪,nbsp:%,eol:↓,space:⁻
-highlight NonText    ctermbg=NONE ctermfg=59 guibg=NONE guifg=NONE
-highlight SpecialKey ctermbg=NONE ctermfg=59 guibg=NONE guifg=NONE
-
 
 set scrolloff=5
 set backspace=indent,eol,start
@@ -40,6 +34,7 @@ set shiftround
 
 
 
+" ===== Key Mappings =====
 
 nnoremap <SPACE> <NOP>
 nnoremap <BS> <NOP>
@@ -85,6 +80,7 @@ tnoremap <ESC><ESC> <C-\><C-n>
 
 
 
+" ===== Bracket Functions =====
 
 let g:my_brackets_pair = { "(":")", "[":"]", "{":"}", "<":">", "'":"'", '"':'"', "`":"`" }
 let g:my_brackets_reverse = {}
@@ -165,13 +161,8 @@ function! Search_bracket_direction(target_bracket, from_left) abort
             if b1 == b1_right
                 " quote系（open == close）は特別処理
                 if line[i] == b1
-                    if bracket_state[b1].opening == 0
-                        let bracket_state[b1].opening = 1
-                        let bracket_state[b1].last_pos = i
-                    else
-                        let bracket_state[b1].opening = 0
-                        let bracket_state[b1].last_pos = i
-                    endif
+                    let bracket_state[b1].opening = bracket_state[b1].opening == 0 ? 1 : 0
+                    let bracket_state[b1].last_pos = i
                 endif
             else
                 let open_char = a:from_left ? b1 : b1_right
@@ -275,6 +266,7 @@ nnoremap S <NOP>
 
 
 
+" ===== Window Management Functions =====
 
 let g:my_expand_val_hori = 16
 let g:my_expand_val_vert = 6
@@ -402,7 +394,7 @@ function! Move_win_separator_R( n, ws, id_ls, id_idx ) abort
             if a:n < 3
                 return 0
             else
-                " " todo
+                " todo
                 return 0
             endif
         endif
@@ -425,7 +417,7 @@ function! Move_win_separator_B( n, ws, id_ls, id_idx ) abort
             if a:n < 3
                 return 0
             else
-                " " todo
+                " todo
                 return 0
             endif
         endif
@@ -444,6 +436,101 @@ nnoremap sx <C-w>=
 
 
 
+" ===== GitDiff =====
+
+function! FixPath(path)
+    if has('win32') || has('win64') || has('win32unix')
+        return substitute(a:path, '\', '/', 'g')
+    endif
+    return a:path
+endfunction
+
+function! ApplyGitDiffColors()
+    " バッファのウィンドウに色を適用
+    if expand('%') =~# 'HEAD:'
+        hi GitDiffHeadBG guibg=#1a3a1a ctermbg=22
+        hi! link Normal GitDiffHeadBG
+        let w:gitdiff_colored = 1
+    else
+        hi! link Normal NONE
+        if exists('w:gitdiff_colored')
+            unlet w:gitdiff_colored
+        endif
+    endif
+endfunction
+
+augroup GitDiffWindowColor
+    autocmd!
+    autocmd WinEnter,BufWinEnter,BufEnter * call ApplyGitDiffColors()
+augroup END
+
+function! GitDiffStart()
+    let filepath = FixPath(expand('%:p'))
+    silent! let gitpath = system('git ls-files --full-name "' . filepath . '"')
+    let gitpath = gitpath[:-2]
+    
+    " ファイルがgitに追跡されていない場合
+    if v:shell_error != 0 || gitpath == ''
+        redraw
+        echohl ErrorMsg
+        echo 'Error: File is not tracked by git'
+        echohl None
+        return
+    endif
+    
+    " HEADにファイルが存在するか確認
+    silent! let check_head = system('git cat-file -e HEAD:' . gitpath . ' 2>&1')
+    if v:shell_error != 0
+        redraw
+        echohl WarningMsg
+        echo 'Warning: File does not exist in HEAD (new file)'
+        echohl None
+        return
+    endif
+    
+    " 新しいタブで開く
+    tabnew %
+    
+    " 左側：HEADの内容を取得
+    vnew
+    setlocal buftype=nofile bufhidden=wipe noswapfile
+    let head_content = systemlist('git show HEAD:' . gitpath)
+    call setline(1, head_content)
+    exe 'file HEAD:' . gitpath
+    " 左側：読み取り専用に設定
+    setlocal nomodifiable readonly
+    setlocal nocursorline nocursorcolumn
+    " 左側：着色を適用
+    call ApplyGitDiffColors()
+    diffthis
+    
+    " 右側：現在のファイル
+    wincmd l
+    call ApplyGitDiffColors()
+    diffthis
+    " 右側：画面をリフレッシュ
+    redraw!
+endfunction
+
+function! GitDiffEnd()
+    " diffモードが有効な場合のみタブを閉じる
+    if &diff
+        hi! link Normal NONE
+        tabclose
+    else
+        echohl WarningMsg
+        echo 'Not in diff mode'
+        echohl None
+    endif
+endfunction
+
+nnoremap <silent> gds :call GitDiffStart()<CR>
+nnoremap <silent> gde :call GitDiffEnd()<CR>
+
+
+
+
+" ===== Netrw Settings =====
 
 augroup netrw_mapping
     autocmd!
@@ -457,10 +544,47 @@ function! NetrwMapping()
     nmap <buffer> l <CR>
 endfunction
 
-highlight ColorColumn ctermbg=236 ctermfg=240 guibg=NONE guifg=NONE
+
+
+" ===== Plugins =====
+
+set runtimepath+=~/.vim
+if filereadable(expand('~/.vim/autoload/plug.vim'))
+    call plug#begin('~/.vim/plugged')
+            Plug 'obcat/vim-hitspop'
+            Plug 'dominikduda/vim_current_word'
+            let g:vim_current_word#highlight_current_word = 0
+            let g:vim_current_word#highlight_delay = 300
+    call plug#end()
+endif
+
+
+
+" ===== Color Settings =====
+
+" 256色モードを有効化
+set t_Co=256
+
+colorscheme elflord
+
+" カーソルライン/カラムのハイライト（ターミナル用）
+highlight CursorLine cterm=NONE ctermbg=235
+highlight CursorColumn cterm=NONE ctermbg=235
+highlight CursorLineNr cterm=NONE ctermbg=235 ctermfg=yellow
+
+" 非アクティブウィンドウ
+highlight NormalNC ctermbg=233
+
+" 非表示文字
+highlight NonText ctermbg=59 ctermfg=59
+highlight SpecialKey ctermbg=59 ctermfg=59
+
+" 非アクティブウィンドウ用のカラーグループ
+highlight ColorColumn ctermbg=236 ctermfg=240
+
+" ウィンドウ切り替え時の動作
 augroup changeBG
     autocmd!
     autocmd WinEnter * setlocal wincolor=Normal
     autocmd WinLeave * setlocal wincolor=ColorColumn
 augroup END
-
