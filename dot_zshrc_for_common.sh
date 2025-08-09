@@ -48,10 +48,24 @@ export TWILIO_AUTH_TOKEN=""
             setopt extended_history
             setopt hist_reduce_blanks
             setopt share_history
+
+            _show_history() {
+                if [ $# -eq 0 ]; then
+                    cat "$HISTFILE"
+                    return
+                fi
+
+                local cmd="cat \"$HISTFILE\""
+                for arg in "$@"; do
+                    cmd="$cmd | grep -- \"$arg\""
+                done
+
+                eval "$cmd"
+            }
             if [ -v MY_FLG_FZF ]; then
                 alias his="cat ~/.zsh_history| fzf "
             else
-                alias his=history
+                alias his=_show_history
             fi
         }
         : "Prompt" && {

@@ -1,3 +1,5 @@
+#!/bin/zsh
+
 : "UNIQUE_SETTING" && {
     : "PRE_CALLING_COMMON" && {
         MY_WORK_DIR="/c/ws"
@@ -116,26 +118,257 @@
             }
 
             # 最終的な関数も修正
-            _wsl_create__environment() {
-                # 使用するWSLディストリビューションを選択
-                print -r -- "インストールするWSLディストリビューションを選択してください:"
-                local wsl_distro=$(_wsl_select_distribution)
+            _wsl_create_environment() {
+                # 利用可能なディストリビューションを確認
+                local wsl_output=$(wsl --list --online)
+                _parse_wsl_distributions_clean "$wsl_output"
                 
-                if [[ -z "$wsl_distro" ]]; then
-                    print -r -- "WSL ディストリビューションが選択されませんでした。処理を中止します。"
+                if [[ ${#WSL_ALLDISTRIBUTIONS} -eq 0 ]]; then
+                    print -r -- "利用可能なディストリビューションが見つかりませんでした"
                     return 1
                 fi
                 
-                # WSL環境をインストール
-                print -r -- "[$wsl_distro] をインストールします..."
-                wsl --install -d "$wsl_distro"
+                # バックアップディレクトリの初期化
+                _init_wsl_backup
                 
-                # 結果確認
-                if [[ $? -eq 0 ]]; then
-                    print -r -- "WSL環境「$wsl_distro」が正常にインストールされました。"
-                    return 0
+                # 既存のinitファイルを確認
+                local -a init_available=()
+                local -a no_init_available=()
+                local -a init_available_with_explains=()
+                local -a no_init_available_with_explains=()
+                
+                for i in {1..${#WSL_ALLDISTRIBUTIONS}}; do
+                    local distro="${WSL_ALLDISTRIBUTIONS[$i]}"
+                    local explain="${WSL_ALLDISTRIBUTIONS_WITH_EXPLAINS[$i]}"
+                    
+                    # 空のエントリはスキップ
+                    if [[ -z "$distro" ]]; then
+                        continue
+                    fi
+                    
+                    local init_file="${WSL_BACKUP_DIR}/${distro}-init.tar"
+                    
+                    if [[ -f "$init_file" ]]; then
+                        local size=$(du -h "$init_file" | cut -f1)
+                        init_available+=("$distro")
+                        init_available_with_explains+=("${explain} [init: ${size}]")
+                    else
+                        no_init_available+=("$distro")
+                        no_init_available_with_explains+=("${explain}")
+                    fi
+                done
+                
+                # すべてのディストリビューションを統合
+                local -a all_distros=()
+                local -a all_distros_with_explains=()
+                
+                for distro in "${init_available[@]}"; do
+                    if [[ -n "$distro" ]]; then
+                        all_distros+=("$distro")
+                    fi
+                done
+                
+                for explain in "${init_available_with_explains[@]}"; do
+                    if [[ -n "$explain" ]]; then
+                        all_distros_with_explains+=("$explain")
+                    fi
+                done
+                
+                for distro in "${no_init_available[@]}"; do
+                    if [[ -n "$distro" ]]; then
+                        all_distros+=("$distro")
+                    fi
+                done
+                
+                for explain in "${no_init_available_with_explains[@]}"; do
+                    if [[ -n "$explain" ]]; then
+                        all_distros_with_explains+=("$explain")
+                    fi
+                done
+                
+                # ディストリビューション選択
+                print -r -- "ディストリビューションを選択してください:"
+                local selected_distro=$(select_1_item all_distros all_distros_with_explains)
+                
+                if [[ -z "$selected_distro" ]]; then
+                    return 1
+                fi
+                
+                # 選択したディストリビューションのinitファイルの存在確認
+                local init_file="${WSL_BACKUP_DIR}/${selected_distro}-init.tar"
+                
+                if [[ -f "$init_file" ]]; then
+                    # initファイルがある場合 → 複製処理
+                    _wsl_create_from_init "$selected_distro" "$init_file"
                 else
-                    print -r -- "WSL環境のインストールに失敗しました。"
+                    # initファイルがない場合 → 新規インストール
+                    _wsl_install_and_save_init "$selected_distro"
+                fi
+            }
+            
+            # initファイルから環境作成
+            _wsl_create_from_init() {
+                local distro_name=$1
+                local init_file=$2
+                
+                print -r -- "新しい環境名を入力してください:"
+                local new_env_name
+                read "new_env_name"
+                
+                if [[ -z "$new_env_name" ]]; then
+                    local timestamp=$(date "+%Y%m%d-%H%M%S")
+                    new_env_name="${distro_name}-${timestamp}"
+                fi
+                
+                # 名前の重複チェック
+                if wsl --list --quiet 2>/dev/null | grep -q "^${new_env_name}$"; then
+                    print -r -- "環境名「${new_env_name}」は既に存在します"
+                    return 1
+                fi
+                
+                # デフォルトのインストール先を使用
+                local install_path="$HOME/AppData/Local/WSL/${new_env_name}"
+                mkdir -p "$install_path"
+                
+                wsl --import "$new_env_name" "$install_path" "$init_file"
+                
+                if [[ $? -eq 0 ]]; then
+                    print -r -- "環境作成完了: ${new_env_name}"
+                    print -n "接続しますか？ (y/N): "
+                    local connect_now
+                    read "connect_now"
+                    
+                    if [[ "$connect_now" =~ ^[Yy]$ ]]; then
+                        wsl -d "$new_env_name"
+                    fi
+                else
+                    print -r -- "インポートに失敗しました"
+                    return 1
+                fi
+            }
+            
+            # 新規インストールしてinitとして保存
+            _wsl_install_and_save_init() {
+                local selected_distro=$1
+                
+                # 既にインストールされているかチェック（実際のWSL環境リストから）
+                local installed_distros_before=$(wsl --list --quiet 2>/dev/null | tr -d '\r' | sed 's/[[:cntrl:]]//g')
+                
+                # インストール実行
+                print -r -- ""
+                print -r -- "=========================================="
+                print -r -- "重要: 初期設定画面での手順"
+                print -r -- "=========================================="
+                print -r -- "1. 一度ベース環境を作成"
+                print -r -- "2.  | ユーザー名とパスワードを設定"
+                print -r -- "3.  | ***** 必ず exit でWSLから抜ける *****"
+                print -r -- "4.  | WSLから抜けた後、自動的に処理が続行されます"
+                print -r -- "5. ベース環境を保存し削除"
+                print -r -- "6. 保存したベース環境をクローンし、新環境を作成"
+                print -r -- "=========================================="
+                print -r -- ""
+                print -r -- "「${selected_distro}」をインストールしています..."
+                
+                # インストール（自動的に初期設定画面に入る）
+                wsl --install -d "$selected_distro"
+                
+                if [[ $? -eq 0 ]]; then
+                    # インストール後の環境リストを取得
+                    local installed_distros_after=$(wsl --list --quiet 2>/dev/null | tr -d '\r' | sed 's/[[:cntrl:]]//g')
+                    local actual_name=""
+                    
+                    # 新しく追加された環境名を探す
+                    while IFS= read -r distro; do
+                        # 空行とdocker-desktopをスキップ
+                        [[ -z "$distro" ]] && continue
+                        [[ "$distro" == "docker-desktop" ]] && continue
+                        
+                        if ! echo "$installed_distros_before" | grep -q "^${distro}$"; then
+                            actual_name="$distro"
+                            break
+                        fi
+                    done <<< "$installed_distros_after"
+                    
+                    # 見つからない場合は選択した名前を使用
+                    if [[ -z "$actual_name" ]]; then
+                        actual_name="$selected_distro"
+                    fi
+                    
+                    print -r -- ""
+                    print -r -- "インストール完了: ${actual_name} : 処理が続行されます ***"
+                    print -r -- "ベースをテンプレートとして保存しています..."
+                    _save_as_init "$actual_name"
+                    
+                    if [[ $? -eq 0 ]]; then
+                        # 元の環境を削除
+                        print -r -- "ベース環境「${actual_name}」を削除しています..."
+                        wsl --unregister "$actual_name" 2>/dev/null
+                        
+                        # 環境名を入力してインポート
+                        print -r -- ""
+                        print -r -- "新しい環境名を入力してください:"
+                        local env_name
+                        read "env_name"
+                        
+                        if [[ -z "$env_name" ]]; then
+                            env_name="${actual_name}-$(date +%Y%m%d-%H%M%S)"
+                        fi
+                        
+                        # initファイルから新しい環境を作成
+                        local init_file="${WSL_BACKUP_DIR}/${actual_name}-init.tar"
+                        local install_path="$HOME/AppData/Local/WSL/${env_name}"
+                        mkdir -p "$install_path"
+                        
+                        print -r -- "「${env_name}」として環境を作成しています..."
+                        wsl --import "$env_name" "$install_path" "$init_file"
+                        
+                        if [[ $? -eq 0 ]]; then
+                            print -r -- "環境作成完了: ${env_name}"
+                            print -n "接続しますか？ (y/N): "
+                            local connect_now
+                            read "connect_now"
+                            
+                            if [[ "$connect_now" =~ ^[Yy]$ ]]; then
+                                wsl -d "$env_name"
+                            fi
+                        else
+                            print -r -- "環境の作成に失敗しました"
+                            return 1
+                        fi
+                    else
+                        print -r -- "初期テンプレートの保存に失敗しました"
+                        return 1
+                    fi
+                else
+                    print -r -- "インストールに失敗しました"
+                    return 1
+                fi
+            }
+            
+            # 初期テンプレートとして保存
+            _save_as_init() {
+                local source_env=$1
+                
+                if [[ -z "$source_env" ]]; then
+                    print -r -- "保存するWSL環境を選択してください:"
+                    source_env=$(_wsl_select_one_distribution)
+                    
+                    if [[ -z "$source_env" ]]; then
+                        return 1
+                    fi
+                fi
+                
+                _init_wsl_backup
+                
+                local init_file="${WSL_BACKUP_DIR}/${source_env}-init.tar"
+                
+                wsl --export "$source_env" "$init_file"
+                
+                if [[ $? -eq 0 ]]; then
+                    _add_backup_record "${source_env}-init.tar" "[INIT] ${source_env}の初期テンプレート"
+                    print -r -- "初期テンプレート保存完了: ${source_env}-init.tar"
+                else
+                    print -r -- "初期テンプレートの保存に失敗しました"
                     return 1
                 fi
             }
@@ -450,24 +683,14 @@
                     return 1
                 fi
 
-                # インストール先パス
-                local install_path="$HOME/wsl_environments/$new_env_name"
-                print -r -- "インストール先パス（Enter でデフォルト: $install_path）:"
-                local custom_path
-                read "custom_path"
-
-                if [[ -n "$custom_path" ]]; then
-                    install_path="$custom_path"
-                fi
-
-                # ディレクトリ作成
+                # デフォルトのインストール先を使用
+                local install_path="$HOME/AppData/Local/WSL/$new_env_name"
                 mkdir -p "$install_path"
 
                 # インポート実行
                 local backup_filepath="$WSL_BACKUP_DIR/$selected_file"
                 print -r -- "WSL環境「$new_env_name」をインポートしています..."
                 print -r -- "ソース: $selected_file"
-                print -r -- "インストール先: $install_path"
 
                 wsl --import "$new_env_name" "$install_path" "$backup_filepath"
 
@@ -529,7 +752,7 @@
                 fi
                 
                 print -r -- "削除するWSL環境を選択してください（複数選択可能）:" >&2
-                print -r -- "⚠️  削除すると環境は完全に消去され、復元できません！" >&2
+                print -r -- "削除すると環境は完全に消去され、復元できません" >&2
                 
                 # 複数選択
                 local -a selected_distros=($(select_items_stepwise ${#WSL_STOPPED_DISTRIBUTIONS} WSL_STOPPED_DISTRIBUTIONS WSL_STOPPED_DISTRIBUTIONS_WITH_EXPLAINS))
@@ -559,7 +782,7 @@
                     print -r -- "  - $distro"
                 done
                 print -r -- ""
-                print -r -- "⚠️  この操作は取り消しできません！"
+                print -r -- "この操作は取り消しできません"
                 print -n "本当に削除しますか？ (yes/No): "
                 
                 local confirm
@@ -585,11 +808,28 @@
                 print -r -- "削除処理が完了しました。"
             }
 
+            # vhdxパス取得
+            _get_wsl_vhdx_path() {
+                local distro=$1
+                # PowerShellを使ってレジストリから直接パスを取得
+                local vhdx_path=$(powershell.exe -Command "
+                    \$distroGuid = (Get-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Lxss' -Name '*' | 
+                        Where-Object { \$_.DistributionName -eq '$distro' }).PSChildName
+                    if (\$distroGuid) {
+                        (Get-ItemProperty \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Lxss\\\$distroGuid\").BasePath + '\\ext4.vhdx'
+                    }
+                " 2>/dev/null | tr -d '\r\n')
+                
+                if [[ -n "$vhdx_path" ]]; then
+                    echo "$vhdx_path"
+                fi
+            }
+
             # WSL vhdxクリーンアップコマンド
             _wsl_clean() {
                 # クリーン対象を選択
                 print -r -- "クリーンアップするWSL環境を選択してください:"
-                local selected_env=$(wsl_select_one_distribution)
+                local selected_env=$(_wsl_select_one_distribution)
                 
                 if [[ -z "$selected_env" ]]; then
                     print -r -- "WSL環境が選択されませんでした。処理を中止します。"
@@ -612,7 +852,7 @@
                 print -r -- "WSL環境: $selected_env"
                 print -r -- "vhdxパス: $clean_vhdx_path"
                 print -r -- ""
-                print -r -- "⚠️  以下のコマンドを PowerShell（管理者権限）で実行してください:"
+                print -r -- "以下のコマンドを PowerShell（管理者権限）で実行してください:"
                 print -r -- ""
                 print -r -- "wsl --shutdown"
                 print -r -- "diskpart"
@@ -650,7 +890,7 @@
                 fi
             }
             # WLS2 環境構築と破壊とメンテ
-            alias wslm=_wsl_create__environment
+            alias wslm=_wsl_create_environment
             alias wslrmv=_wsl_remove
             alias wslclean=_wsl_clean
             # WLS2 環境確認
@@ -661,6 +901,10 @@
             # WLS2 環境抽出と導入
             alias wslex=_wsl_export
             alias wslin=_wsl_import
+            # 初期テンプレート管理
+            alias wslinit="_save_as_init"
+            alias wslinitrm="rm -i $WSL_BACKUP_DIR/*-init.tar"
+            alias wslinitls="ls -lh $WSL_BACKUP_DIR/*-init.tar 2>/dev/null || echo '初期テンプレートがありません'"
         }
 
     }
