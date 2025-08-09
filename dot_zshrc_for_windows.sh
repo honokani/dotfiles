@@ -234,13 +234,6 @@
                 
                 if [[ $? -eq 0 ]]; then
                     print -r -- "環境作成完了: ${new_env_name}"
-                    print -n "接続しますか？ (y/N): "
-                    local connect_now
-                    read "connect_now"
-                    
-                    if [[ "$connect_now" =~ ^[Yy]$ ]]; then
-                        wsl -d "$new_env_name"
-                    fi
                 else
                     print -r -- "インポートに失敗しました"
                     return 1
@@ -261,10 +254,11 @@
                 print -r -- "=========================================="
                 print -r -- "1. 一度ベース環境を作成"
                 print -r -- "2.  | ユーザー名とパスワードを設定"
-                print -r -- "3.  | ***** 必ず exit でWSLから抜ける *****"
-                print -r -- "4.  | WSLから抜けた後、自動的に処理が続行されます"
-                print -r -- "5. ベース環境を保存し削除"
-                print -r -- "6. 保存したベース環境をクローンし、新環境を作成"
+                print -r -- "3.  | sudo apt update, sudo apt upgrade"
+                print -r -- "4.  | ***** 必ず exit でWSLから抜ける *****"
+                print -r -- "5.  | WSLから抜けた後、自動的に処理が続行されます"
+                print -r -- "6. ベース環境を保存し削除"
+                print -r -- "7. 保存したベース環境をクローンし、新環境を作成"
                 print -r -- "=========================================="
                 print -r -- ""
                 print -r -- "「${selected_distro}」をインストールしています..."
@@ -295,7 +289,7 @@
                     fi
                     
                     print -r -- ""
-                    print -r -- "インストール完了: ${actual_name} : 処理が続行されます ***"
+                    print -r -- "インストール完了: ${actual_name} : 処理が続行されます"
                     print -r -- "ベースをテンプレートとして保存しています..."
                     _save_as_init "$actual_name"
                     
@@ -324,13 +318,6 @@
                         
                         if [[ $? -eq 0 ]]; then
                             print -r -- "環境作成完了: ${env_name}"
-                            print -n "接続しますか？ (y/N): "
-                            local connect_now
-                            read "connect_now"
-                            
-                            if [[ "$connect_now" =~ ^[Yy]$ ]]; then
-                                wsl -d "$env_name"
-                            fi
                         else
                             print -r -- "環境の作成に失敗しました"
                             return 1
