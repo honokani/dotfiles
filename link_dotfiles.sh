@@ -29,7 +29,9 @@ link_dotfile() {
             unique="mac"
             ;;
         Linux)
-            if [ -f /proc/sys/fs/binfmt_misc/WSLInterop ]; then
+            if [[ -n "$WSL_DISTRO_NAME" ]] || \
+               [[ -n "$WSL_INTEROP" ]] || \
+               grep -qi microsoft /proc/version 2>/dev/null; then
                 unique="wsl"
             fi
             ;;
