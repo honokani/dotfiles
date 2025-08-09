@@ -1,4 +1,4 @@
-#!/usr/bin/zsh
+#!/usr/bin/bash
 # install zsh (冪等性対応)
 if ! command -v zsh &> /dev/null; then
     sudo apt update
