@@ -9,7 +9,9 @@
             . "$HOME/.zshrc_for_mac"
             ;;
         Linux)
-            if [ -f /proc/sys/fs/binfmt_misc/WSLInterop ]; then
+            if [[ -n "$WSL_DISTRO_NAME" ]] || \
+               [[ -n "$WSL_INTEROP" ]] || \
+               grep -qi microsoft /proc/version 2>/dev/null; then
                 CURR_OS='WSL on Windows'
                 . "$HOME/.zshrc_for_common"
                 . "$HOME/.zshrc_for_wsl"
