@@ -223,8 +223,10 @@ parse_pyenv_install_list() {
                 versions+=("$version")
             fi
         fi
-    done <<< "$install_list_output"
-    
+    done << EOF
+ "$install_list_output"
+EOF
+
     # グローバル変数に結果を格納
     PYENV_INSTALLABLE_VERSIONS=("${versions[@]}")
     PYENV_INSTALLABLE_VERSIONS_WITH_EXPLAINS=()
@@ -413,7 +415,9 @@ parse_pyenv_versions() {
                 versions_with_explains+=("${version}:${explain}")
             fi
         fi
-    done <<< "$pyenv_output"
+    done << EOF
+ "$pyenv_output"
+EOF
     
     # グローバル変数に結果を格納
     PYENV_ALLVERSIONS=("${versions[@]}")
