@@ -187,6 +187,209 @@ select_items_at_once() {
 
 
 
+pyenv_select_version() {
+    # pyenv versionsの実行結果を取得
+    local pyenv_output=$(pyenv versions)
+    
+    # バージョンと説明を解析
+    parse_pyenv_versions "$pyenv_output"
+    
+    # ユーザーに選択を促す
+    print -r -- "以下のPythonバージョンから選択:" >&2
+    local selected_version=$(select_1_item PYENV_ALLVERSIONS PYENV_ALLVERSIONS_WITH_EXPLAINS)
+    
+    # 選択結果を返す
+    if [[ -n "$selected_version" ]]; then
+        print "$selected_version"
+    else
+        print -r -- "バージョンが選択されませんでした" >&2
+    fi
+}
+
+parse_pyenv_install_list() {
+    local install_list_output=$1
+    local -a versions=()
+    local -a versions_with_explains=()
+    
+    # 標準的なPythonバージョン（3.x.y形式）のみを抽出
+    while IFS= read -r line; do
+        local trimmed_line="${line#"${line%%[! ]*}"}"
+        
+        # 3.x.y形式のバージョンのみを対象とし、特殊版（dev, rc, t付き等）は除外
+        if [[ "$trimmed_line" =~ ^([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            local version="${match[1]}"
+            # Python 3.x系のみを対象
+            if [[ "$version" =~ ^3\. ]]; then
+                versions+=("$version")
+            fi
+        fi
+    done <<< "$install_list_output"
+    
+    # グローバル変数に結果を格納
+    PYENV_INSTALLABLE_VERSIONS=("${versions[@]}")
+    PYENV_INSTALLABLE_VERSIONS_WITH_EXPLAINS=()
+}
+
+# 推奨バージョンを取得する関数（各マイナーバージョンで最新のパッチバージョン）
+get_recommended_versions() {
+    local -a all_versions=("${(@P)1}")
+    local -A latest_by_minor=()
+    local -a recommended=()
+    
+    # 各マイナーバージョンの最新パッチバージョンを特定
+    for version in "${all_versions[@]}"; do
+        if [[ "$version" =~ ^(3\.[0-9]+)\. ]]; then
+            local minor_version="${match[1]}"
+            if [[ -z "${latest_by_minor[$minor_version]}" ]] || [[ "$version" > "${latest_by_minor[$minor_version]}" ]]; then
+                latest_by_minor[$minor_version]="$version"
+            fi
+        fi
+    done
+    
+    # マイナーバージョンを降順でソートして、最新5つを取得
+    local -a sorted_minors=($(printf '%s\n' ${(k)latest_by_minor} | sort -V -r))
+    local count=0
+    for minor in "${sorted_minors[@]}"; do
+        if [[ $count -lt 5 ]]; then
+            recommended+=("${latest_by_minor[$minor]}")
+            ((count++))
+        else
+            break
+        fi
+    done
+    
+    # 結果をグローバル変数に格納
+    RECOMMENDED_VERSIONS=("${recommended[@]}")
+}
+
+# インストール済みバージョンを確認する関数
+check_installed_versions() {
+    local -a target_versions=("${(@P)1}")
+    local -a installed=()
+    local -a not_installed=()
+    
+    local installed_output=$(pyenv versions 2>/dev/null)
+    
+    for version in "${target_versions[@]}"; do
+        if echo "$installed_output" | grep -q "$version"; then
+            installed+=("$version")
+        else
+            not_installed+=("$version")
+        fi
+    done
+    
+    INSTALLED_VERSIONS=("${installed[@]}")
+    NOT_INSTALLED_VERSIONS=("${not_installed[@]}")
+}
+
+# バージョン選択とインストールを行う関数
+pyenv_select_and_install_version() {
+    print -r -- "Python環境構築を開始します..." >&2
+    
+    # インストール可能なバージョンを取得
+    print -r -- "利用可能なPythonバージョンを取得中..." >&2
+    local install_list_output=$(pyenv install --list)
+    parse_pyenv_install_list "$install_list_output"
+    
+    if [[ ${#PYENV_INSTALLABLE_VERSIONS} -eq 0 ]]; then
+        print -r -- "インストール可能なPythonバージョンが見つかりませんでした。" >&2
+        return 1
+    fi
+    
+    # 推奨バージョンを取得
+    get_recommended_versions PYENV_INSTALLABLE_VERSIONS
+    
+    print -r -- "推奨Pythonバージョン（各マイナーバージョンの最新）:" >&2
+    for version in "${RECOMMENDED_VERSIONS[@]}"; do
+        print -r -- "  - $version" >&2
+    done
+    print "" >&2
+    
+    # インストール状況を確認
+    check_installed_versions RECOMMENDED_VERSIONS
+    
+    if [[ ${#INSTALLED_VERSIONS} -gt 0 ]]; then
+        print -r -- "既にインストール済みのバージョン:" >&2
+        for version in "${INSTALLED_VERSIONS[@]}"; do
+            print -r -- "  ✓ $version" >&2
+        done
+        print "" >&2
+    fi
+    
+    if [[ ${#NOT_INSTALLED_VERSIONS} -gt 0 ]]; then
+        print -r -- "未インストールのバージョン:" >&2
+        for version in "${NOT_INSTALLED_VERSIONS[@]}"; do
+            print -r -- "  - $version" >&2
+        done
+        print "" >&2
+    fi
+    
+    # 使用するバージョンを選択（推奨バージョンから）
+    print -r -- "使用するPythonバージョンを選択してください:" >&2
+    local selected_version=$(select_1_item RECOMMENDED_VERSIONS)
+    
+    if [[ -z "$selected_version" ]]; then
+        print -r -- "バージョンが選択されませんでした。" >&2
+        return 1
+    fi
+    
+    # 選択されたバージョンがインストール済みかチェック
+    if echo "${INSTALLED_VERSIONS[@]}" | grep -q "$selected_version"; then
+        print -r -- "選択されたバージョン $selected_version は既にインストール済みです。" >&2
+    else
+        print -r -- "Python $selected_version をインストールします..." >&2
+        pyenv install "$selected_version"
+        
+        if [[ $? -ne 0 ]]; then
+            print -r -- "Python $selected_version のインストールに失敗しました。" >&2
+            return 1
+        fi
+        
+        print -r -- "Python $selected_version のインストールが完了しました。" >&2
+    fi
+    
+    print "$selected_version"
+}
+
+# 改善されたcreate_python_venv関数
+create_python_venv() {
+    # バージョン選択とインストール
+    local python_version=$(pyenv_select_and_install_version)
+    
+    if [[ -z "$python_version" ]]; then
+        print -r -- "Python バージョンの選択/インストールに失敗しました。処理を中止します。" >&2
+        return 1
+    fi
+    
+    # 仮想環境の名前を入力
+    print -r -- "仮想環境の名前を入力してください（例: myenv）:" >&2
+    local env_name=""
+    read "env_name"
+    
+    if [[ -z "$env_name" ]]; then
+        print -r -- "環境名が入力されませんでした。処理を中止します。" >&2
+        return 1
+    fi
+    
+    # pyenvでPythonバージョンを切り替え
+    print -r -- "Python $python_version に切り替え中..." >&2
+    pyenv local "$python_version"
+    
+    # 仮想環境を作成
+    print -r -- "仮想環境「$env_name」を作成中..." >&2
+    python -m venv "$env_name"
+    
+    # 結果確認
+    if [[ $? -eq 0 ]]; then
+        print -r -- "仮想環境「$env_name」が正常に作成されました。" >&2
+        print -r -- "アクティベート方法: source $env_name/bin/activate" >&2
+        return 0
+    else
+        print -r -- "仮想環境の作成に失敗しました。" >&2
+        return 1
+    fi
+}
+
 parse_pyenv_versions() {
     local pyenv_output=$1
     local -a versions=()
@@ -215,59 +418,4 @@ parse_pyenv_versions() {
     # グローバル変数に結果を格納
     PYENV_ALLVERSIONS=("${versions[@]}")
     PYENV_ALLVERSIONS_WITH_EXPLAINS=("${versions_with_explains[@]}")
-}
-
-pyenv_select_version() {
-    # pyenv versionsの実行結果を取得
-    local pyenv_output=$(pyenv versions)
-    
-    # バージョンと説明を解析
-    parse_pyenv_versions "$pyenv_output"
-    
-    # ユーザーに選択を促す
-    print -r -- "以下のPythonバージョンから選択:" >&2
-    local selected_version=$(select_1_item PYENV_ALLVERSIONS PYENV_ALLVERSIONS_WITH_EXPLAINS)
-    
-    # 選択結果を返す
-    if [[ -n "$selected_version" ]]; then
-        print "$selected_version"
-    else
-        print -r -- "バージョンが選択されませんでした" >&2
-    fi
-}
-
-create_python_venv() {
-    # 使用するPythonバージョンを選択
-    print -r -- "使用するPythonバージョンを選択してください:" 
-    local python_version=$(pyenv_select_version)
-    
-    if [[ -z "$python_version" ]]; then
-        print -r -- "Python バージョンが選択されませんでした。処理を中止します。"
-        return 1
-    fi
-    
-    # 仮想環境の名前を入力
-    print -r -- "仮想環境の名前を入力してください（例: myenv）:"
-    local env_name=""
-    read "env_name"
-    
-    if [[ -z "$env_name" ]]; then
-        print -r -- "環境名が入力されませんでした。処理を中止します。"
-        return 1
-    fi
-    
-    # pyenvでPythonバージョンを切り替え
-    pyenv local $python_version
-    
-    # 仮想環境を作成
-    python -m venv "$env_name"
-    
-    # 結果確認
-    if [[ $? -eq 0 ]]; then
-        print -r -- "仮想環境「$env_name」が正常に作成されました。"
-        return 0
-    else
-        print -r -- "仮想環境の作成に失敗しました。"
-        return 1
-    fi
 }
