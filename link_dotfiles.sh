@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Windows環境でのシンボリックリンク設定
+if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
+    export MSYS="${MSYS:+$MSYS:}winsymlinks:nativestrict"
+    echo "INFO: Set MSYS=winsymlinks:nativestrict for proper symlink support"
+fi
+
 : "SET_BASE_PATH" && {
     PTH_D_BASE=$(cd "$(dirname "$0")" && pwd)
 }
@@ -17,6 +23,13 @@ link_dotfile() {
     fi
 
     ln -s "$source_path" "$target_path"
+    
+    # シンボリックリンクが正しく作成されたかチェック
+    if [[ -L "$target_path" ]]; then
+        echo "INFO: Created symlink: $target_path -> $source_path"
+    else
+        echo "WARN: Symlink creation may have failed for: $target_path"
+    fi
 }
 
 : "LINK_DOTS_OF_VIM" && {
