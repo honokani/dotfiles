@@ -217,7 +217,9 @@ export TWILIO_AUTH_TOKEN=""
                         branches_with_explains+=("$line:ローカル")
                     fi
                 fi
-            done <<< "$branch_list"
+            done << EOF
+"$branch_list"
+EOF
 
             # ソート（説明付きも同じ順序でソート）
             local -a sorted_indices=($(for i in {1..${#branches}}; do echo "$i:${branches[$i]}"; done | sort -t: -k2 | cut -d: -f1))
@@ -394,7 +396,9 @@ export TWILIO_AUTH_TOKEN=""
                         fi
                     fi
                 fi
-            done <<< "$status_output"
+            done << EOF
+"$status_output"
+EOF
             
             if [[ ${#target_files} -eq 0 ]]; then
                 print "追加可能なファイルがありません。" >&2
@@ -449,7 +453,7 @@ export TWILIO_AUTH_TOKEN=""
                         eval "$(pyenv init -)"
                     fi
                     eval "$(pyenv virtualenv-init -)"
-                    alias pyem="pyenv virtualenv " # arg: version, env_name
+                    alias pyem=create_python_venv
                     alias pyel="pyenv virtualenvs"
                     alias pyea="pyenv activate "
                     alias pyed="pyenv deactivate "
