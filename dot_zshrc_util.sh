@@ -206,6 +206,9 @@ pyenv_select_version() {
     fi
 }
 
+# 既存の関数はそのまま保持して、以下を追加/修正
+
+# インストール可能なPythonバージョンを解析する関数
 parse_pyenv_install_list() {
     local install_list_output=$1
     local -a versions=()
@@ -224,7 +227,7 @@ parse_pyenv_install_list() {
             fi
         fi
     done << EOF
- "$install_list_output"
+"$install_list_output"
 EOF
 
     # グローバル変数に結果を格納
@@ -301,34 +304,50 @@ pyenv_select_and_install_version() {
     # 推奨バージョンを取得
     get_recommended_versions PYENV_INSTALLABLE_VERSIONS
     
-    print -r -- "推奨Pythonバージョン（各マイナーバージョンの最新）:" >&2
-    for version in "${RECOMMENDED_VERSIONS[@]}"; do
-        print -r -- "  - $version" >&2
-    done
-    print "" >&2
-    
     # インストール状況を確認
     check_installed_versions RECOMMENDED_VERSIONS
     
-    if [[ ${#INSTALLED_VERSIONS} -gt 0 ]]; then
-        print -r -- "既にインストール済みのバージョン:" >&2
-        for version in "${INSTALLED_VERSIONS[@]}"; do
-            print -r -- "  ✓ $version" >&2
-        done
-        print "" >&2
-    fi
+    # インストール済みのバージョンを取得（pyenv versionsから）
+    local installed_output=$(pyenv versions 2>/dev/null)
+    local -a all_installed=()
+    while IFS= read -r line; do
+        local trimmed_line="${line#"${line%%[! ]*}"}"
+        # アスタリスクを除去して、バージョン番号のみを抽出
+        if [[ "$trimmed_line" =~ ^[\*]?[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+            local version="${match[1]}"
+            if [[ "$version" =~ ^3\. ]]; then
+                all_installed+=("$version")
+            fi
+        fi
+    done << EOF
+"$installed_output"
+EOF
     
-    if [[ ${#NOT_INSTALLED_VERSIONS} -gt 0 ]]; then
-        print -r -- "未インストールのバージョン:" >&2
-        for version in "${NOT_INSTALLED_VERSIONS[@]}"; do
-            print -r -- "  - $version" >&2
-        done
-        print "" >&2
-    fi
+    # 選択肢とその説明を準備
+    local -a final_choices=()
+    local -a final_explains=()
     
-    # 使用するバージョンを選択（推奨バージョンから）
+    # インストール済みバージョンを優先して追加
+    for version in "${all_installed[@]}"; do
+        final_choices+=("$version")
+    done
+    
+    # 推奨バージョンの中で未インストールのものを追加
+    for version in "${RECOMMENDED_VERSIONS[@]}"; do
+        # すでに選択肢に含まれていない場合のみ追加
+        if ! echo "${final_choices[@]}" | grep -q "$version"; then
+            final_choices+=("$version")
+            final_explains+=("${version}:新規インストール")
+        fi
+    done
+    
+    # グローバル変数に設定
+    FINAL_CHOICES=("${final_choices[@]}")
+    FINAL_EXPLAINS=("${final_explains[@]}")
+    
+    # 使用するバージョンを選択
     print -r -- "使用するPythonバージョンを選択してください:" >&2
-    local selected_version=$(select_1_item RECOMMENDED_VERSIONS)
+    local selected_version=$(select_1_item FINAL_CHOICES FINAL_EXPLAINS)
     
     if [[ -z "$selected_version" ]]; then
         print -r -- "バージョンが選択されませんでした。" >&2
@@ -336,7 +355,7 @@ pyenv_select_and_install_version() {
     fi
     
     # 選択されたバージョンがインストール済みかチェック
-    if echo "${INSTALLED_VERSIONS[@]}" | grep -q "$selected_version"; then
+    if echo "${all_installed[@]}" | grep -q "$selected_version"; then
         print -r -- "選択されたバージョン $selected_version は既にインストール済みです。" >&2
     else
         print -r -- "Python $selected_version をインストールします..." >&2
