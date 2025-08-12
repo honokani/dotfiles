@@ -453,7 +453,7 @@ EOF
                         eval "$(pyenv init -)"
                     fi
                     eval "$(pyenv virtualenv-init -)"
-                    alias pyem=create_python_venv
+                    alias pyem=_create_python_venv
                     alias pyel="pyenv virtualenvs"
                     alias pyea="pyenv activate "
                     alias pyed="pyenv deactivate "
@@ -468,7 +468,7 @@ EOF
             }
             _activate_pyenv_win () {
                 if [ -d "$HOME/.pyenv" ]; then
-                    alias pyem=create_python_venv
+                    alias pyem=_create_python_venv_win
                     alias pyea=_run_env_win
                     alias pyed="deactivate "
                     

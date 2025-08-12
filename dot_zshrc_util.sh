@@ -206,9 +206,8 @@ pyenv_select_version() {
     fi
 }
 
-# 既存の関数はそのまま保持して、以下を追加/修正
 
-# インストール可能なPythonバージョンを解析する関数
+
 parse_pyenv_install_list() {
     local install_list_output=$1
     local -a versions=()
@@ -227,9 +226,9 @@ parse_pyenv_install_list() {
             fi
         fi
     done << EOF
-"$install_list_output"
+$install_list_output
 EOF
-
+    
     # グローバル変数に結果を格納
     PYENV_INSTALLABLE_VERSIONS=("${versions[@]}")
     PYENV_INSTALLABLE_VERSIONS_WITH_EXPLAINS=()
@@ -320,7 +319,7 @@ pyenv_select_and_install_version() {
             fi
         fi
     done << EOF
-"$installed_output"
+$installed_output
 EOF
     
     # 選択肢とその説明を準備
@@ -372,8 +371,8 @@ EOF
     print "$selected_version"
 }
 
-# 改善されたcreate_python_venv関数
-create_python_venv() {
+# 共通部分：バージョン選択と環境名設定
+select_python_version_and_set_name() {
     # バージョン選択とインストール
     local python_version=$(pyenv_select_and_install_version)
     
@@ -392,18 +391,27 @@ create_python_venv() {
         return 1
     fi
     
-    # pyenvでPythonバージョンを切り替え
-    print -r -- "Python $python_version に切り替え中..." >&2
-    pyenv local "$python_version"
+    # 結果をグローバル変数に格納（戻り値として複数の値を返すため）
+    SELECTED_PYTHON_VERSION="$python_version"
+    SELECTED_ENV_NAME="$env_name"
+    return 0
+}
+
+_create_python_venv() {
+    # 共通部分：バージョン選択と環境名設定
+    if ! select_python_version_and_set_name; then
+        return 1
+    fi
     
-    # 仮想環境を作成
-    print -r -- "仮想環境「$env_name」を作成中..." >&2
-    python -m venv "$env_name"
+    # pyenv virtualenvで仮想環境を作成
+    print -r -- "pyenv virtualenv で仮想環境「$SELECTED_ENV_NAME」を作成中..." >&2
+    pyenv virtualenv "$SELECTED_PYTHON_VERSION" "$SELECTED_ENV_NAME"
     
     # 結果確認
     if [[ $? -eq 0 ]]; then
-        print -r -- "仮想環境「$env_name」が正常に作成されました。" >&2
-        print -r -- "アクティベート方法: source $env_name/bin/activate" >&2
+        print -r -- "仮想環境「$SELECTED_ENV_NAME」が正常に作成されました。" >&2
+        print -r -- "アクティベート方法: pyenv activate $SELECTED_ENV_NAME" >&2
+        print -r -- "自動アクティベート設定: pyenv local $SELECTED_ENV_NAME" >&2
         return 0
     else
         print -r -- "仮想環境の作成に失敗しました。" >&2
@@ -411,34 +419,27 @@ create_python_venv() {
     fi
 }
 
-parse_pyenv_versions() {
-    local pyenv_output=$1
-    local -a versions=()
-    local -a versions_with_explains=()
+_create_python_venv_win() {
+    # 共通部分：バージョン選択と環境名設定
+    if ! select_python_version_and_set_name; then
+        return 1
+    fi
     
-    # 各行を処理
-    while IFS= read -r line; do
-        # 行を整形（先頭の空白を削除）
-        local trimmed_line="${line#"${line%%[! ]*}"}"
-        
-        # バージョン番号を抽出
-        if [[ "$trimmed_line" =~ ^[\*]?[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+) ]]; then
-            local version="${match[1]}"
-            versions+=("$version")
-            
-            # 説明を抽出（バージョン番号の部分を取り除く）
-            local explain="${trimmed_line/${version}/}"
-            
-            # 説明が存在する場合のみ追加
-            if [[ -n "${explain// /}" ]]; then
-                versions_with_explains+=("${version}:${explain}")
-            fi
-        fi
-    done << EOF
- "$pyenv_output"
-EOF
+    # pyenvでPythonバージョンを切り替え
+    print -r -- "Python $SELECTED_PYTHON_VERSION に切り替え中..." >&2
+    pyenv local "$SELECTED_PYTHON_VERSION"
     
-    # グローバル変数に結果を格納
-    PYENV_ALLVERSIONS=("${versions[@]}")
-    PYENV_ALLVERSIONS_WITH_EXPLAINS=("${versions_with_explains[@]}")
+    # 仮想環境を作成
+    print -r -- "仮想環境「$SELECTED_ENV_NAME」を作成中..." >&2
+    python -m venv "$SELECTED_ENV_NAME"
+    
+    # 結果確認
+    if [[ $? -eq 0 ]]; then
+        print -r -- "仮想環境「$SELECTED_ENV_NAME」が正常に作成されました。" >&2
+        print -r -- "アクティベート方法: source $SELECTED_ENV_NAME/bin/activate" >&2
+        return 0
+    else
+        print -r -- "仮想環境の作成に失敗しました。" >&2
+        return 1
+    fi
 }
