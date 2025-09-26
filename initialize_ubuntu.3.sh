@@ -167,6 +167,7 @@ set-option -g mouse on
 
 # コピーモード
 setw -g mode-keys vi
+bind -T copy-mode-vi v send -X begin-selection
 EOF
         log_info "tmux設定ファイルを作成しました: $TMUX_CONF"
     else
