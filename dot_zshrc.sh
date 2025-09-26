@@ -13,11 +13,10 @@
                [[ -n "$WSL_INTEROP" ]] || \
                grep -qi microsoft /proc/version 2>/dev/null; then
                 CURR_OS='WSL on Windows'
-                . "$HOME/.zshrc_for_common"
                 . "$HOME/.zshrc_for_wsl"
             else
                 CURR_OS="Linux not WSL"
-                . "$HOME/.zshrc_for_common"
+                . "$HOME/.zshrc_for_linux"
             fi
             ;;
         MINGW32_NT*)
@@ -29,8 +28,8 @@
             . "$HOME/.zshrc_for_windows"
             ;;
         *)
+            CURR_OS=""
             . "$HOME/.zshrc_for_common"
-            unique=""
             ;;
     esac
 
