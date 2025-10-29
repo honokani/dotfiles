@@ -57,9 +57,10 @@ export TWILIO_AUTH_TOKEN=""
 
                 local cmd="cat \"$HISTFILE\""
                 for arg in "$@"; do
-                    cmd="$cmd | grep -- \"$arg\""
+                    cmd="$cmd | grep \"$arg\""
                 done
 
+                cmd="$cmd" | grep -v "his"
                 eval "$cmd"
             }
             if [ -v MY_FLG_FZF ]; then
@@ -218,7 +219,7 @@ export TWILIO_AUTH_TOKEN=""
                     fi
                 fi
             done << EOF
-"$branch_list"
+$branch_list
 EOF
 
             # ソート（説明付きも同じ順序でソート）
@@ -397,7 +398,7 @@ EOF
                     fi
                 fi
             done << EOF
-"$status_output"
+$status_output
 EOF
             
             if [[ ${#target_files} -eq 0 ]]; then
