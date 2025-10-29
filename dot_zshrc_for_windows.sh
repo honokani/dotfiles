@@ -499,22 +499,26 @@
                 fi
             }
 
-            # 修正版：WSL環境に入る
             _wsl_activate() {
                 if [ $# -eq 0 ]; then
-                    # 引数なしの場合は選択式
                     local selected_distro=$(_wsl_select_one_distribution)
 
                     if [[ -z "$selected_distro" ]]; then
                         print -r -- "WSL環境が選択されませんでした。処理を中止します。"
                         return 1
                     fi
-
-                    print -r -- "WSL環境「$selected_distro」に接続しています..."
-                    wsl -d "$selected_distro"
                 else
-                    # 引数ありの場合は従来通り
-                    wsl -d "$1"
+                    local selected_distro="$1"
+                fi
+                    
+                local detected_user=$(wsl -d "$selected_distro" -e bash -c "getent passwd | awk -F: '\$3 >= 1000 && \$3 < 60000 {print \$1}' | head -1" 2>/dev/null)
+
+                if [[ -n "$detected_user" ]]; then
+                    print -r -- "WSL環境「$selected_distro」にユーザー「$detected_user」で接続しています..."
+                    wsl -d "$selected_distro" --user "$detected_user" -- bash -c "cd; exec \$SHELL -l"
+                else
+                    print -r -- "警告: 一般ユーザーが検出できませんでした。「$selected_distro」にrootユーザーで接続します。"
+                    wsl -d "$selected_distro" -- bash -c "cd; exec \$SHELL -l"
                 fi
             }
 
