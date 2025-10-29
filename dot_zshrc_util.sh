@@ -1,3 +1,26 @@
+judge_os() {
+    case "$(uname)" in
+        Darwin)
+            OS_TYPE="mac"
+            ;;
+        Linux)
+            if [[ -n "$WSL_DISTRO_NAME" ]] || [[ -n "$WSL_INTEROP" ]] || grep -qi microsoft /proc/version 2>/dev/null; then
+                OS_TYPE="wsl" # WSL detection
+            else
+                OS_TYPE="linux"
+            fi
+            ;;
+        MINGW32_NT*|MINGW64_NT*|MSYS_NT*)
+            OS_TYPE="windows" # Git Bash / MSYS / MinGW
+            ;;
+        *)
+            OS_TYPE="unknown"
+            ;;
+    esac
+    export OS_TYPE
+    return 0
+}
+
 select_items_stepwise() {
     local max_select=$1
     local -a choices=("${(@P)2}")

@@ -1,43 +1,30 @@
 : "Call_zsh_core_for_each_OS" ; {
-    . "$HOME/.zshrc_util"
-
-    CURR_OS=""
-    case "$(uname)" in
-        Darwin)
+    source "$HOME/.zshrc_util"
+    judge_os
+    
+    # Load OS-specific settings
+    case "$OS_TYPE" in
+        mac)
             CURR_OS="Mac"
-            . "$HOME/.zshrc_for_common"
-            . "$HOME/.zshrc_for_mac"
+            source "$HOME/.zshrc_for_mac"
             ;;
-        Linux)
-            if [[ -n "$WSL_DISTRO_NAME" ]] || \
-               [[ -n "$WSL_INTEROP" ]] || \
-               grep -qi microsoft /proc/version 2>/dev/null; then
-                CURR_OS='WSL on Windows'
-                . "$HOME/.zshrc_for_wsl"
-            else
-                CURR_OS="Linux not WSL"
-                . "$HOME/.zshrc_for_linux"
-            fi
+        wsl)
+            CURR_OS='WSL on Windows'
+            source "$HOME/.zshrc_for_wsl"
             ;;
-        MINGW32_NT*)
-            CURR_OS="Windows 32bit"
-            . "$HOME/.zshrc_for_windows"
+        linux)
+            CURR_OS="Linux"
+            source "$HOME/.zshrc_for_linux"
             ;;
-        MINGW64_NT*)
-            CURR_OS="Windows 64bit"
-            . "$HOME/.zshrc_for_windows"
+        windows)
+            CURR_OS="Windows (Git Bash)"
+            source "$HOME/.zshrc_for_windows"
             ;;
         *)
-            CURR_OS=""
-            . "$HOME/.zshrc_for_common"
+            CURR_OS="Unknown ($(uname))"
             ;;
     esac
 
-    if [ -z "$CURR_OS" ]; then
-        echo "Platform is : ($(uname -a))"
-    else
-        echo "Platform is ""$CURR_OS"". "
-    fi
+    echo "Platform is ""$CURR_OS"". "
     echo "Here is on ""$SHELL"". And zshrc has loaded. "
 }
-
