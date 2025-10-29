@@ -46,6 +46,8 @@ link_dotfile() {
                [[ -n "$WSL_INTEROP" ]] || \
                grep -qi microsoft /proc/version 2>/dev/null; then
                 unique="wsl"
+            else
+                unique="linux"
             fi
             ;;
         MINGW32_NT*|MINGW64_NT*)

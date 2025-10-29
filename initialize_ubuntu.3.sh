@@ -87,7 +87,7 @@ setup_dev_tools() {
     if ! command -v node &> /dev/null; then
         # nvmインストール
         if [[ ! -d "$HOME/.nvm" ]]; then
-            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/latest/install.sh | PROFILE=/dev/null bash
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             
@@ -167,6 +167,7 @@ set-option -g mouse on
 
 # コピーモード
 setw -g mode-keys vi
+bind -T copy-mode-vi v send -X begin-selection
 EOF
         log_info "tmux設定ファイルを作成しました: $TMUX_CONF"
     else
