@@ -202,7 +202,7 @@ export TWILIO_AUTH_TOKEN=""
             local -a branches_with_explains=()
             local branch_list=$(git branch -a --format='%(refname:short)' | grep -v HEAD | sort -u)
 
-            while IFS= read -r line; do
+            echo "$variable" | while IFS= read -r line; do
                 if [[ -n "$line" ]]; then
                     # origin/で始まるリモートブランチの場合の処理
                     if [[ "$line" =~ ^origin/(.+)$ ]]; then
@@ -218,9 +218,7 @@ export TWILIO_AUTH_TOKEN=""
                         branches_with_explains+=("$line:ローカル")
                     fi
                 fi
-            done << EOF
-$branch_list
-EOF
+            done
 
             # ソート（説明付きも同じ順序でソート）
             local -a sorted_indices=($(for i in {1..${#branches}}; do echo "$i:${branches[$i]}"; done | sort -t: -k2 | cut -d: -f1))
@@ -356,22 +354,18 @@ EOF
             local -a target_files=()
             local -a files_with_explains=()
             
-            while IFS= read -r line; do
+            echo "$status_output" | while IFS= read -r line; do
                 if [[ -n "$line" ]]; then
                     local status_code="${line:0:2}"
                     local filename="${line:3}"
                     
+                    
                     # ダブルクォートで囲まれたファイル名の処理
                     if [[ "$filename" =~ ^\".*\"$ ]]; then
-                        # 前後のダブルクォートを削除
                         filename="${filename:1:-1}"
-                        # エスケープされた文字を解釈（例：\343\201\223 → こ）
                         filename=$(printf "%b" "$filename")
                     fi
                     
-                    # ステータスコードの解釈
-                    # 1文字目: インデックス（ステージング）の状態
-                    # 2文字目: 作業ツリーの状態
                     local index_status="${status_code:0:1}"
                     local work_status="${status_code:1:1}"
                     
@@ -397,9 +391,7 @@ EOF
                         fi
                     fi
                 fi
-            done << EOF
-$status_output
-EOF
+           done
             
             if [[ ${#target_files} -eq 0 ]]; then
                 print "追加可能なファイルがありません。" >&2

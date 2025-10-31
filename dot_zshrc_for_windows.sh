@@ -43,7 +43,7 @@
                 # echo "$cleaned_output" >&2
                 # echo "==================" >&2
                 
-                while IFS= read -r line; do
+                 echo "$cleaned_output" | while IFS= read -r line; do
                     # 空行スキップ
                     if [[ -z "${line// /}" ]]; then
                         continue
@@ -74,7 +74,7 @@
                         distributions+=("$distro")
                         distributions_with_explains+=("${distro}:${description}")
                     fi
-                done <<< "$cleaned_output"
+                done
                 
                 # echo "=== 最終結果 ===" >&2
                 # echo "distributions数: ${#distributions}" >&2
@@ -272,7 +272,7 @@
                     local actual_name=""
                     
                     # 新しく追加された環境名を探す
-                    while IFS= read -r distro; do
+                    echo  "$installed_distros_after" | while IFS= read -r distro; do
                         # 空行とdocker-desktopをスキップ
                         [[ -z "$distro" ]] && continue
                         [[ "$distro" == "docker-desktop" ]] && continue
@@ -281,7 +281,7 @@
                             actual_name="$distro"
                             break
                         fi
-                    done <<< "$installed_distros_after"
+                    done
                     
                     # 見つからない場合は選択した名前を使用
                     if [[ -z "$actual_name" ]]; then
@@ -366,7 +366,7 @@
                 local -a running_distributions=()
                 local -a running_distributions_with_explains=()
 
-                while IFS= read -r line; do
+                echo "$wsl_output" | while IFS= read -r line; do
                     # 制御文字を除去
                     local cleaned_line=$(echo "$line" | tr -d '\r' | sed 's/[[:cntrl:]]//g' | sed 's/▒[0-9]*//g')
 
@@ -384,7 +384,7 @@
                             running_distributions_with_explains+=("${distro}:Running")
                         fi
                     fi
-                done <<< "$wsl_output"
+                done
 
                 # グローバル変数に結果を格納
                 WSL_RUNNING_DISTRIBUTIONS=("${running_distributions[@]}")
@@ -447,7 +447,7 @@
                 local -a all_distributions=()
                 local -a all_distributions_with_explains=()
                 
-                while IFS= read -r line; do
+                echo "$wsl_output" | while IFS= read -r line; do
                     # 制御文字を除去
                     local cleaned_line=$(echo "$line" | tr -d '\r' | sed 's/[[:cntrl:]]//g' | sed 's/▒[0-9]*//g')
                     
@@ -469,7 +469,7 @@
                         all_distributions+=("$distro")
                         all_distributions_with_explains+=("${distro}:${state}")
                     fi
-                done <<< "$wsl_output"
+                done
                 
                 # グローバル変数に結果を格納
                 WSL_ALL_DISTRIBUTIONS=("${all_distributions[@]}")
@@ -499,22 +499,26 @@
                 fi
             }
 
-            # 修正版：WSL環境に入る
             _wsl_activate() {
                 if [ $# -eq 0 ]; then
-                    # 引数なしの場合は選択式
                     local selected_distro=$(_wsl_select_one_distribution)
 
                     if [[ -z "$selected_distro" ]]; then
                         print -r -- "WSL環境が選択されませんでした。処理を中止します。"
                         return 1
                     fi
-
-                    print -r -- "WSL環境「$selected_distro」に接続しています..."
-                    wsl -d "$selected_distro"
                 else
-                    # 引数ありの場合は従来通り
-                    wsl -d "$1"
+                    local selected_distro="$1"
+                fi
+                    
+                local detected_user=$(wsl -d "$selected_distro" -e bash -c "getent passwd | awk -F: '\$3 >= 1000 && \$3 < 60000 {print \$1}' | head -1" 2>/dev/null)
+
+                if [[ -n "$detected_user" ]]; then
+                    print -r -- "WSL環境「$selected_distro」にユーザー「$detected_user」で接続しています..."
+                    wsl -d "$selected_distro" --user "$detected_user" -- bash -c "cd; exec \$SHELL -l"
+                else
+                    print -r -- "警告: 一般ユーザーが検出できませんでした。「$selected_distro」にrootユーザーで接続します。"
+                    wsl -d "$selected_distro" -- bash -c "cd; exec \$SHELL -l"
                 fi
             }
 
@@ -560,7 +564,7 @@
 
                 # CSVを読み込み（ヘッダー行をスキップ）
                 local line_num=0
-                while IFS=',' read -r filename message; do
+                echo  "$WSL_BACKUP_CSV" | while IFS=',' read -r filename message; do
                     ((line_num++))
 
                     # ヘッダー行をスキップ
@@ -575,7 +579,7 @@
                         local clean_message=$(echo "$message" | sed 's/^"//; s/"$//')
                         backup_files_with_explains+=("${filename}:${clean_message}")
                     fi
-                done < "$WSL_BACKUP_CSV"
+                done
 
                 WSL_BACKUP_FILES=("${backup_files[@]}")
                 WSL_BACKUP_FILES_WITH_EXPLAINS=("${backup_files_with_explains[@]}")
@@ -697,7 +701,7 @@
                 local -a stopped_distributions=()
                 local -a stopped_distributions_with_explains=()
                 
-                while IFS= read -r line; do
+                echo "$wsl_output" | while IFS= read -r line; do
                     # 制御文字を除去
                     local cleaned_line=$(echo "$line" | tr -d '\r' | sed 's/[[:cntrl:]]//g' | sed 's/▒[0-9]*//g')
                     
@@ -721,7 +725,7 @@
                             stopped_distributions_with_explains+=("${distro}:${state}")
                         fi
                     fi
-                done <<< "$wsl_output"
+                done
                 
                 # グローバル変数に結果を格納
                 WSL_STOPPED_DISTRIBUTIONS=("${stopped_distributions[@]}")
