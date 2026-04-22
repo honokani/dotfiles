@@ -1,5 +1,8 @@
 : "Call_zsh_core_for_each_OS" ; {
     . "$HOME/.zshrc_util"
+    #. "$HOME/.local/bin/env"
+    autoload -Uz compinit
+    compinit
 
     CURR_OS=""
     case "$(uname)" in

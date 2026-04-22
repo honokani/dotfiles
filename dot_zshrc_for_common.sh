@@ -102,6 +102,8 @@ export TWILIO_AUTH_TOKEN=""
                 fi
             }
         fi
+        compdef '_path_files' _lsl
+        compdef '_path_files' _lsla
         alias ll=_lsl
         alias lll=_lsla
         alias lld=_lsld
@@ -434,7 +436,21 @@ export TWILIO_AUTH_TOKEN=""
 }
 
 : "PG_SETTING" && {
+    : "claude" && {
+        if type claude > /dev/null 2>&1; then
+            _claude_using_session() {
+                if [[ $# -eq 0 ]]; then
+                command claude --continue || command claude
+                else
+                command claude "$@"
+                fi
+            }
+            alias claude=_claude_using_session
+        fi
+    }
+
     : "Python" && {
+        export PYTHONIOENCODING=utf-8
         : "pyenv" && {
             # this function was called in each setting if necessary.
             _activate_pyenv () {
@@ -468,14 +484,48 @@ export TWILIO_AUTH_TOKEN=""
                 fi
             }
         }
+        : "uv" && {
+            export PATH="$HOME/.local/bin:$PATH"
+            if type uv > /dev/null 2>&1; then
+                _activate_uvenv () {
+                    if [ -d "$(pwd)/.venv" ]; then
+                        . ./.venv/bin/activate
+                    else
+                        echo "no uv env: activate"
+                    fi
+                }
+                _deactivate_uvenv () {
+                    if [ -d "$(pwd)/.venv" ]; then
+                        deactivate
+                    else
+                        echo "no uv env: deactivate"
+                    fi
+                }
+                _create_uvenv () {
+                    if [ $# -eq 1 ]; then
+                        uv venv --python "$1"
+                    else
+                        echo "required just 1 arg"
+                    fi
+                }
+                alias uva=_activate_uvenv
+                alias uvd=_deactivate_uvenv
+                alias uvm=_create_uvenv
+            fi
+        }
     }
     : "cuda" && {
         export PATH="/usr/local/cuda/bin:$PATH"
     }
     : "Haskell" && {
-        [ -f "/Users/shoto.miki/.ghcup/env" ] && {
+        [ -f "$HOME/.ghcup/env" ] && {
             source "/Users/shoto.miki/.ghcup/env" # ghcup-env
             alias -s hs="stack runghc "
+        }
+    }
+    : "Rust" && {
+        [ -d "$HOME/.cargo/" ] && {
+            export PATH="$HOME/.cargo/bin:$PATH"
         }
     }
     : "nodejs" && {
@@ -483,6 +533,13 @@ export TWILIO_AUTH_TOKEN=""
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+        fi
+        if command -v npm &>/dev/null; then
+            if command -v cygpath &>/dev/null; then
+                export PATH="$(cygpath -u "$(npm config get prefix)"):$PATH"
+            else
+                export PATH="$(npm config get prefix):$PATH"
+            fi
         fi
     }
 }
