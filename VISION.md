@@ -1,7 +1,7 @@
 # dotfiles — VISION.md
 
 ## Why
-複数環境（Windows/WSL/Linux/Mac）の個人開発環境を一元管理し、新規セットアップを `initialize_ubuntu.*.sh` で自動化する。
+複数環境（Windows/WSL/Linux/Mac）の個人開発環境を一元管理し、新規セットアップを `initialize.*.sh` で自動化する。
 
 ## 設計思想
 

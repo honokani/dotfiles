@@ -7,14 +7,13 @@
 ### Step
 
 **Ubuntu / WSL**
-   1. execute `initialize_ubuntu.1.sh`
-   1. execute `initialize_ubuntu.2.sh`
-   1. execute `initialize_ubuntu.3.sh`
+   1. execute `initialize.1.sh`
+   1. execute `initialize.2.sh`
+   1. execute `initialize.3.sh`
 
-**Windows**
-   1. install zsh (msys2 / git bash 等)
-   1. execute `initialize_windows.sh` (uv 公式 PowerShell installer 経由)
-   1. execute `link_dotfiles.sh`
+**Windows (git bash + scoop 前提)**
+   1. 事前準備: git bash で zsh 起動可、scoop 導入済み
+   1. execute `initialize.2.sh` (OS判定で Windows 用処理が走る: PowerShell uv installer + scoop vim + fzf git clone)
 
 ## Expected Error
    *  neovim  

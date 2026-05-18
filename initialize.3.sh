@@ -1,5 +1,5 @@
 #!/usr/bin/zsh
-# initialize_ubuntu_optional.sh
+# initialize.3.sh (optional)
 # =============================
 # 必要に応じて実行するオプション設定
 
@@ -29,7 +29,6 @@ setup_dev_tools() {
         w3m \
         zip \
         ripgrep \
-        fzf \
         bat \
         fd-find \
         jq
@@ -79,58 +78,17 @@ setup_dev_tools() {
 # =============================
 setup_tmux() {
     log_info "tmux環境を構築中..."
-    
+
     # tmuxインストール
     if ! command -v tmux &> /dev/null; then
         sudo apt install -y tmux
     fi
-    
-    # tmux設定ファイル作成（dotfilesに含めるべき）
-    local TMUX_CONF="$HOME/.tmux.conf"
-    if [[ ! -f "$TMUX_CONF" ]]; then
-        cat > "$TMUX_CONF" << 'EOF'
-# 基本設定
-set-option -g default-shell $SHELL
-set-option -g default-terminal "screen-256color"
-set -g terminal-overrides 'xterm:colors=256'
 
-# プレフィックスキー
-set -g prefix C-q
-unbind C-b
-
-# ペイン分割
-bind | split-window -h
-bind - split-window -v
-
-# インデックス
-set-option -g base-index 1
-set-window-option -g pane-base-index 1
-
-# ステータスバー
-set-option -g status-justify centre
-set-option -g status-bg "colour238"
-set-option -g status-fg "colour255"
-
-# ペイン操作
-bind h select-pane -L
-bind j select-pane -D
-bind k select-pane -U
-bind l select-pane -R
-bind -r H resize-pane -L 5
-bind -r J resize-pane -D 5
-bind -r K resize-pane -U 5
-bind -r L resize-pane -R 5
-
-# マウス
-set-option -g mouse on
-
-# コピーモード
-setw -g mode-keys vi
-bind -T copy-mode-vi v send -X begin-selection
-EOF
-        log_info "tmux設定ファイルを作成しました: $TMUX_CONF"
+    # tmux 設定は dot_tmux.conf を link_dotfiles.sh で symlink 配置
+    if [[ -L "$HOME/.tmux.conf" ]]; then
+        log_info "tmux 設定 ($HOME/.tmux.conf) は symlink 配置済み"
     else
-        log_info "tmux設定ファイルは既に存在します"
+        log_warn "tmux 設定が symlink になっていません。link_dotfiles.sh を実行してください"
     fi
 }
 

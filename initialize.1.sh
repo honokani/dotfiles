@@ -10,7 +10,7 @@ fi
 # change shell (現在のシェルがzshでない場合のみ)
 if [[ "$SHELL" != "$(which zsh)" ]]; then
     sudo chsh -s $(which zsh) $USER
-    echo "Shell changed to zsh. Please reboot and run initialize_ubuntu.2.sh"
+    echo "Shell changed to zsh. Please reboot and run initialize.2.sh"
 else
     echo "Already using zsh"
 fi

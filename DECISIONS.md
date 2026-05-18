@@ -41,6 +41,13 @@
 | 6.0.0 | uv | 二重 activate | ◯ | ◯ | ◯ | ◯ | 警告して拒否 | 黙って上書き | 既に他 venv に居ることを気づかず再 activate する事故防止 |
 | 6.0.0 | uv | create 引数仕様 | ◯ | ◯ | ◯ | ◯ | 0/1 引数許容 (0=uv デフォルト python) | 1引数必須 | `uv venv` 自体が引数なしで動くので、ラッパー側で縛る理由がない |
 | -     | uv | Windowsインストール方式 | ◯ | × | × | × | 公式 PowerShell standalone installer | Scoop / WinGet | Linux/Mac と一貫した配置 (`%USERPROFILE%\.local\bin\uv.exe`)、現状の zshrc PATH 設定がそのまま機能、self-update対応 |
+| 7.0.0 | 初期化 | 初期化スクリプト構成 | ◯ | ◯ | ◯ | ◯ | initialize.2.sh で OS分岐 | initialize_windows.sh を別途維持 | initialize_windows.sh は実行フローに組み込まれず機能していなかった。1ファイルに統合して uname 判定で分岐するほうが運用がシンプル |
+| 7.0.0 | vim | Linux のインストール | × | × | ◯ | ◯ | apt install vim | PPA / ソースビルド | Ubuntu 24.04+ なら apt の vim が 9.x で十分 |
+| 7.0.0 | vim | Windows のインストール | ◯ | × | × | × | scoop install vim | 手動 / chocolatey | ユーザーが既に scoop を使用中、統合しやすい |
+| 7.0.0 | fzf | インストール方式 | ◯ | ◯ | ◯ | ◯ | GitHub git clone + ~/.fzf/install --all --no-update-rc | apt fzf | apt版は古い、GitHub clone なら全OS共通で最新版、dotfiles 自動編集を抑制 (--no-update-rc) |
+| 7.0.0 | zsh | his alias | ◯ | ◯ | ◯ | ◯ | 廃止（fzf の Ctrl+R で代替） | 維持 / fallback 残す | Ctrl+R が完全上位互換（フィルタ→Enter で即実行）、his (フィルタ→コピペ実行) は冗長 |
+| 8.0.0 | 初期化 | initialize.{4,5}.sh | × | × | ◯ | ◯ | 削除（3.sh に統合済み） | 維持 | 4.sh の USEFUL_APPS/TMUX、5.sh の xmonad は既に initialize.3.sh の setup_* 関数に対応 |
+| 8.0.0 | tmux | 設定ファイル管理 | × | × | ◯ | ◯ | dotfiles に dot_tmux.conf を置き link_dotfiles.sh で symlink | initialize スクリプト内で heredoc 書き出し | 設定が dotfiles 管理下になり、編集→反映の流れが他の dotfile と統一 |
 
 ## vim
 

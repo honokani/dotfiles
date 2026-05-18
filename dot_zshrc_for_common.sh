@@ -1,6 +1,7 @@
 export TWILIO_ACCOUNT_SID=""
 export TWILIO_AUTH_TOKEN=""
 : "PRESETTING" && {
+    typeset -U path
     if [ -z "$MY_WORK_DIR" ]; then
         if [ -z "$1" ]; then
             MY_WORK_DIR="$HOME/ws"
@@ -49,25 +50,6 @@ export TWILIO_AUTH_TOKEN=""
             setopt hist_reduce_blanks
             setopt share_history
 
-            _show_history() {
-                if [ $# -eq 0 ]; then
-                    cat "$HISTFILE"
-                    return
-                fi
-
-                local cmd="cat \"$HISTFILE\""
-                for arg in "$@"; do
-                    cmd="$cmd | grep \"$arg\""
-                done
-
-                cmd="$cmd" | grep -v "his"
-                eval "$cmd"
-            }
-            if [ -v MY_FLG_FZF ]; then
-                alias his="cat ~/.zsh_history| fzf "
-            else
-                alias his=_show_history
-            fi
         }
         : "Prompt" && {
             PROMPT='%F{cyan}%(!.#.$)%f '
@@ -514,7 +496,7 @@ export TWILIO_AUTH_TOKEN=""
 : "APPLICATION_SETTING" && {
     : "fzf" && {
         if [ -v MY_FLG_FZF ]; then
-            [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+            [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
             export ENHANCD_FILTER=fzf
             export ENHANCD_HOOK_AFTER_CD=chpwd
         fi

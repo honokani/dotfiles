@@ -36,6 +36,10 @@ link_dotfile() {
     link_dotfile "$HOME/.vimrc" "$PTH_D_BASE/dot_vimrc.vim"
 }
 
+: "LINK_DOTS_OF_TMUX" && {
+    link_dotfile "$HOME/.tmux.conf" "$PTH_D_BASE/dot_tmux.conf"
+}
+
 : "LINK_DOTS_OF_ZSH" && {
     case "$(uname)" in
         Darwin)
