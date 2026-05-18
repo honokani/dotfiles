@@ -13,45 +13,6 @@ log_info() { echo -e "${GREEN}[INFO]${NC} $*"; }
 log_warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
 
 # =============================
-# Neovim環境構築
-# =============================
-setup_neovim() {
-    log_info "Neovim環境を構築します..."
-    
-    # Neovimインストール
-    if ! command -v nvim &> /dev/null; then
-        sudo apt-get install -y software-properties-common
-        sudo add-apt-repository -y ppa:neovim-ppa/stable
-        sudo apt-get update
-        sudo apt-get install -y neovim
-    else
-        log_info "Neovimは既にインストールされています"
-    fi
-    
-    # uv が PATH にあるか確認
-    if ! command -v uv &> /dev/null; then
-        export PATH="$HOME/.local/bin:$PATH"
-    fi
-
-    # Neovim用Python venv (Python2は廃止、Python3のみ)
-    local PYTHON_VERSION="3.12"
-    local NVIM_VENV="$HOME/.local/share/uv-venvs/neovim3"
-    if [[ ! -d "$NVIM_VENV" ]]; then
-        log_info "Neovim用Python venv を作成中: $NVIM_VENV"
-        mkdir -p "$(dirname "$NVIM_VENV")"
-        uv venv --python "$PYTHON_VERSION" "$NVIM_VENV"
-        uv pip install --python "$NVIM_VENV/bin/python" pynvim
-    else
-        log_info "Neovim用Python venv は既に存在します"
-    fi
-    
-    # Git設定
-    git config --global core.editor nvim
-    
-    log_info "Neovim環境構築完了"
-}
-
-# =============================
 # 開発ツール
 # =============================
 setup_dev_tools() {
@@ -91,7 +52,7 @@ setup_dev_tools() {
             nvm use --lts
             
             # 必要なパッケージ
-            npm install -g yarn neovim
+            npm install -g yarn
         fi
     else
         log_info "Node.jsは既にインストールされています"
@@ -106,7 +67,10 @@ setup_dev_tools() {
             log_warn "exaのインストールにはRustが必要です: https://www.rust-lang.org/tools/install"
         fi
     fi
-    
+
+    # Git エディタ設定 (vim を使う方針)
+    git config --global core.editor vim
+
     log_info "開発ツールのインストール完了"
 }
 
@@ -194,23 +158,20 @@ main() {
     echo "================================"
     echo "Ubuntu オプション設定"
     echo "================================"
-    echo "1) Neovim環境構築"
-    echo "2) 開発ツールインストール"
-    echo "3) tmux設定"
-    echo "4) Xmonad環境構築（GUI用）"
-    echo "5) すべて実行"
+    echo "1) 開発ツールインストール"
+    echo "2) tmux設定"
+    echo "3) Xmonad環境構築（GUI用）"
+    echo "4) すべて実行"
     echo "q) 終了"
     echo ""
-    
-    read "choice?選択してください (1-5/q): "
-    
+
+    read "choice?選択してください (1-4/q): "
+
     case $choice in
-        1) setup_neovim ;;
-        2) setup_dev_tools ;;
-        3) setup_tmux ;;
-        4) setup_xmonad ;;
-        5) 
-            setup_neovim
+        1) setup_dev_tools ;;
+        2) setup_tmux ;;
+        3) setup_xmonad ;;
+        4)
             setup_dev_tools
             setup_tmux
             # Xmonadは必要な場合のみ

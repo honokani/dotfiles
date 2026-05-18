@@ -5,14 +5,10 @@ endif
 if has('win32') || has ('win64')
     set shellslash
     let g:vimproc#download_windows_dll = 1
-    let g:python_host_prog  = expand( "C:/Python27/python.exe" )
-    let g:python3_host_prog = expand( "$USERPROFILE/AppData/Local/Programs/Python/Python36/python.exe" )
+    let g:python3_host_prog = expand( "$HOME/.local/share/uv-venvs/neovim3/Scripts/python.exe" )
 else
-    " set sh=zsh
     set sh=bash
     let g:python3_host_prog = expand( "$HOME/.local/share/uv-venvs/neovim3/bin/python" )
-    " let g:python_host_prog  = expand( "/opt/anaconda3/envs/py2715/bin/python" )
-    " let g:python3_host_prog = expand( "/opt/anaconda3/envs/py36/bin/python" )
 endif
 
 " reset auto
