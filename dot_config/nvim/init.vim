@@ -10,8 +10,7 @@ if has('win32') || has ('win64')
 else
     " set sh=zsh
     set sh=bash
-    let g:python_host_prog  = expand( "$HOME/.pyenv/versions/neovim2/bin/python" )
-    let g:python3_host_prog = expand( "$HOME/.pyenv/versions/neovim3/bin/python" )
+    let g:python3_host_prog = expand( "$HOME/.local/share/uv-venvs/neovim3/bin/python" )
     " let g:python_host_prog  = expand( "/opt/anaconda3/envs/py2715/bin/python" )
     " let g:python3_host_prog = expand( "/opt/anaconda3/envs/py36/bin/python" )
 endif

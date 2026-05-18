@@ -1,12 +1,9 @@
 #!/bin/zsh
 
 : "UNIQUE_SETTING" && {
-    : "PRE_CALLING_COMMON" && {
+    : "COMMON_OVERRIDE" && {
         MY_WORK_DIR="/c/ws"
         MY_GITCLONE_DIR="/c/git_clone"
-    }
-    : "CALLING_COMMON_SETTIG" && {
-        . "$HOME/.zshrc_for_common"
     }
     : "UNIQUE_SETTING" && {
         if [ -e "$HOME/scoop/shims/vim.exe" ]; then
@@ -19,8 +16,24 @@
                 -c "args ~/.zshrc_for_windows" \
                 -c "split ~/.zshrc"
         }
-
-        _activate_pyenv_win
+        : "uv" && {
+            if type uv > /dev/null 2>&1; then
+                _activate_uvenv () {
+                    if [ -n "$VIRTUAL_ENV" ]; then
+                        echo "already in venv: $VIRTUAL_ENV"
+                        echo "run 'uvd' to deactivate first"
+                        return 1
+                    fi
+                    if [ -f "./.venv/Scripts/activate" ]; then
+                        . ./.venv/Scripts/activate
+                    else
+                        echo "no .venv/Scripts/activate in $(pwd)"
+                        echo "run 'uvm [python_version]' to create one"
+                        return 1
+                    fi
+                }
+            fi
+        }
 
         : "wsl2 setting" && {
             # CSVファイルパス

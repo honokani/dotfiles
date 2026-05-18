@@ -451,62 +451,29 @@ export TWILIO_AUTH_TOKEN=""
 
     : "Python" && {
         export PYTHONIOENCODING=utf-8
-        : "pyenv" && {
-            # this function was called in each setting if necessary.
-            _activate_pyenv () {
-                if [ -d "$HOME/.pyenv" ]; then
-                    export PYENV_ROOT="$HOME/.pyenv"
-                    export PATH="$PYENV_ROOT/bin:$PATH"
-                    if command -v pyenv 1>/dev/null 2>&1; then
-                        eval "$(pyenv init --path)"
-                        eval "$(pyenv init -)"
-                    fi
-                    eval "$(pyenv virtualenv-init -)"
-                    alias pyem=_create_python_venv
-                    alias pyel="pyenv virtualenvs"
-                    alias pyea="pyenv activate "
-                    alias pyed="pyenv deactivate "
-                fi
-            }
-            _run_env_win () {
-                if [ $# -eq 0 ]; then
-                    echo "need env name"
-                else
-                    source "./""$1""/Scripts/activate"
-                fi
-            }
-            _activate_pyenv_win () {
-                if [ -d "$HOME/.pyenv" ]; then
-                    alias pyem=_create_python_venv_win
-                    alias pyea=_run_env_win
-                    alias pyed="deactivate "
-                    
-                fi
-            }
-        }
         : "uv" && {
             export PATH="$HOME/.local/bin:$PATH"
             if type uv > /dev/null 2>&1; then
-                _activate_uvenv () {
-                    if [ -d "$(pwd)/.venv" ]; then
-                        . ./.venv/bin/activate
-                    else
-                        echo "no uv env: activate"
-                    fi
-                }
+                # _activate_uvenv は OS別に for_linux.sh / for_windows.sh で定義（パス差分のため）
                 _deactivate_uvenv () {
-                    if [ -d "$(pwd)/.venv" ]; then
+                    if [ -n "$VIRTUAL_ENV" ]; then
                         deactivate
                     else
-                        echo "no uv env: deactivate"
+                        echo "no active venv"
+                        return 1
                     fi
                 }
                 _create_uvenv () {
-                    if [ $# -eq 1 ]; then
-                        uv venv --python "$1"
-                    else
-                        echo "required just 1 arg"
+                    if [ -d "$(pwd)/.venv" ]; then
+                        echo ".venv already exists in $(pwd)"
+                        echo "remove it first, or run 'uv venv --python <ver>' directly to overwrite"
+                        return 1
                     fi
+                    case $# in
+                        0) uv venv ;;
+                        1) uv venv --python "$1" ;;
+                        *) echo "usage: uvm [python_version]" ; return 1 ;;
+                    esac
                 }
                 alias uva=_activate_uvenv
                 alias uvd=_deactivate_uvenv
@@ -519,7 +486,7 @@ export TWILIO_AUTH_TOKEN=""
     }
     : "Haskell" && {
         [ -f "$HOME/.ghcup/env" ] && {
-            source "/Users/shoto.miki/.ghcup/env" # ghcup-env
+            source "$HOME/.ghcup/env" # ghcup-env
             alias -s hs="stack runghc "
         }
     }

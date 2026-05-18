@@ -28,27 +28,22 @@ setup_neovim() {
         log_info "Neovimは既にインストールされています"
     fi
     
-    # Python環境（Python3のみ、Python2は廃止）
-    eval "$(pyenv init -)"
-    
-    # 最新のPython3をインストール
-    local PYTHON_VERSION="3.12.2"
-    if ! pyenv versions | grep -q "$PYTHON_VERSION"; then
-        log_info "Python $PYTHON_VERSION をインストール中..."
-        pyenv install "$PYTHON_VERSION"
+    # uv が PATH にあるか確認
+    if ! command -v uv &> /dev/null; then
+        export PATH="$HOME/.local/bin:$PATH"
     fi
-    
-    # Neovim用仮想環境（Python3のみ）
-    if ! pyenv versions | grep -q "neovim3"; then
-        pyenv virtualenv "$PYTHON_VERSION" neovim3
-        pyenv activate neovim3
-        pip install --upgrade pip
-        pip install pynvim  # neovimパッケージは非推奨、pynvimを使用
-        pyenv deactivate
+
+    # Neovim用Python venv (Python2は廃止、Python3のみ)
+    local PYTHON_VERSION="3.12"
+    local NVIM_VENV="$HOME/.local/share/uv-venvs/neovim3"
+    if [[ ! -d "$NVIM_VENV" ]]; then
+        log_info "Neovim用Python venv を作成中: $NVIM_VENV"
+        mkdir -p "$(dirname "$NVIM_VENV")"
+        uv venv --python "$PYTHON_VERSION" "$NVIM_VENV"
+        uv pip install --python "$NVIM_VENV/bin/python" pynvim
+    else
+        log_info "Neovim用Python venv は既に存在します"
     fi
-    
-    # グローバルPython設定
-    pyenv global "$PYTHON_VERSION"
     
     # Git設定
     git config --global core.editor nvim

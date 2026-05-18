@@ -555,8 +555,63 @@ if filereadable(expand('~/.vim/autoload/plug.vim'))
             Plug 'dominikduda/vim_current_word'
             let g:vim_current_word#highlight_current_word = 0
             let g:vim_current_word#highlight_delay = 300
+
+            " LSP
+            Plug 'prabirshrestha/vim-lsp'
+            Plug 'prabirshrestha/asyncomplete.vim'
+            Plug 'prabirshrestha/asyncomplete-lsp.vim'
+
+            " Haskell syntax/indent (Vim内蔵より高機能)
+            Plug 'neovimhaskell/haskell-vim'
     call plug#end()
+
+    " 未インストールのプラグインがあれば起動時に自動 :PlugInstall
+    autocmd VimEnter *
+        \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+        \|   PlugInstall --sync | source $MYVIMRC
+        \| endif
 endif
+
+
+
+" ===== LSP =====
+
+" HLS のパス解決: PATH 優先、無ければ C:\ghcup\bin 直指定
+let s:hls_path = expand('C:/ghcup/bin/haskell-language-server-wrapper.exe')
+if executable('haskell-language-server-wrapper')
+    let s:hls_cmd = 'haskell-language-server-wrapper'
+elseif filereadable(s:hls_path)
+    let s:hls_cmd = s:hls_path
+else
+    let s:hls_cmd = ''
+endif
+
+if !empty(s:hls_cmd)
+    augroup lsp_hls
+        autocmd!
+        autocmd User lsp_setup call lsp#register_server({
+            \ 'name': 'hls',
+            \ 'cmd': {server_info -> [s:hls_cmd, '--lsp']},
+            \ 'allowlist': ['haskell'],
+            \ })
+    augroup END
+endif
+
+" LSP バッファごとの設定 (haskell バッファに入ったとき発火)
+function! s:on_lsp_buffer_enabled() abort
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    nmap <buffer> <silent> <SPACE>d <plug>(lsp-definition)
+    nmap <buffer> <silent> <SPACE>r <plug>(lsp-references)
+    nmap <buffer> <silent> K        <plug>(lsp-hover)
+    nmap <buffer> <silent> [d       <plug>(lsp-previous-diagnostic)
+    nmap <buffer> <silent> ]d       <plug>(lsp-next-diagnostic)
+endfunction
+
+augroup lsp_install
+    autocmd!
+    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
 
 
 

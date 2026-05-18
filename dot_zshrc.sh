@@ -9,6 +9,7 @@
         Darwin)
             CURR_OS="Mac"
             . "$HOME/.zshrc_for_common"
+            . "$HOME/.zshrc_for_linux"
             . "$HOME/.zshrc_for_mac"
             ;;
         Linux)
@@ -16,18 +17,18 @@
                [[ -n "$WSL_INTEROP" ]] || \
                grep -qi microsoft /proc/version 2>/dev/null; then
                 CURR_OS='WSL on Windows'
+                . "$HOME/.zshrc_for_common"
+                . "$HOME/.zshrc_for_linux"
                 . "$HOME/.zshrc_for_wsl"
             else
                 CURR_OS="Linux not WSL"
+                . "$HOME/.zshrc_for_common"
                 . "$HOME/.zshrc_for_linux"
             fi
             ;;
-        MINGW32_NT*)
-            CURR_OS="Windows 32bit"
-            . "$HOME/.zshrc_for_windows"
-            ;;
-        MINGW64_NT*)
-            CURR_OS="Windows 64bit"
+        MINGW*_NT*)
+            CURR_OS="Windows"
+            . "$HOME/.zshrc_for_common"
             . "$HOME/.zshrc_for_windows"
             ;;
         *)
