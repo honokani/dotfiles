@@ -3,13 +3,13 @@
 
 
 
-# make git clone directory
-GC_NAME=$(pwd|awk -F/ '{print $(NF-1)}')
-GC=$HOME/$GC_NAME
-DF_NAME=$(pwd|awk -F/ '{print $(NF)}')
-[[ ! -d "$GC" ]] && mkdir -p "$GC"
-# link dotfiles
-$GC/$DF_NAME/link_dotfiles.sh
+# link dotfiles (call from script's directory)
+# Windows では link_dotfiles.sh が $HOME/git_clone -> /c/git_clone, $HOME/ws -> /c/ws の symlink も作成する
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+"$SCRIPT_DIR/link_dotfiles.sh"
+
+# ensure git_clone directory exists (Linux/Mac/WSL のみ。Windows は link_dotfiles.sh で symlink 済み)
+[[ ! -d "$HOME/git_clone" ]] && mkdir -p "$HOME/git_clone"
 
 
 
@@ -75,4 +75,5 @@ fi
 
 
 
-source ~/.zshrc
+echo ""
+echo "Setup complete. Please run 'zrc' or restart your shell to reload zshrc."

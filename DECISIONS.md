@@ -49,6 +49,7 @@
 | 8.0.0 | 初期化 | initialize.{4,5}.sh | × | × | ◯ | ◯ | 削除（3.sh に統合済み） | 維持 | 4.sh の USEFUL_APPS/TMUX、5.sh の xmonad は既に initialize.3.sh の setup_* 関数に対応 |
 | 8.0.0 | tmux | 設定ファイル管理 | × | × | ◯ | ◯ | dotfiles に dot_tmux.conf を置き link_dotfiles.sh で symlink | initialize スクリプト内で heredoc 書き出し | 設定が dotfiles 管理下になり、編集→反映の流れが他の dotfile と統一 |
 | -     | scoop | Windowsインストール自動化 | ◯ | × | × | × | initialize.2.sh で公式 PowerShell installer 経由で自動インストール | 手動事前準備として残す | scoop は uv/vim のインストール前提なので、initialize.2.sh で自動化したほうが新規 Windows 環境セットアップが完結する |
+| 9.0.0 | 構造 | Windows のディレクトリ抽象化 | ◯ | × | × | × | symlink で吸収（`$HOME/git_clone` → `/c/git_clone`、`$HOME/ws` → `/c/ws`） | OS分岐で各スクリプトに条件分岐 | スクリプト/zshrc 側を `$HOME` ベースで統一でき、Linux流の慣習を維持。Windows ユーザーのアドレスバー `/c/...` 直打ちも実体ヒットで動く。link_dotfiles.sh が既に symlink 管理しているので追加コストが小さい。Phase 5.0.0 #2 の `MY_WORK_DIR=/c/ws` override は本 Phase で撤回 |
 
 ## vim
 

@@ -55,7 +55,7 @@ flowchart TB
         Wn3["for_common<br/>(Linux同)"]:::same
         Wn4a["for_windows: 他環境対応<br/>関数: zet (windows用)<br/>関数: _activate_uvenv → Scripts/activate"]:::win
         Wn4b["for_windows: wsl系<br/>WSL_BACKUP_DIR / WSL_BACKUP_CSV (wsl2 setting)<br/>関数群: wsl2 distro control / wsl2 backup"]:::win
-        Wn4c["for_windows: その他<br/>COMMON_OVERRIDE: MY_WORK_DIR=/c/ws, MY_GITCLONE_DIR=/c/git_clone<br/>alias vim → scoop の vim.exe"]:::win
+        Wn4c["for_windows: その他<br/>alias vim → scoop の vim.exe<br/>※ MY_WORK_DIR/MY_GITCLONE_DIR の override は Phase 9.0.0 で symlink 化により廃止"]:::win
         Wn1 --> Wn2 --> Wn3 --> Wn4a --> Wn4b --> Wn4c
     end
 ```
@@ -126,13 +126,11 @@ flowchart TB
 - (関数定義: `zet` (wsl用))
 
 ### dot_zshrc_for_windows.sh (Windows 固有、908行)
-**COMMON_OVERRIDE**
-- `MY_WORK_DIR="/c/ws"` / `MY_GITCLONE_DIR="/c/git_clone"` ※common デフォルトを意図的に上書き（アドレスバー直打ち用）
-
 **UNIQUE_SETTING**
 - alias `vim` for scoop (条件: `$HOME/scoop/shims/vim.exe` 存在)
 - `WSL_BACKUP_DIR` / `WSL_BACKUP_CSV` セット (wsl2 setting)
 - (関数定義多数: `zet`, `_activate_uvenv` (Scripts/activate版), wsl2 distro control 群、wsl2 バックアップ群など)
+- 注: Phase 9.0.0 にて `MY_WORK_DIR`/`MY_GITCLONE_DIR` の override は廃止。代わりに `link_dotfiles.sh` が `$HOME/ws` → `/c/ws`、`$HOME/git_clone` → `/c/git_clone` の symlink を作成し、`$HOME` ベースで統一
 
 ---
 

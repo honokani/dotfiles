@@ -10,25 +10,36 @@ fi
     PTH_D_BASE=$(cd "$(dirname "$0")" && pwd)
 }
 
-# 共通関数：安全にシンボリックリンクを張る
+# 共通関数：安全にシンボリックリンクを張る (ファイル / ディレクトリ両対応)
 link_dotfile() {
     local target_path="$1"
     local source_path="$2"
 
     if [ -L "$target_path" ]; then
         rm "$target_path"
-    elif [ -f "$target_path" ]; then
-        echo "WARN: real $target_path file exists already. backuped."
+    elif [ -e "$target_path" ]; then
+        echo "WARN: real $target_path exists already. backuped."
         mv "$target_path" "${target_path}_bk"
     fi
 
     ln -s "$source_path" "$target_path"
-    
+
     # シンボリックリンクが正しく作成されたかチェック
     if [[ -L "$target_path" ]]; then
         echo "INFO: Created symlink: $target_path -> $source_path"
     else
         echo "WARN: Symlink creation may have failed for: $target_path"
+    fi
+}
+
+: "LINK_OS_BASE_DIRS_FOR_WINDOWS" && {
+    # Windows では HOME 外 (/c 直下) を作業領域として使うが、スクリプト/zshrc 側は $HOME ベースで統一するため
+    # $HOME/git_clone -> /c/git_clone, $HOME/ws -> /c/ws の symlink を張って吸収する
+    if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
+        [[ ! -d "/c/git_clone" ]] && mkdir -p "/c/git_clone"
+        [[ ! -d "/c/ws" ]] && mkdir -p "/c/ws"
+        link_dotfile "$HOME/git_clone" "/c/git_clone"
+        link_dotfile "$HOME/ws" "/c/ws"
     fi
 }
 

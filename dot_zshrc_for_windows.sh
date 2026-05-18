@@ -1,10 +1,6 @@
 #!/bin/zsh
 
 : "UNIQUE_SETTING" && {
-    : "COMMON_OVERRIDE" && {
-        MY_WORK_DIR="/c/ws"
-        MY_GITCLONE_DIR="/c/git_clone"
-    }
     : "UNIQUE_SETTING" && {
         if [ -e "$HOME/scoop/shims/vim.exe" ]; then
             alias vim="$HOME/scoop/shims/vim.exe"

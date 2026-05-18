@@ -15,7 +15,7 @@ export TWILIO_AUTH_TOKEN=""
 }
 
 : "FLAGS_FOR_SETTING" && {
-    if type fzf > /dev/null 2>&1; then
+    if type fzf > /dev/null 2>&1 || [ -f ~/.fzf.zsh ]; then
         MY_FLG_FZF=1
     fi
     if type git > /dev/null 2>&1; then
