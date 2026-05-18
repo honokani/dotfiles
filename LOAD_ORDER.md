@@ -7,24 +7,70 @@
 
 ## 起動ルート
 
+各ルートでロードされるファイルと主要タスク。色: 青=全環境共通、緑=Unix基盤 (linux)、黄=Mac、赤=WSL、紫=Windows固有。
+
 ```mermaid
-flowchart TD
-    Start([zsh 起動]) --> Util[zshrc_util ロード]
-    Util --> Compinit[compinit]
-    Compinit --> Detect{uname 判定}
+flowchart TB
+    classDef common fill:#e6f3ff,stroke:#4a90d9
+    classDef linux fill:#e6ffe6,stroke:#4caf50
+    classDef linuxSame fill:#e6ffe6,stroke:#4caf50,stroke-dasharray: 5 5
+    classDef mac fill:#fff5cc,stroke:#f9a825
+    classDef wsl fill:#ffe6e6,stroke:#e57373
+    classDef win fill:#f0e6ff,stroke:#9575cd
+    classDef same fill:#f5f5f5,stroke:#999,stroke-dasharray: 5 5
 
-    Detect -->|Darwin| Mc[common]
-    Detect -->|Linux| WSLCheck{WSL?}
-    Detect -->|MINGW*_NT*| Wnc[common]
+    subgraph LinuxRoute["Linux"]
+        direction TB
+        L1["util<br/>(select_* 関数群)"]:::common
+        L2["compinit"]:::common
+        L3["for_common<br/>PRESETTING / FLAGS / COMMON_SETTING<br/>GIT_SETTING / PG_SETTING (claude, uv, cuda, Haskell, Rust, nodejs)<br/>APPLICATION_SETTING (fzf)"]:::common
+        L4["for_linux<br/>関数: zet (linux用)<br/>関数: _activate_uvenv → bin/activate"]:::linux
+        L1 --> L2 --> L3 --> L4
+    end
 
-    WSLCheck -->|Yes| Wc[common]
-    WSLCheck -->|No| Lc[common]
+    subgraph MacRoute["Mac"]
+        direction TB
+        M1["util<br/>(Linux同)"]:::same
+        M2["compinit<br/>(Linux同)"]:::same
+        M3["for_common<br/>(Linux同)"]:::same
+        M4["for_linux<br/>(Linux同)"]:::linuxSame
+        M5["for_mac<br/>関数: zet (mac override)"]:::mac
+        M1 --> M2 --> M3 --> M4 --> M5
+    end
 
-    Mc --> Ml[linux] --> Mm[mac]
-    Lc --> Ll[linux]
-    Wc --> Wl[linux] --> Ww[wsl]
-    Wnc --> Wnw[windows]
+    subgraph WSLRoute["WSL"]
+        direction TB
+        W1["util<br/>(Linux同)"]:::same
+        W2["compinit<br/>(Linux同)"]:::same
+        W3["for_common<br/>(Linux同)"]:::same
+        W4["for_linux<br/>(Linux同)"]:::linuxSame
+        W5["for_wsl<br/>関数: zet (wsl override)"]:::wsl
+        W1 --> W2 --> W3 --> W4 --> W5
+    end
+
+    subgraph WinRoute["Windows (for_linux 経由しない)"]
+        direction TB
+        Wn1["util<br/>(Linux同)"]:::same
+        Wn2["compinit<br/>(Linux同)"]:::same
+        Wn3["for_common<br/>(Linux同)"]:::same
+        Wn4a["for_windows: 他環境対応<br/>関数: zet (windows用)<br/>関数: _activate_uvenv → Scripts/activate"]:::win
+        Wn4b["for_windows: wsl系<br/>WSL_BACKUP_DIR / WSL_BACKUP_CSV (wsl2 setting)<br/>関数群: wsl2 distro control / wsl2 backup"]:::win
+        Wn4c["for_windows: その他<br/>COMMON_OVERRIDE: MY_WORK_DIR=/c/ws, MY_GITCLONE_DIR=/c/git_clone<br/>alias vim → scoop の vim.exe"]:::win
+        Wn1 --> Wn2 --> Wn3 --> Wn4a --> Wn4b --> Wn4c
+    end
 ```
+
+**Windows と Unix系の対応関係**（wsl2 関連を除く windows.sh の要素）:
+
+| 機能 | Mac/Linux/WSL | Windows | 一致 |
+|------|---------------|---------|------|
+| `util` | ✓ (共通) | ✓ (共通) | ◯ |
+| `compinit` | ✓ (共通) | ✓ (共通) | ◯ |
+| `for_common` 内容 | ✓ (共通) | ✓ (共通) | ◯ |
+| MY_WORK_DIR / MY_GITCLONE_DIR | common デフォルト (`$HOME/ws`, `$HOME/git_clone`) | windows.sh で override (`/c/ws`, `/c/git_clone`) | 差分 (意図的) |
+| `zet` 関数 | for_linux/mac/wsl で OS別 | for_windows で windows用 | 各OS版あり |
+| `_activate_uvenv` | for_linux で `bin/activate` (Mac/WSL は継承) | for_windows で `Scripts/activate` | 各OS版あり、パスのみ差分 |
+| Windows固有の `alias vim` (scoop) | なし | windows.sh のみ | Windows固有 |
 
 ---
 
