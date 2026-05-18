@@ -40,6 +40,7 @@
 | 6.0.0 | uv | activate存在チェック | ◯ | ◯ | ◯ | ◯ | activate スクリプト本体 (`-f`) | `.venv` ディレクトリ (`-d`) | ディレクトリだけだと壊れた venv (bin/activate なし) で source 失敗 |
 | 6.0.0 | uv | 二重 activate | ◯ | ◯ | ◯ | ◯ | 警告して拒否 | 黙って上書き | 既に他 venv に居ることを気づかず再 activate する事故防止 |
 | 6.0.0 | uv | create 引数仕様 | ◯ | ◯ | ◯ | ◯ | 0/1 引数許容 (0=uv デフォルト python) | 1引数必須 | `uv venv` 自体が引数なしで動くので、ラッパー側で縛る理由がない |
+| -     | uv | Windowsインストール方式 | ◯ | × | × | × | 公式 PowerShell standalone installer | Scoop / WinGet | Linux/Mac と一貫した配置 (`%USERPROFILE%\.local\bin\uv.exe`)、現状の zshrc PATH 設定がそのまま機能、self-update対応 |
 
 ## vim
 

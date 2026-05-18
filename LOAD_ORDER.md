@@ -7,11 +7,23 @@
 
 ## 起動ルート
 
-```
-[Mac]     dot_zshrc.sh → util → common → linux → mac
-[Linux]   dot_zshrc.sh → util → common → linux
-[WSL]     dot_zshrc.sh → util → common → linux → wsl
-[Windows] dot_zshrc.sh → util → common → windows
+```mermaid
+flowchart TD
+    Start([zsh 起動]) --> Util[zshrc_util ロード]
+    Util --> Compinit[compinit]
+    Compinit --> Detect{uname 判定}
+
+    Detect -->|Darwin| Mc[common]
+    Detect -->|Linux| WSLCheck{WSL?}
+    Detect -->|MINGW*_NT*| Wnc[common]
+
+    WSLCheck -->|Yes| Wc[common]
+    WSLCheck -->|No| Lc[common]
+
+    Mc --> Ml[linux] --> Mm[mac]
+    Lc --> Ll[linux]
+    Wc --> Wl[linux] --> Ww[wsl]
+    Wnc --> Wnw[windows]
 ```
 
 ---

@@ -4,10 +4,17 @@
    *  make my life easy  
    *  learn to use github  
 
-### Step  
+### Step
+
+**Ubuntu / WSL**
    1. execute `initialize_ubuntu.1.sh`
    1. execute `initialize_ubuntu.2.sh`
    1. execute `initialize_ubuntu.3.sh`
+
+**Windows**
+   1. install zsh (msys2 / git bash 等)
+   1. execute `initialize_windows.sh` (uv 公式 PowerShell installer 経由)
+   1. execute `link_dotfiles.sh`
 
 ## Expected Error
    *  neovim  
