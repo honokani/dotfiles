@@ -48,6 +48,7 @@
 | 7.0.0 | zsh | his alias | ◯ | ◯ | ◯ | ◯ | 廃止（fzf の Ctrl+R で代替） | 維持 / fallback 残す | Ctrl+R が完全上位互換（フィルタ→Enter で即実行）、his (フィルタ→コピペ実行) は冗長 |
 | 8.0.0 | 初期化 | initialize.{4,5}.sh | × | × | ◯ | ◯ | 削除（3.sh に統合済み） | 維持 | 4.sh の USEFUL_APPS/TMUX、5.sh の xmonad は既に initialize.3.sh の setup_* 関数に対応 |
 | 8.0.0 | tmux | 設定ファイル管理 | × | × | ◯ | ◯ | dotfiles に dot_tmux.conf を置き link_dotfiles.sh で symlink | initialize スクリプト内で heredoc 書き出し | 設定が dotfiles 管理下になり、編集→反映の流れが他の dotfile と統一 |
+| -     | scoop | Windowsインストール自動化 | ◯ | × | × | × | initialize.2.sh で公式 PowerShell installer 経由で自動インストール | 手動事前準備として残す | scoop は uv/vim のインストール前提なので、initialize.2.sh で自動化したほうが新規 Windows 環境セットアップが完結する |
 
 ## vim
 

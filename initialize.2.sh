@@ -36,7 +36,14 @@ case "$(uname)" in
         fi
         ;;
     MINGW*|MSYS*)
-        # Windows (git bash / msys2) - 事前に scoop + zsh 済み前提
+        # Windows (git bash / msys2) - 事前に zsh 済み前提
+        # install scoop (公式 PowerShell installer)
+        if ! command -v scoop > /dev/null 2>&1; then
+            echo "Installing scoop..."
+            powershell -ExecutionPolicy ByPass -c "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force; Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression"
+            export PATH="$HOME/scoop/shims:$PATH"
+        fi
+
         # install uv (official PowerShell installer)
         if ! command -v uv > /dev/null 2>&1; then
             echo "Installing uv (official PowerShell installer)..."

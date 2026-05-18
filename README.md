@@ -11,9 +11,9 @@
    1. execute `initialize.2.sh`
    1. execute `initialize.3.sh`
 
-**Windows (git bash + scoop 前提)**
-   1. 事前準備: git bash で zsh 起動可、scoop 導入済み
-   1. execute `initialize.2.sh` (OS判定で Windows 用処理が走る: PowerShell uv installer + scoop vim + fzf git clone)
+**Windows (git bash 前提)**
+   1. 事前準備: git bash で zsh 起動可
+   1. execute `initialize.2.sh` (OS判定で Windows 用処理が走る: scoop installer + PowerShell uv installer + scoop vim + fzf git clone)
 
 ## Expected Error
    *  neovim  
