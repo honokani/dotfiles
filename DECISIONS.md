@@ -51,6 +51,7 @@
 | -     | scoop | Windowsインストール自動化 | ◯ | × | × | × | initialize.2.sh で公式 PowerShell installer 経由で自動インストール | 手動事前準備として残す | scoop は uv/vim のインストール前提なので、initialize.2.sh で自動化したほうが新規 Windows 環境セットアップが完結する |
 | 9.0.0 | 構造 | Windows のディレクトリ抽象化 | ◯ | × | × | × | symlink で吸収（`$HOME/git_clone` → `/c/git_clone`、`$HOME/ws` → `/c/ws`） | OS分岐で各スクリプトに条件分岐 | スクリプト/zshrc 側を `$HOME` ベースで統一でき、Linux流の慣習を維持。Windows ユーザーのアドレスバー `/c/...` 直打ちも実体ヒットで動く。link_dotfiles.sh が既に symlink 管理しているので追加コストが小さい。Phase 5.0.0 #2 の `MY_WORK_DIR=/c/ws` override は本 Phase で撤回 |
 | 3.0.1 | zsh    | for_* のリンク方式 | ◯ | ◯ | ◯ | ◯ | A案: link_dotfiles.sh で OS ごとのリスト（Mac=linux+mac, WSL=linux+wsl, Linux=linux, Windows=windows）をリンク | B案: for_* 全ファイルを無条件リンク / C案: dot_zshrc.sh 側で `[ -f ] && .` ガード | Phase 3.0.0 の Unix継承にリンク側が未追従だったバグの修正。A案はリンク集合=ロード構造で VISION の継承構造と一致し、dot_zshrc.sh 側は無変更で済む。B案は無関係ファイル（Mac に windows 等）が置かれるノイズ。C案は症状（起動時エラー）は消えるが `_activate_uvenv` 欠落が黙殺され `uva` が壊れたままになる |
+| 3.0.1 | 初期化 | スクリプト自身のディレクトリ取得 | ◯ | ◯ | ◯ | ◯ | `$(cd "$(dirname "$0")" >/dev/null && pwd)`（cd の stdout を捨てる） | `cd -q`（zsh 専用）/ `${0:A:h}`（zsh 専用）/ chpwd を unfunction | zshrc の `chpwd() { _lsl }` hook が `cd` 時に ls 出力を出し、コマンド置換に混入して `command too long` になった。stdout 遮断は bash/zsh 両対応で最小差分、`link_dotfiles.sh`（bash）と同じ形に揃う。`cd -q` / `${0:A:h}` は zsh 専用で bash から呼ぶと壊れる。unfunction は呼び出し元の環境を書き換えるので却下 |
 
 ## vim
 

@@ -7,7 +7,8 @@ if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
 fi
 
 : "SET_BASE_PATH" && {
-    PTH_D_BASE=$(cd "$(dirname "$0")" && pwd)
+    # cd の stdout を捨てる (zsh から source された場合の chpwd hook 出力混入を防ぐ)
+    PTH_D_BASE=$(cd "$(dirname "$0")" >/dev/null && pwd)
 }
 
 # 共通関数：安全にシンボリックリンクを張る (ファイル / ディレクトリ両対応)

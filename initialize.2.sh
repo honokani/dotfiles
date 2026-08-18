@@ -5,7 +5,8 @@
 
 # link dotfiles (call from script's directory)
 # Windows では link_dotfiles.sh が $HOME/git_clone -> /c/git_clone, $HOME/ws -> /c/ws の symlink も作成する
-SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+# cd の stdout を捨てる: zshrc の chpwd hook (_lsl) が発火すると ls 出力が混入し "command too long" になる
+SCRIPT_DIR=$(cd "$(dirname "$0")" >/dev/null && pwd)
 "$SCRIPT_DIR/link_dotfiles.sh"
 
 # ensure git_clone directory exists (Linux/Mac/WSL のみ。Windows は link_dotfiles.sh で symlink 済み)

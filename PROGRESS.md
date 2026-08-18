@@ -57,6 +57,7 @@ Phase 9.0.0: Windows ディレクトリ抽象化 (symlink で $HOME ベース統
 - [x] `link_dotfiles.sh`: `unique`（単一）→ `uniques`（配列）に変更し、Darwin=(linux mac) / WSL=(linux wsl) / Linux=(linux) / Windows=(windows) をループでリンク（リンク集合 = `dot_zshrc.sh` のロード構造）
 - [x] 構文チェック (bash -n / zsh -n) OK (2026-08-18)
 - [x] 擬似環境確認 (2026-08-18): 偽 `uname` + 偽 `HOME` で 4 ルート実行 → 作成リンク集合が `dot_zshrc.sh` のロード構造と一致。偽 Mac HOME で `.zshrc` を zsh 読込 → 修正前 `.zshrc:.:12: no such file` + `_activate_uvenv` 未定義、修正後エラーなし + function 定義を確認
+- [x] Mac 実環境確認で発覚した追加バグ修正 (2026-08-19): `initialize.2.sh:9 command too long` — `SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)` の `cd` で zshrc の `chpwd() { _lsl }` hook が発火し、`ls -al` 出力が `SCRIPT_DIR` に混入（zsh hook 付き環境で実行/source した場合）。`initialize.2.sh` / `link_dotfiles.sh` の当該行を `cd ... >/dev/null && pwd` に変更し hook 出力を遮断。手元 zsh で汚染 chpwd を定義して評価 → 修正前 5 行汚染・実行失敗、修正後 1 行・`link_dotfiles.sh` 到達を確認
 - [ ] 実環境確認 (Mac / WSL): `initialize.2.sh` 再実行 → `zrc` で起動エラーが出ないこと → `uva` 動作確認
 
 ## Phase 4.0.0: uva の OS分岐 (C案=上書き方式)
