@@ -4,7 +4,7 @@
 
 ---
 
-## 現在のフェーズ: **Phase 9.0.0 完了、実環境確認待ち**
+## 現在のフェーズ: **Phase 9.0.0 完了 + Phase 3.0.1 (3.0.0 の取りこぼし修正) 完了、実環境確認待ち**
 
 テスト累計: **0 Green** （テストなし）
 
@@ -16,6 +16,7 @@
 Phase 1.0.0: Claude管理開始時点の安定状態              完了 (2026-05-15)
 Phase 2.0.0: pyenv → uv 移行                          構文OK / 実環境確認待ち
 Phase 3.0.0: ファイル構造再編 (Linux ベース継承)       構文OK / 実環境確認待ち
+Phase 3.0.1: link_dotfiles.sh を Unix継承に追従 (Mac/WSL の for_linux リンク漏れ修正)  擬似環境確認済 / 実環境確認待ち
 Phase 4.0.0: uva の OS分岐 (C案=上書き方式)            構文OK / 実環境確認待ち
 Phase 4.1.0: ロード順俯瞰 LOAD_ORDER.md 作成           完了 (2026-05-18)
 Phase 5.0.0: 俯瞰所見の対処                            構文OK / 実環境確認待ち
@@ -50,6 +51,13 @@ Phase 9.0.0: Windows ディレクトリ抽象化 (symlink で $HOME ベース統
 - [x] dot_zshrc_for_wsl.sh: 同上
 - [x] dot_zshrc_for_windows.sh: 同上
 - [x] 構文チェック (zsh -n) — 全スクリプトOK (2026-05-18)
+
+## Phase 3.0.1: link_dotfiles.sh を Unix継承に追従 (Mac/WSL の for_linux リンク漏れ修正)
+- [x] 原因特定: Phase 3.0.0 で `dot_zshrc.sh` を Unix継承（Mac/WSL が `for_linux` を経由）にしたが、`link_dotfiles.sh` の `LINK_DOTS_OF_ZSH` は OS ごとに 1 ファイル (`unique`) しかリンクせず未追従。Mac/WSL では `~/.zshrc_for_linux` が存在せず、zsh 起動毎に `no such file or directory` + `_activate_uvenv` 未定義で `uva` が使えない状態だった（Windows は for_linux を経由しないため Phase 9.0.0 の実環境確認で検出されず）
+- [x] `link_dotfiles.sh`: `unique`（単一）→ `uniques`（配列）に変更し、Darwin=(linux mac) / WSL=(linux wsl) / Linux=(linux) / Windows=(windows) をループでリンク（リンク集合 = `dot_zshrc.sh` のロード構造）
+- [x] 構文チェック (bash -n / zsh -n) OK (2026-08-18)
+- [x] 擬似環境確認 (2026-08-18): 偽 `uname` + 偽 `HOME` で 4 ルート実行 → 作成リンク集合が `dot_zshrc.sh` のロード構造と一致。偽 Mac HOME で `.zshrc` を zsh 読込 → 修正前 `.zshrc:.:12: no such file` + `_activate_uvenv` 未定義、修正後エラーなし + function 定義を確認
+- [ ] 実環境確認 (Mac / WSL): `initialize.2.sh` 再実行 → `zrc` で起動エラーが出ないこと → `uva` 動作確認
 
 ## Phase 4.0.0: uva の OS分岐 (C案=上書き方式)
 - [x] dot_zshrc_for_common.sh: _activate_uvenv 関数を削除し alias のみ残す（_deactivate_uvenv / _create_uvenv は OS共通なので維持）

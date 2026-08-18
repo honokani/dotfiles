@@ -52,33 +52,38 @@ link_dotfile() {
 }
 
 : "LINK_DOTS_OF_ZSH" && {
+    # OS ごとにリンクする for_* ファイル群。dot_zshrc.sh の Unix継承ロード構造と一致させる:
+    #   Mac=common→linux→mac, Linux=common→linux, WSL=common→linux→wsl, Windows=common→windows
+    # (Mac/WSL は for_linux を継承するので linux も必ずリンクする)
     case "$(uname)" in
         Darwin)
-            unique="mac"
+            uniques=(linux mac)
             ;;
         Linux)
             if [[ -n "$WSL_DISTRO_NAME" ]] || \
                [[ -n "$WSL_INTEROP" ]] || \
                grep -qi microsoft /proc/version 2>/dev/null; then
-                unique="wsl"
+                uniques=(linux wsl)
             else
-                unique="linux"
+                uniques=(linux)
             fi
             ;;
         MINGW32_NT*|MINGW64_NT*)
-            unique="windows"
+            uniques=(windows)
             ;;
         *)
-            unique=""
+            uniques=()
             ;;
     esac
 
     link_dotfile "$HOME/.zshrc" "$PTH_D_BASE/dot_zshrc.sh"
     link_dotfile "$HOME/.zshrc_for_common" "$PTH_D_BASE/dot_zshrc_for_common.sh"
     link_dotfile "$HOME/.zshrc_util" "$PTH_D_BASE/dot_zshrc_util.sh"
-    if [ -n "$unique" ]; then
-        echo "link for $unique"
-        link_dotfile "$HOME/.zshrc_for_$unique" "$PTH_D_BASE/dot_zshrc_for_${unique}.sh"
+    if [ ${#uniques[@]} -gt 0 ]; then
+        for unique in "${uniques[@]}"; do
+            echo "link for $unique"
+            link_dotfile "$HOME/.zshrc_for_$unique" "$PTH_D_BASE/dot_zshrc_for_${unique}.sh"
+        done
     else
         echo "no_uniq_file"
     fi

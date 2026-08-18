@@ -50,6 +50,7 @@
 | 8.0.0 | tmux | 設定ファイル管理 | × | × | ◯ | ◯ | dotfiles に dot_tmux.conf を置き link_dotfiles.sh で symlink | initialize スクリプト内で heredoc 書き出し | 設定が dotfiles 管理下になり、編集→反映の流れが他の dotfile と統一 |
 | -     | scoop | Windowsインストール自動化 | ◯ | × | × | × | initialize.2.sh で公式 PowerShell installer 経由で自動インストール | 手動事前準備として残す | scoop は uv/vim のインストール前提なので、initialize.2.sh で自動化したほうが新規 Windows 環境セットアップが完結する |
 | 9.0.0 | 構造 | Windows のディレクトリ抽象化 | ◯ | × | × | × | symlink で吸収（`$HOME/git_clone` → `/c/git_clone`、`$HOME/ws` → `/c/ws`） | OS分岐で各スクリプトに条件分岐 | スクリプト/zshrc 側を `$HOME` ベースで統一でき、Linux流の慣習を維持。Windows ユーザーのアドレスバー `/c/...` 直打ちも実体ヒットで動く。link_dotfiles.sh が既に symlink 管理しているので追加コストが小さい。Phase 5.0.0 #2 の `MY_WORK_DIR=/c/ws` override は本 Phase で撤回 |
+| 3.0.1 | zsh    | for_* のリンク方式 | ◯ | ◯ | ◯ | ◯ | A案: link_dotfiles.sh で OS ごとのリスト（Mac=linux+mac, WSL=linux+wsl, Linux=linux, Windows=windows）をリンク | B案: for_* 全ファイルを無条件リンク / C案: dot_zshrc.sh 側で `[ -f ] && .` ガード | Phase 3.0.0 の Unix継承にリンク側が未追従だったバグの修正。A案はリンク集合=ロード構造で VISION の継承構造と一致し、dot_zshrc.sh 側は無変更で済む。B案は無関係ファイル（Mac に windows 等）が置かれるノイズ。C案は症状（起動時エラー）は消えるが `_activate_uvenv` 欠落が黙殺され `uva` が壊れたままになる |
 
 ## vim
 
